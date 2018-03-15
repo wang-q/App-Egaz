@@ -29,3 +29,7 @@ cover_db/
 MYMETA.*
 
 /App-Egaz-*
+
+# IDE
+.idea
+.komodotools
