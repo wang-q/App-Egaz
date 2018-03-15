@@ -1,11 +1,10 @@
 package App::Egaz;
-use 5.008001;
-use strict;
-use warnings;
 
 our $VERSION = "0.0.1";
 
-
+use strict;
+use warnings;
+use App::Cmd::Setup -app;
 
 1;
 __END__
