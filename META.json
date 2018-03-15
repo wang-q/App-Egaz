@@ -42,7 +42,8 @@
       },
       "runtime" : {
          "requires" : {
-            "perl" : "5.008001"
+            "App::Cmd" : "0.330",
+            "perl" : "5.010001"
          }
       },
       "test" : {
@@ -52,7 +53,18 @@
       }
    },
    "release_status" : "unstable",
-   "version" : "0.01",
+   "resources" : {
+      "bugtracker" : {
+         "web" : "https://github.com/wang-q/App-Egaz/issues"
+      },
+      "homepage" : "https://github.com/wang-q/App-Egaz",
+      "repository" : {
+         "type" : "git",
+         "url" : "git://github.com/wang-q/App-Egaz.git",
+         "web" : "https://github.com/wang-q/App-Egaz"
+      }
+   },
+   "version" : "0.0.1",
    "x_authority" : "cpan:WANGQ",
    "x_serialization_backend" : "JSON::PP version 2.97000"
 }
