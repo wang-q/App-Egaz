@@ -12,7 +12,7 @@ $result = test_app( 'App::Egaz' => [qw(mergecsv)] );
 like( $result->error, qr{need .+input file}, 'need infile' );
 
 $result = test_app( 'App::Egaz' => [qw(mergecsv t/not_exists)] );
-like( $result->error, qr{need two input files}, 'need infiles' );
+like( $result->error, qr{doesn't exist}, 'infile not exists' );
 
 $result = test_app( 'App::Egaz' => [qw(mergecsv t/not_exists t/not_exists)] );
 like( $result->error, qr{doesn't exist}, 'infile not exists' );
