@@ -53,4 +53,90 @@ sub validate_args {
     $opt->{fields} = [ sort @{ $opt->{fields} } ];
 }
 
+sub execute {
+    my ( $self, $opt, $args ) = @_;
+
+    #----------------------------#
+    # read
+    #----------------------------#
+    my $index_of = {};    # index of ids in @lines
+    my @lines;
+    my ( $count_all, $index ) = ( 0, 0 );
+
+    for my $infile ( @{$args} ) {
+
+        #@type IO::Handle
+        my $in_fh;
+        if ( lc $infile eq "stdin" ) {
+            $in_fh = *STDIN{IO};
+        }
+        else {
+            $in_fh = IO::Zlib->new( $infile, "rb" );
+        }
+
+        while ( !$in_fh->eof ) {
+            my $line = $in_fh->getline;
+            chomp $line;
+            next unless $line;
+
+            $count_all++;
+            my $id = join( "_", ( split ",", $line )[ @{ $opt->{fields} } ] );
+            if ( exists $index_of->{$id} ) {
+                if ( $opt->{concat} ) {
+                    my $ori_index = $index_of->{$id};
+                    my $ori_line  = $lines[$ori_index];
+
+                    my @fs = split ",", $line;
+                    for my $f_idx ( reverse @{ $opt->{fields} } ) {
+                        splice @fs, $f_idx, 1;
+                    }
+                    $lines[$ori_index] = join ",", $ori_line, @fs;
+                }
+            }
+            else {
+                $index_of->{$id} = $index;
+                push @lines, $line;
+                $index++;
+            }
+        }
+
+        $in_fh->close;
+    }
+
+    #----------------------------#
+    # check
+    #----------------------------#
+    {
+        my %seen;
+        for (@lines) {
+            my $number = scalar split(",");
+            $seen{$number}++;
+        }
+        if ( keys(%seen) > 1 ) {
+            Carp::carp "*** Fields not identical, be careful.\n";
+            Carp::carp YAML::Syck::Dump { fields => \%seen, };
+        }
+    }
+
+    #----------------------------#
+    # write outputs
+    #----------------------------#
+    my $out_fh;
+    if ( lc( $opt->{outfile} ) eq "stdout" ) {
+        $out_fh = *STDOUT{IO};
+    }
+    else {
+        open $out_fh, ">", $opt->{outfile};
+    }
+
+    for (@lines) {
+        print {$out_fh} $_ . "\n";
+    }
+    close $out_fh;
+
+    printf STDERR "Total lines [%d]; Result lines [%d].\n", $count_all, scalar @lines;
+
+    return;
+}
+
 1;
