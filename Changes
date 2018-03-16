@@ -2,7 +2,9 @@ Revision history for Perl extension App-Egaz
 
 {{$NEXT}}
 
-0.0.1 2018-03-15T20:54:33Z
+0.0.2 2018-03-16T07:14:30Z
+    - Add `fasops check`
 
+0.0.1 2018-03-15T20:54:33Z
     - original version
 
