@@ -1,0 +1,16 @@
+#!/usr/bin/perl
+use strict;
+use warnings;
+use App::Egaz;
+
+App::Egaz->run;
+
+=head1 OVERVIEW
+
+For help with App::Egaz, run "egaz help"
+
+=cut
+
+__END__
+
+perl -I lib/ script/egaz help
