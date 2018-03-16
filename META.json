@@ -43,6 +43,11 @@
       "runtime" : {
          "requires" : {
             "App::Cmd" : "0.330",
+            "IO::Zlib" : "0",
+            "IPC::Cmd" : "0",
+            "List::Util" : "0",
+            "Path::Tiny" : "0.076",
+            "YAML::Syck" : "1.29",
             "perl" : "5.010001"
          }
       },
