@@ -4,6 +4,7 @@ use warnings;
 use autodie;
 
 use App::Egaz -command;
+use App::Egaz::Common;
 
 use constant abstract => 'merge csv files based on @fields';
 
