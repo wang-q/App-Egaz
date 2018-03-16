@@ -16,3 +16,4 @@ __END__
 perl -I lib/ script/egaz help
 
 perl -I lib/ script/egaz mergecsv
+perl -I lib/ t/03-mergecsv.t
