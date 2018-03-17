@@ -20,18 +20,23 @@ sub usage_desc {
 sub description {
     my $desc;
     $desc .= ucfirst(abstract) . ".\n";
-    $desc .= "\tinfile == stdin means reading from STDIN\n";
-    $desc .= "\n";
-    $desc .= "\tlav format http://www.bx.psu.edu/miller_lab/dist/lav_format.html\n";
-    $desc .= "\t\tHere <start> and <stop> are origin 1 (i.e. the first base in the\n";
-    $desc .= "\t\toriginal given sequence is called '1') and inclusive (both\n";
-    $desc .= "\t\tendpoints are included in the interval).\n";
-    $desc .= "\n";
-    $desc .= "\taxt format https://genome.ucsc.edu/goldenPath/help/axt.html\n";
-    $desc .= "\t\tIf the strand value is '-', the values of the aligning\n";
-    $desc .= "\t\torganism's start and end fields are relative to the \n";
-    $desc .= "\t\treverse-complemented coordinates of its chromosome.\n";
-    $desc .= "\n";
+    $desc .= <<EOF;
+infile == stdin means reading from STDIN
+
+lav format http://www.bx.psu.edu/miller_lab/dist/lav_format.html
+
+    Here <start> and <stop> are origin 1 (i.e. the first base in the
+    original given sequence is called '1') and inclusive (both
+    endpoints are included in the interval).
+
+axt format https://genome.ucsc.edu/goldenPath/help/axt.html
+
+    If the strand value is '-', the values of the aligning
+    organism's start and end fields are relative to the
+    reverse-complemented coordinates of its chromosome.
+
+EOF
+
     return $desc;
 }
 
