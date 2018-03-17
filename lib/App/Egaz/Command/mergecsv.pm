@@ -18,7 +18,7 @@ sub opt_spec {
 }
 
 sub usage_desc {
-    return "fasops check [options] <infile> [more files]";
+    return "egaz mergecsv [options] <infile> [more files]";
 }
 
 sub description {
