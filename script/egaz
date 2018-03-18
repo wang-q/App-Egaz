@@ -29,3 +29,5 @@ perl -I lib/ t/05-lav2psl.t
 
 perl -I lib/ script/egaz formats
 perl -I lib/ t/06-formats.t
+
+perl -I lib/ t/07-maskfasta.t
