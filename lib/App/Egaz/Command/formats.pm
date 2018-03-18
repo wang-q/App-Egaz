@@ -36,7 +36,7 @@ sub execute {
     }
 
     my $desc .= <<MARKDOWN;
-* [lav format ](http://www.bx.psu.edu/miller_lab/dist/lav_format.html)
+* [lav format](http://www.bx.psu.edu/miller_lab/dist/lav_format.html)
 
     Here <start> and <stop> are origin 1 (i.e. the first base in the original
     given sequence is called '1') and inclusive (both endpoints are included
@@ -59,15 +59,15 @@ sub execute {
         tName tSize tStart tEnd
         blockCount blockSizes qStarts tStarts
 
-* [axt format ](https://genome.ucsc.edu/goldenPath/help/axt.html)
+* [axt format](https://genome.ucsc.edu/goldenPath/help/axt.html)
 
     If the strand value is '-', the values of the aligning organism's start
     and end fields are relative to the reverse-complemented coordinates of
     its chromosome.
 
-* [chain format ](https://genome.ucsc.edu/goldenPath/help/chain.html)
+* [chain format](https://genome.ucsc.edu/goldenPath/help/chain.html)
 
-* [net format ](https://genome.ucsc.edu/goldenPath/help/net.html)
+* [net format](https://genome.ucsc.edu/goldenPath/help/net.html)
 
 MARKDOWN
 
