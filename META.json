@@ -72,7 +72,7 @@
          "web" : "https://github.com/wang-q/App-Egaz"
       }
    },
-   "version" : "0.0.3",
+   "version" : "0.0.4",
    "x_authority" : "cpan:WANGQ",
    "x_serialization_backend" : "JSON::PP version 2.97000"
 }
