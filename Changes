@@ -2,6 +2,10 @@ Revision history for Perl extension App-Egaz
 
 {{$NEXT}}
 
+0.0.7 2018-03-18T16:00:35Z
+    - Add `egaz masked`
+    - Use `fasops check` in t/04-lav2axt.t
+
 0.0.6 2018-03-18T13:28:34Z
     - Add `egaz maskfasta`
     - Use markdown syntax in formats.pm
