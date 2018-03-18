@@ -40,5 +40,11 @@ sub resolve_file {
     }
 }
 
+sub round {
+    my $float = shift;
+
+    return int( $float + $float / abs( $float * 2 || 1 ) );
+}
+
 1;
 
