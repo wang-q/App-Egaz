@@ -34,6 +34,8 @@ like( $result->stdout, qr{pig2: 548-582}, 'first part of pig2' );
     my $fasta = <<FASTA;
 >cat
 TTGGCATCTAtcctaTCACAAATTGAATGCNNNGAAGACAAAATTTGGTC
+>cat
+TTGGCATCTAtcctaTCACAAATTGAATGCNNNGAAGACAAAATTTGGTC
 FASTA
 
     Path::Tiny::path("cat.fasta")->spew($fasta);
