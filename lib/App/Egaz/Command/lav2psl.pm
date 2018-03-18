@@ -23,20 +23,6 @@ sub description {
     $desc .= <<EOF;
 infile == stdin means reading from STDIN
 
-lav format http://www.bx.psu.edu/miller_lab/dist/lav_format.html
-
-    Here <start> and <stop> are origin 1 (i.e. the first base in the
-    original given sequence is called '1') and inclusive (both
-    endpoints are included in the interval).
-
-psl format https://genome.ucsc.edu/FAQ/FAQformat.html#format2
-
-    Be aware that the coordinates for a negative strand in a PSL line are
-    handled in a special way. In the qStart and qEnd fields, the coordinates
-    indicate the position where the query matches from the point of view of
-    the forward strand, even when the match is on the reverse strand.
-    However, in the qStarts list, the coordinates are reversed.
-
 EOF
 
     return $desc;

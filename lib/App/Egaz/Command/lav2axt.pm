@@ -23,18 +23,6 @@ sub description {
     $desc .= <<EOF;
 infile == stdin means reading from STDIN
 
-lav format http://www.bx.psu.edu/miller_lab/dist/lav_format.html
-
-    Here <start> and <stop> are origin 1 (i.e. the first base in the
-    original given sequence is called '1') and inclusive (both
-    endpoints are included in the interval).
-
-axt format https://genome.ucsc.edu/goldenPath/help/axt.html
-
-    If the strand value is '-', the values of the aligning
-    organism's start and end fields are relative to the
-    reverse-complemented coordinates of its chromosome.
-
 EOF
 
     return $desc;
