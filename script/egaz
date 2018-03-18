@@ -21,5 +21,5 @@ perl -I lib/ t/03-mergecsv.t
 lastz t/pseudocat.fa t/pseudopig.fa > t/default.lav
 lavToPsl t/default.lav t/default.psl
 
-perl -I lib/ script/egaz lav2axt t/base_test.default.lav
+perl -I lib/ script/egaz lav2axt t/default.lav
 perl -I lib/ t/04-lav2axt.t
