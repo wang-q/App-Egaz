@@ -19,4 +19,9 @@ $result
 is( ( scalar grep {/\S/} split( /\n/, $result->stdout ) ), 30, 'line count' );
 like( $result->stdout, qr{TCGCTCCACGGCGAAA--TAAGCGCACGAACCGG}, 'sequences' );
 
+$result
+    = test_app( 'App::Egaz' => [qw(lav2axt t/default.relative.lav -o stdout)] );
+is( ( scalar grep {/\S/} split( /\n/, $result->stdout ) ), 30, 'line count' );
+like( $result->stdout, qr{TCGCTCCACGGCGAAA--TAAGCGCACGAACCGG}, 'sequences' );
+
 done_testing();
