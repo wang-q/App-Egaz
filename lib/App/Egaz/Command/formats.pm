@@ -35,17 +35,14 @@ sub execute {
         open $out_fh, ">", $opt->{outfile};
     }
 
-    my     $desc .= <<EOF;
-infile == stdin means reading from STDIN
---outfile -o == stdout means write to screen
-
-lav format http://www.bx.psu.edu/miller_lab/dist/lav_format.html
+    my $desc .= <<MARKDOWN;
+* [lav format ](http://www.bx.psu.edu/miller_lab/dist/lav_format.html)
 
     Here <start> and <stop> are origin 1 (i.e. the first base in the original
     given sequence is called '1') and inclusive (both endpoints are included
     in the interval).
 
-psl format https://genome.ucsc.edu/FAQ/FAQformat.html#format2
+* [psl format](https://genome.ucsc.edu/FAQ/FAQformat.html#format2)
 
     Be aware that the coordinates for a negative strand in a PSL line are
     handled in a special way. In the qStart and qEnd fields, the coordinates
@@ -62,17 +59,17 @@ psl format https://genome.ucsc.edu/FAQ/FAQformat.html#format2
         tName tSize tStart tEnd
         blockCount blockSizes qStarts tStarts
 
-axt format https://genome.ucsc.edu/goldenPath/help/axt.html
+* [axt format ](https://genome.ucsc.edu/goldenPath/help/axt.html)
 
     If the strand value is '-', the values of the aligning organism's start
     and end fields are relative to the reverse-complemented coordinates of
     its chromosome.
 
-chain format https://genome.ucsc.edu/goldenPath/help/chain.html
+* [chain format ](https://genome.ucsc.edu/goldenPath/help/chain.html)
 
-net format https://genome.ucsc.edu/goldenPath/help/net.html
+* [net format ](https://genome.ucsc.edu/goldenPath/help/net.html)
 
-EOF
+MARKDOWN
 
     print {$out_fh} $desc;
 
