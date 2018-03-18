@@ -2,6 +2,9 @@ Revision history for Perl extension App-Egaz
 
 {{$NEXT}}
 
+0.0.5 2018-03-18T11:57:35Z
+    - Add `egaz formats`
+
 0.0.4 2018-03-18T08:54:47Z
     - Add `egaz lav2psl`
     - Add round() to Common.pm
