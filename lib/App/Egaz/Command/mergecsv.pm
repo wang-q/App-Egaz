@@ -12,7 +12,7 @@ sub opt_spec {
     return (
         [ "outfile|o=s", "Output filename. [stdout] for screen",    { default => "stdout" }, ],
         [ 'fields|f=i@', 'fields as identifies, 0 as first column', { default => [0] }, ],
-        [ 'concat|c', ' do concat other than merge. Keep first ID fields', ],
+        [ 'concat|c', 'do concat other than merge. Keep first ID fields', ],
         { show_defaults => 1, }
     );
 }
