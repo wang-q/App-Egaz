@@ -31,3 +31,6 @@ perl -I lib/ script/egaz formats
 perl -I lib/ t/06-formats.t
 
 perl -I lib/ t/07-maskfasta.t
+
+perl -I lib/ script/egaz masked <(echo -e ">1\nNNNN\n")
+perl -I lib/ t/08-masked.t
