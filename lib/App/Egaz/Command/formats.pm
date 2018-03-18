@@ -53,6 +53,15 @@ psl format https://genome.ucsc.edu/FAQ/FAQformat.html#format2
     the forward strand, even when the match is on the reverse strand.
     However, in the qStarts list, the coordinates are reversed.
 
+    Each psl lines contain 21 fields:
+
+        matches misMatches repMatches nCount
+        qNumInsert qBaseInsert tNumInsert tBaseInsert
+        strand
+        qName qSize qStart qEnd
+        tName tSize tStart tEnd
+        blockCount blockSizes qStarts tStarts
+
 axt format https://genome.ucsc.edu/goldenPath/help/axt.html
 
     If the strand value is '-', the values of the aligning organism's start

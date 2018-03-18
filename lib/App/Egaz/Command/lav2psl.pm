@@ -127,13 +127,6 @@ sub execute {
         #----------------------------#
         # generate psl lines
         #----------------------------#
-        # 21 fields
-        # matches misMatches repMatches nCount
-        # qNumInsert qBaseInsert tNumInsert tBaseInsert
-        # strand
-        # qName qSize qStart qEnd
-        # tName tSize tStart tEnd
-        # blockCount blockSizes qStarts tStarts
         my @a_stanzas = $lav =~ /a {\s+(.+?)\s+}/sg;
         for my $a_stanza (@a_stanzas) {
             my ( $match, $mismatch ) = ( 0, 0, );
