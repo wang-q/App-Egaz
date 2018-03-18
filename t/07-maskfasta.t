@@ -31,12 +31,15 @@ cat: 1-20
 YAML
 
     Path::Tiny::path("runlist.yml")->spew($yaml);
+    my $fasta = Path::Tiny::path("$t_path/pseudocat.fa")->slurp;
 
     $result = test_app( 'App::Egaz' => [ "maskfasta", "$t_path/pseudocat.fa", "runlist.yml" ] );
     like( $result->stdout, qr{ttggcatctatcctatcaca}s, 'soft masked' );
+    ok(uc $result->stdout eq uc $fasta, 'sequence not changed');
 
     $result = test_app( 'App::Egaz' => [ "maskfasta", "$t_path/pseudocat.fa", "runlist.yml", "--hard" ] );
     like( $result->stdout, qr{N{20}}s, 'hard masked' );
+    ok(uc $result->stdout ne uc $fasta, 'sequence changed');
 
     chdir $cwd;    # Won't keep tempdir
 }
