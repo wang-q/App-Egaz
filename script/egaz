@@ -23,3 +23,6 @@ lavToPsl t/default.lav t/default.psl
 
 perl -I lib/ script/egaz lav2axt t/default.lav
 perl -I lib/ t/04-lav2axt.t
+
+perl -I lib/ script/egaz lav2psl t/default.lav
+perl -I lib/ t/05-lav2psl.t

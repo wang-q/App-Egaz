@@ -1,4 +1,4 @@
-package App::Egaz::Command::lav2axt;
+package App::Egaz::Command::lav2psl;
 use strict;
 use warnings;
 use autodie;
@@ -6,7 +6,7 @@ use autodie;
 use App::Egaz -command;
 use App::Egaz::Common;
 
-use constant abstract => 'convert .lav files to .axt files';
+use constant abstract => 'convert .lav files to .psl files';
 
 sub opt_spec {
     return ( [ "outfile|o=s", "Output filename. [stdout] for screen", { default => "stdout" }, ],
@@ -14,24 +14,31 @@ sub opt_spec {
 }
 
 sub usage_desc {
-    return "egaz lav2axt [options] <infile>";
+    return "egaz lav2psl [options] <infile>";
 }
 
 sub description {
     my $desc;
     $desc .= ucfirst(abstract) . ".\n";
-    $desc .= "\tinfile == stdin means reading from STDIN\n";
-    $desc .= "\n";
-    $desc .= "\tlav format http://www.bx.psu.edu/miller_lab/dist/lav_format.html\n";
-    $desc .= "\t\tHere <start> and <stop> are origin 1 (i.e. the first base in the\n";
-    $desc .= "\t\toriginal given sequence is called '1') and inclusive (both\n";
-    $desc .= "\t\tendpoints are included in the interval).\n";
-    $desc .= "\n";
-    $desc .= "\taxt format https://genome.ucsc.edu/goldenPath/help/axt.html\n";
-    $desc .= "\t\tIf the strand value is '-', the values of the aligning\n";
-    $desc .= "\t\torganism's start and end fields are relative to the \n";
-    $desc .= "\t\treverse-complemented coordinates of its chromosome.\n";
-    $desc .= "\n";
+    $desc .= <<EOF;
+infile == stdin means reading from STDIN
+
+lav format http://www.bx.psu.edu/miller_lab/dist/lav_format.html
+
+    Here <start> and <stop> are origin 1 (i.e. the first base in the
+    original given sequence is called '1') and inclusive (both
+    endpoints are included in the interval).
+
+psl format https://genome.ucsc.edu/FAQ/FAQformat.html#format2
+
+    Be aware that the coordinates for a negative strand in a PSL line are
+    handled in a special way. In the qStart and qEnd fields, the coordinates
+    indicate the position where the query matches from the point of view of
+    the forward strand, even when the match is on the reverse strand.
+    However, in the qStarts list, the coordinates are reversed.
+
+EOF
+
     return $desc;
 }
 
@@ -76,9 +83,6 @@ sub execute {
         open $out_fh, ">", $opt->{outfile};
     }
 
-    my $serial = 0;
-    my %cache;    # cache fasta files
-
     for my $lav (@lavs) {
 
         #----------------------------#
@@ -122,72 +126,66 @@ sub execute {
             Carp::croak "h-stanza error.\n";
         }
 
-        #----------------------------#
-        # generate two sequences
-        #----------------------------#
-        if ( !exists $cache{$t_file} ) {
-            my $seq_of = App::Fasops::Common::read_fasta($t_file);
-            $cache{$t_file} = {
-                seq_of    => $seq_of,
-                seq_names => [ keys %{$seq_of} ],
-            };
-        }
-        my $t_name = $cache{$t_file}->{seq_names}[ $t_contig - 1 ];
-        my $t_seq  = $cache{$t_file}->{seq_of}{$t_name};
+        $h_lines[0] =~ m{">?\s*(\w+)};
+        my $t_name = $1;
 
-        if ( !exists $cache{$q_file} ) {
-            my $seq_of = App::Fasops::Common::read_fasta($q_file);
-            $cache{$q_file} = {
-                seq_of    => $seq_of,
-                seq_names => [ keys %{$seq_of} ],
-            };
-        }
-        my $q_name = $cache{$q_file}->{seq_names}[ $q_contig - 1 ];
-        my $q_seq  = $cache{$q_file}->{seq_of}{$q_name};
-        if ($q_strand) {
-            $q_seq = App::Fasops::Common::revcom($q_seq);
+        $h_lines[1] =~ m{">?\s*(\w+)};
+        my $q_name = $1;
+
+        if ( $h_lines[1] =~ m{ \(reverse complement\)} ) {
+            if ( $q_strand == 0 ) {
+                Carp::croak "q_strand from h-stanza doesn't match with s-stanza.\n";
+            }
         }
 
         #----------------------------#
-        # generate axt alignments
+        # generate psl lines
         #----------------------------#
+        # 21 fields
+        # matches misMatches repMatches nCount
+        # qNumInsert qBaseInsert tNumInsert tBaseInsert
+        # strand
+        # qName qSize qStart qEnd
+        # tName tSize tStart tEnd
+        # blockCount blockSizes qStarts tStarts
         my @a_stanzas = $lav =~ /a {\s+(.+?)\s+}/sg;
         for my $a_stanza (@a_stanzas) {
-            my $alignment_target  = '';
-            my $alignment_query   = '';
-            my @align_pieces      = $a_stanza =~ /\s*l (\d+ \d+ \d+ \d+) \d+/g;
-            my $former_end_target = '';
-            my $former_end_query  = '';
+            my ( $match, $mismatch ) = ( 0, 0, );
+            my ( $q_num_ins, $q_base_ins, $t_num_ins, $t_base_ins, ) = ( 0, 0, 0, 0, );
+            my ( @sizes, @q_begins, @t_begins );
+
+            my @align_pieces = $a_stanza =~ /\s*l (\d+ \d+ \d+ \d+ \d+)/g;
+            my $t_former_end;
+            my $q_former_end;
             for my $align_piece (@align_pieces) {
-                unless ( $align_piece =~ /(\d+) (\d+) (\d+) (\d+)/g ) {
+
+                unless ( $align_piece =~ /(\d+) (\d+) (\d+) (\d+) (\d+)/g ) {
                     Carp::croak "l-line error\n";
                 }
-                my ( $t_begin, $q_begin, $t_end, $q_end ) = ( $1, $2, $3, $4 );
-                my $t_del = '';
-                my $q_del = '';
-                if ( $alignment_target
-                    && ( $t_begin - $former_end_target > 1 ) )
-                {
-                    $q_del = '-' x ( $t_begin - $former_end_target - 1 );
-                    $alignment_query .= $q_del;
+                my ( $t_begin, $q_begin, $t_end, $q_end, $percent_id ) = ( $1, $2, $3, $4, $5 );
+                $t_begin--;
+                $q_begin--;
+                $percent_id = 0.01 * $percent_id;
+
+                my $bases       = $q_end - $q_begin;
+                my $match_piece = App::Egaz::Common::round( $percent_id * $bases );
+                $match += $match_piece;
+                $mismatch += $bases - $match_piece;
+
+                if ( $t_former_end and $t_begin != $t_former_end ) {
+                    $t_num_ins++;
+                    $t_base_ins += $t_begin - $t_former_end;
                 }
-                if ( $alignment_query
-                    && ( $q_begin - $former_end_query > 1 ) )
-                {
-                    $t_del = '-' x ( $q_begin - $former_end_query - 1 );
-                    $alignment_target .= $t_del;
+                if ( $q_former_end and $q_begin != $q_former_end ) {
+                    $q_num_ins++;
+                    $q_base_ins += $q_begin - $q_former_end;
                 }
-                my $length_target = $t_end - $t_begin + 1 + ( length $q_del );
-                my $length_query  = $q_end - $q_begin + 1 + ( length $t_del );
-                $alignment_target
-                    .= substr( $t_seq, ( $t_begin - 1 - ( length $q_del ) ), $length_target );
-                $alignment_query
-                    .= substr( $q_seq, ( $q_begin - 1 - ( length $t_del ) ), $length_query );
-                if ( ( length $alignment_query ) ne ( length $alignment_target ) ) {
-                    Carp::croak "Target length doesn't match query's in the alignment.\n";
-                }
-                $former_end_target = $t_end;
-                $former_end_query  = $q_end;
+                $t_former_end = $t_end;
+                $q_former_end = $q_end;
+
+                push @sizes,    $t_end - $t_begin;
+                push @q_begins, $q_begin;
+                push @t_begins, $t_begin;
             }
 
             # b-line, begins
@@ -196,6 +194,8 @@ sub execute {
             }
             my $t_from = $1;
             my $q_from = $2;
+            $t_from--;
+            $q_from--;
 
             # e-line, ends
             unless ( $a_stanza =~ /\s*e (\d+) (\d+)/ ) {
@@ -210,22 +210,35 @@ sub execute {
             }
             my $score = $1;
 
-            # only keep the first part in fasta header
-            ($t_name) = split /\W+/, $t_name;
-            ($q_name) = split /\W+/, $q_name;
+            # prepare psl line
+            my $psl_line;
+            $psl_line .= sprintf "%d\t%d\t0\t0\t", $match, $mismatch;
+            $psl_line .= sprintf "%d\t%d\t%d\t%d\t", $q_num_ins, $q_base_ins, $t_num_ins,
+                $t_base_ins,;
+            $psl_line .= sprintf "%s\t", $q_strand ? '-' : '+';
 
-            # prepare axt header
-            my $axt_head = $serial;
-            $axt_head .= " $t_name $t_from $t_to";
-            $axt_head .= " $q_name $q_from $q_to ";
-            $axt_head .= $q_strand ? '-' : '+';
-            $axt_head .= " $score\n";
+            # if query is - strand, convert begin/end to genomic coordinates
+            if ($q_strand) {
+                $psl_line .= sprintf "%s\t%d\t%d\t%d\t", $q_name, $q_seq_stop, $q_seq_stop - $q_to,
+                    $q_seq_stop - $q_from;
+            }
+            else {
+                $psl_line .= sprintf "%s\t%d\t%d\t%d\t", $q_name, $q_seq_stop, $q_from, $q_to;
+            }
 
-            # write axt file
-            print {$out_fh} $axt_head;
-            print {$out_fh} "$alignment_target\n";
-            print {$out_fh} "$alignment_query\n\n";
-            $serial++;
+            $psl_line .= sprintf "%s\t%d\t%d\t%d\t", $t_name, $t_seq_stop, $t_from, $t_to;
+            $psl_line .= sprintf "%d\t", scalar @align_pieces;
+
+            $psl_line .= sprintf "%d,", $_ for (@sizes);
+            $psl_line .= "\t";
+
+            $psl_line .= sprintf "%d,", $_ for (@q_begins);
+            $psl_line .= "\t";
+
+            $psl_line .= sprintf "%d,", $_ for (@t_begins);
+            $psl_line .= "\n";
+
+            print {$out_fh} $psl_line;
         }
     }
 
