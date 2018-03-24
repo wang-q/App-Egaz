@@ -75,7 +75,7 @@ sub execute {
         # s-stanza
         #----------------------------#
         # "<filename>[-]" <start> <stop> [<rev_comp_flag> <sequence_number>]
-        $lav =~ /s {\s+(.+?)\s+}/s;
+        $lav =~ /s \{\s+(.+?)\s+\}/s;
         my $s_stanza = $1;
         my @s_lines  = $s_stanza =~ /(.+ \s+ \d+ \s+ \d+ \s+ \d+ \s+ \d+)/gx;
         if ( scalar @s_lines != 2 ) {
@@ -105,7 +105,7 @@ sub execute {
         #----------------------------#
         # h-stanza
         #----------------------------#
-        $lav =~ /h {\s+(.+?)\s+}/s;
+        $lav =~ /h \{\s+(.+?)\s+\}/s;
         my $h_stanza = $1;
         my @h_lines  = $h_stanza =~ /(.+)/g;
         if ( scalar @h_lines != 2 ) {
@@ -127,7 +127,7 @@ sub execute {
         #----------------------------#
         # generate psl lines
         #----------------------------#
-        my @a_stanzas = $lav =~ /a {\s+(.+?)\s+}/sg;
+        my @a_stanzas = $lav =~ /a \{\s+(.+?)\s+\}/sg;
         for my $a_stanza (@a_stanzas) {
             my ( $match, $mismatch ) = ( 0, 0, );
             my ( $q_num_ins, $q_base_ins, $t_num_ins, $t_base_ins, ) = ( 0, 0, 0, 0, );

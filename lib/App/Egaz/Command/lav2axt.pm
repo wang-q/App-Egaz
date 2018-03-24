@@ -78,7 +78,7 @@ sub execute {
         # s-stanza
         #----------------------------#
         # "<filename>[-]" <start> <stop> [<rev_comp_flag> <sequence_number>]
-        $lav =~ /s {\s+(.+?)\s+}/s;
+        $lav =~ /s \{\s+(.+?)\s+\}/s;
         my $s_stanza = $1;
         my @s_lines  = $s_stanza =~ /(.+ \s+ \d+ \s+ \d+ \s+ \d+ \s+ \d+)/gx;
         if ( scalar @s_lines != 2 ) {
@@ -108,7 +108,7 @@ sub execute {
         #----------------------------#
         # h-stanza
         #----------------------------#
-        $lav =~ /h {\s+(.+?)\s+}/s;
+        $lav =~ /h \{\s+(.+?)\s+\}/s;
         my $h_stanza = $1;
         my @h_lines  = $h_stanza =~ /(.+)/g;
         if ( scalar @h_lines != 2 ) {
@@ -144,7 +144,7 @@ sub execute {
         #----------------------------#
         # generate axt alignments
         #----------------------------#
-        my @a_stanzas = $lav =~ /a {\s+(.+?)\s+}/sg;
+        my @a_stanzas = $lav =~ /a \{\s+(.+?)\s+\}/sg;
         for my $a_stanza (@a_stanzas) {
             my $alignment_target  = '';
             my $alignment_query   = '';
