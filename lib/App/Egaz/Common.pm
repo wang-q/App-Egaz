@@ -18,14 +18,14 @@ use App::Fasops::Common;
 
 sub resolve_file {
     my $original = shift;
-    my @pathes   = @_;
+    my @paths   = @_;
 
     my $file = $original;
     if ( !-e $file ) {
         $file = Path::Tiny::path($file)->basename();
 
         if ( !-e $file ) {
-            for my $p (@pathes) {
+            for my $p (@paths) {
                 $file = Path::Tiny::path($p)->child($file);
                 last if -e $file;
             }
