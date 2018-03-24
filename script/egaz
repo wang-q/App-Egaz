@@ -31,3 +31,7 @@ perl -I lib/ t/07-maskfasta.t
 
 perl -I lib/ script/egaz masked <(echo -e ">1\nNNNN\n")
 perl -I lib/ t/08-masked.t
+
+perl -I lib/ script/egaz partition
+perl -I lib/ t/09-partition.t
+
