@@ -47,3 +47,4 @@ perl -I lib/ script/egaz normalize t/partition.t.lav --tlen 18803
 perl -I lib/ t/10-normalize.t
 
 sortaxt
+
