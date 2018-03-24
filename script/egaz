@@ -18,7 +18,7 @@ perl -I lib/ script/egaz help
 lastz t/pseudocat.fa t/pseudopig.fa > t/default.lav
 lavToPsl t/default.lav t/default.psl
 
-perl -I lib/ script/egaz exactmatch t/pig2.fa t/pseudopig.fa
+perl -I lib/ script/egaz exactmatch t/pig2.fa t/pseudopig.fa --debug
 perl -I lib/ t/03-exactmatch.t
 
 perl -I lib/ script/egaz lav2axt t/default.lav
