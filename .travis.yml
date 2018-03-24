@@ -4,7 +4,7 @@ perl:
   - "5.10"
 before_install:
   - sudo apt-get update -qq
-  - sudo apt-get install -qq mummer muscle samtools
+  - sudo apt-get install -qq mummer muscle ncbi-blast+ samtools
 install:
   - cpanm -nq --installdeps --with-develop .
 before_script:
