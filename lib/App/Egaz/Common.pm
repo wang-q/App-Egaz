@@ -69,24 +69,25 @@ sub run_sparsemem {
     my $genome            = shift;
     my $length = shift || 20;
 
-    my $exe;
-    if ( IPC::Cmd::can_run('sparsemem') ) {
-        $exe = 'sparsemem';
-    }
-    else {
-        $exe = 'mummer';
-    }
-
+    # mummer
     # -b    compute forward and reverse complement matches
     # -F    force 4 column output format regardless of the number of reference sequence inputs
     # -n    match only the characters a, c, g, or t
+    #
+    # sparsemem only
     # -k    sampled suffix positions (one by default)
-    my $cmd = sprintf "%s -maxmatch -F -l %d -b -n -k 4 -threads 4 %s %s > %s",
-        $exe,
-        $length,
-        $genome,
-        $query,
-        $result->stringify;
+    my $template;
+    my $exe;
+    if ( IPC::Cmd::can_run('sparsemem') ) {
+        $exe      = 'sparsemem';
+        $template = "%s -maxmatch -F -l %d -b -n -k 4 -threads 4 %s %s > %s";
+    }
+    else {
+        $exe      = 'mummer';
+        $template = "%s -maxmatch -F -l %d -b -n %s %s > %s";
+    }
+
+    my $cmd = sprintf $template, $exe, $length, $genome, $query, $result->stringify;
     system $cmd;
 }
 
@@ -124,7 +125,7 @@ sub get_size {
         }
     }
     else {
-        my $seq_of = App::Fasops::Common::read_fasta($file);
+        my $seq_of    = App::Fasops::Common::read_fasta($file);
         my @seq_names = keys %{$seq_of};
 
         for my $name (@seq_names) {
