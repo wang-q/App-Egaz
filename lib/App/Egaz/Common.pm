@@ -46,6 +46,21 @@ sub round {
     return int( $float + $float / abs( $float * 2 || 1 ) );
 }
 
+# Return a list of 1-based overlapping ranges
 sub overlap_ranges {
+    my $start   = shift;
+    my $end     = shift;
+    my $chunk   = shift;
+    my $overlap = shift;
+
+    my @ranges;
+    for ( my $i = $start - 1; $i < $end; $i += $chunk ) {
+        my $j = $i + $chunk + $overlap;
+        $j = $end if ( $j > $end );
+        push @ranges, [ ( $i + 1 ), $j ];
+    }
+    return \@ranges;
+}
+
 1;
 
