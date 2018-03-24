@@ -3,6 +3,7 @@ requires 'File::ShareDir', '1.102';
 requires 'List::Util';
 requires 'IO::Zlib';
 requires 'IPC::Cmd';
+requires 'JSON',        '2.97001';
 requires 'Path::Tiny',  '0.076';
 requires 'Template',    '2.26';
 requires 'Tie::IxHash', '1.23';
