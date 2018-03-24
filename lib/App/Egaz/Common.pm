@@ -46,5 +46,6 @@ sub round {
     return int( $float + $float / abs( $float * 2 || 1 ) );
 }
 
+sub overlap_ranges {
 1;
 
