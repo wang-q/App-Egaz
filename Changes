@@ -1,6 +1,11 @@
 Revision history for Perl extension App-Egaz
 
 {{$NEXT}}
+    - Move `egaz mergecsv` to `fasops mergecsv`
+    - Escape braces in regex
+    - Add overlap_ranges() to Common.pm
+    - Add `egaz partition`
+    - Add `egaz normalize`
 
 0.0.7 2018-03-18T16:00:35Z
     - Add `egaz masked`

@@ -4,13 +4,13 @@
       "wang-q <wang-q@outlook.com>"
    ],
    "dynamic_config" : 0,
-   "generated_by" : "Minilla/v3.0.14, CPAN::Meta::Converter version 2.150010",
+   "generated_by" : "Minilla/v3.0.16, CPAN::Meta::Converter version 2.150001",
    "license" : [
       "perl_5"
    ],
    "meta-spec" : {
       "url" : "http://search.cpan.org/perldoc?CPAN::Meta::Spec",
-      "version" : 2
+      "version" : "2"
    },
    "name" : "App-Egaz",
    "no_index" : {
@@ -73,6 +73,5 @@
       }
    },
    "version" : "0.0.7",
-   "x_authority" : "cpan:WANGQ",
-   "x_serialization_backend" : "JSON::PP version 2.97000"
+   "x_authority" : "cpan:WANGQ"
 }
