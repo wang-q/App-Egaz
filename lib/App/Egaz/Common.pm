@@ -91,25 +91,6 @@ sub run_sparsemem {
     system $cmd;
 }
 
-sub get_seq_faidx {
-    my $file     = shift;
-    my $location = shift;    # I:1-100
-
-    my $cmd = sprintf "samtools faidx %s %s", $file, $location;
-    open my $fh_pipe, '-|', $cmd;
-
-    my $seq;
-    while ( my $line = <$fh_pipe> ) {
-        chomp $line;
-        if ( $line =~ /^[\w-]+/ ) {
-            $seq .= $line;
-        }
-    }
-    close $fh_pipe;
-
-    return $seq;
-}
-
 sub get_size {
     my $file = shift;
 
