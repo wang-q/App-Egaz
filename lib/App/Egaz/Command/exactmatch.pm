@@ -29,7 +29,6 @@ sub description {
 
 * <infile> can't be stdin
 * `mummer` or `sparsemem` should be in $PATH
-* `samtools` should be in $PATH
 
 MARKDOWN
 
