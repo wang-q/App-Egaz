@@ -20,10 +20,11 @@ sub usage_desc {
 sub description {
     my $desc;
     $desc .= ucfirst(abstract) . ".\n";
-    $desc .= <<EOF;
-infile == stdin means reading from STDIN
+    $desc .= <<MARKDOWN;
 
-EOF
+* infile == stdin means reading from STDIN
+
+MARKDOWN
 
     return $desc;
 }
