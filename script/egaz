@@ -35,3 +35,14 @@ perl -I lib/ t/08-masked.t
 perl -I lib/ script/egaz partition
 perl -I lib/ t/09-partition.t
 
+touch 't/pseudocat.fa[5001,10100]'
+lastz 't/pseudocat.fa[5001,10100]' t/pseudopig.fa > t/partition.t.lav
+cat t/partition.t.lav | perl ~/Downloads/blastz-normalizeLav 18803 0 > t/partition.t.norm.lav
+
+touch 't/pig2.fa[10001,18000]'
+lastz t/pseudocat.fa 't/pig2.fa[10001,18000]' > t/partition.q.lav
+cat t/partition.q.lav | perl ~/Downloads/blastz-normalizeLav 18803 22929 > t/partition.q.norm.lav
+
+perl -I lib/ script/egaz normalize t/partition.t.lav --tlen 18803
+perl -I lib/ t/10-normalize.t
+
