@@ -18,7 +18,7 @@ $result = test_app( 'App::Egaz' => [qw(exactmatch t/not_exists t/pseudopig.fa)] 
 like( $result->error, qr{doesn't exist}, 'infile not exists' );
 
 SKIP: {
-    skip "mummer of sparsemem not installed", 3
+    skip "mummer or sparsemem not installed", 3
         unless IPC::Cmd::can_run('mummer')
         or IPC::Cmd::can_run('sparsemem');
 
