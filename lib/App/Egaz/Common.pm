@@ -117,5 +117,16 @@ sub get_size {
     return \%length_of;
 }
 
+sub exec_cmd {
+    my $cmd = shift;
+    my $opt = shift;
+
+    if ( defined $opt and ref $opt eq "HASH" and $opt->{verbose} ) {
+        print STDERR "CMD: ", $cmd, "\n";
+    }
+
+    system $cmd;
+}
+
 1;
 
