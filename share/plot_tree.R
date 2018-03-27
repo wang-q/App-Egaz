@@ -18,7 +18,7 @@ spec = matrix(
 
         "outfile",
         "o",
-        0,
+        1,
         "character",
         "output filename"
     ),
