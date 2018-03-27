@@ -10,9 +10,7 @@ perl:
   - "5.10"
 before_install:
   - sudo apt-get update -qq
-  - sudo apt-get install -qq mummer muscle ncbi-blast+ r-base raxml samtools
-  - sudo Rscript -e 'install.packages("getopt", repos="http://cran.rstudio.com/")'
-  - sudo Rscript -e 'install.packages("ape", repos="http://cran.rstudio.com/")'
+  - sudo apt-get install -qq mummer muscle ncbi-blast+ raxml samtools
 install:
   - cpanm -nq --installdeps --with-develop .
 before_script:
