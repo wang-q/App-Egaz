@@ -24,13 +24,11 @@ SKIP: {
     my $tempdir = Path::Tiny->tempdir;
     chdir $tempdir;
 
-    test_app(
-        'App::Egaz' => [ "plottree", "$t_path/YDL184C.nwk", "-o", "YDL184C.pdf", ] );
+    test_app( 'App::Egaz' => [ "plottree", "$t_path/YDL184C.nwk", "-o", "YDL184C.pdf", ] );
     ok( $tempdir->child("YDL184C.pdf")->is_file, 'pdf created' );
 
     Path::Tiny::path("$t_path/YDL184C.nwk")->copy("temp.nwk");
-    test_app(
-        'App::Egaz' => [ "plottree", "temp.nwk",  ] );
+    test_app( 'App::Egaz' => [ "plottree", "temp.nwk", ] );
     ok( $tempdir->child("temp.nwk.pdf")->is_file, 'pdf with default name' );
 
     chdir $cwd;    # Won't keep tempdir
