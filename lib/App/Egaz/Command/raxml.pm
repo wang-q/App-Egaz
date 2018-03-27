@@ -15,7 +15,7 @@ sub opt_spec {
         [ "seed|s=i",      "specify a random number seed", ],
         [ "bootstrap|b=i", "the number of alternative runs",       { default => 100 }, ],
         [ "tmp=s",         "user defined tempdir", ],
-        [ "parallel|p=i",  "number of threads",                    { default => 8 }, ],
+        [ "parallel|p=i",  "number of threads",                    { default => 2 }, ],
         [ "verbose|v",     "verbose mode", ],
         { show_defaults => 1, }
     );
