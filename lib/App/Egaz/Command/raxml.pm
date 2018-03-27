@@ -33,6 +33,7 @@ sub description {
 * <infile> should be a blocked fasta file (*.fas)
 * use `fasops concat` to create a temp relaxed phylip file
 * `raxmlHPC` or `raxmlHPC-*` should be in $PATH
+* `raxml` is very sensitive to CPU resources. Any competitions on cores will dramatically slow down it.
 
 MARKDOWN
 

@@ -53,6 +53,8 @@ perl -I lib/ script/egaz raxml t/YDL184C.fas --verbose
 perl -I lib/ script/egaz raxml t/YDL184C.fas --seed 999 --tmp . --outgroup Spar
 perl -I lib/ t/11-raxml.t
 
+plottree
+
 blastn
 
 sortaxt
