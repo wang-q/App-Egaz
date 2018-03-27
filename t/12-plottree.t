@@ -15,8 +15,11 @@ $result = test_app( 'App::Egaz' => [qw(plottree t/not_exists)] );
 like( $result->error, qr{doesn't exist}, 'infile not exists' );
 
 SKIP: {
-    skip "R not installed", 2
-        unless IPC::Cmd::can_run('Rscript');
+    skip "R not installed", 2 unless IPC::Cmd::can_run('Rscript');
+    skip "R package getopt not installed", 2
+        unless IPC::Cmd::run( command => q{ Rscript -e 'if(!require(getopt)){ q(status = 1) }' } );
+    skip "R package ape not installed", 2
+        unless IPC::Cmd::run( command => q{ Rscript -e 'if(!require(ape)){ q(status = 1) }' } );
 
     my $t_path = Path::Tiny::path("t/")->absolute->stringify;
     my $cwd    = Path::Tiny->cwd;
