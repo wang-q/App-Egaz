@@ -99,19 +99,28 @@ sub execute {
     {    # blastn
         my $cmd
             = sprintf "blastn -task megablast"
+            . " -max_target_seqs 20 -culling_limit 20"    # reduce size of reports
+            . " -dust no -soft_masking false"             # disable dust and soft masking
             . " -evalue $opt->{evalue} -word_size $opt->{wordsize}"
-            . " -max_target_seqs 20 -max_hsps 10 -culling_limit 20"  # reduce size of reports
-            . " -dust no -soft_masking false"                        # disable dust and soft masking
             . " -outfmt '$opt->{outfmt}'"
             . " -num_threads $opt->{parallel} -db $basename -query $infiles[0]"
             . " -out $basename.blast";
+
+        my $blastn_usage = `blastn -h`;
+        if ( $blastn_usage =~ /\-max_hsps int/ ) {
+            $cmd .= " -max_hsps 10";                      # Nucleotide-Nucleotide BLAST 2.6.0+
+        }
+        elsif ( $blastn_usage =~ /\-max_hsps_per_subject int/ ) {
+            $cmd .= " -max_hsps_per_subject 10";          # Nucleotide-Nucleotide BLAST 2.2.28+
+        }
+
         App::Egaz::Common::exec_cmd( $cmd, { verbose => $opt->{verbose}, } );
         if ( !$tempdir->child("$basename.blast")->is_file ) {
             Carp::croak "Failed: blastn\n";
         }
     }
 
-    {    # outputs
+    {                                                     # outputs
         if ( lc $opt->{outfile} ne "stdout" ) {
             Path::Tiny::path("$basename.blast")->copy( $opt->{outfile} );
         }
