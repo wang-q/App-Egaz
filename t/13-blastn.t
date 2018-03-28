@@ -28,11 +28,6 @@ SKIP: {
     ok( ( scalar grep {/\S/} split( /\n/, $result->stdout ) ) > 1, 'line count with comments' );
     is( ( scalar grep {/\S/} split( /\n/, $result->stderr ) ), 2, 'stderr line count' );
     like( $result->stdout, qr{pig2\tpig2}, 'target exists' );
-
-#    $result
-#        = test_app( 'App::Egaz' => [qw(blastn t/YDL184C.fas --seed 999 --tmp . --outgroup Spar)] );
-#    is( ( scalar grep {/\S/} split( /\n/, $result->stdout ) ), 1, 'line count' );
-#    like( $result->stdout, qr{Spar:[\d.]+\);$}, 'outgroup at last' );
 }
 
 done_testing();
