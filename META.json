@@ -1,7 +1,7 @@
 {
-   "abstract" : "It's new $module",
+   "abstract" : "Backend of B<E>asy B<G>enome B<A>ligner",
    "author" : [
-      "wang-q <wang-q@outlook.com>"
+      "Qiang Wang <wang-q@outlook.com>"
    ],
    "dynamic_config" : 0,
    "generated_by" : "Minilla/v3.0.16, CPAN::Meta::Converter version 2.150001",
@@ -75,6 +75,6 @@
          "web" : "https://github.com/wang-q/App-Egaz"
       }
    },
-   "version" : "0.0.11",
+   "version" : "0.0.12",
    "x_authority" : "cpan:WANGQ"
 }
