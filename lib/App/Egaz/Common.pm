@@ -12,6 +12,7 @@ use IPC::Cmd qw();
 use JSON qw();
 use List::Util qw();
 use Path::Tiny qw();
+use Statistics::R;
 use Template;
 use YAML::Syck qw();
 

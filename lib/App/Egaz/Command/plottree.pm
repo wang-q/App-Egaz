@@ -11,7 +11,7 @@ use constant abstract => 'use the ape package to draw newick trees';
 sub opt_spec {
     return (
         [ "outfile|o=s", "Output filename", ],
-        [ "verbose|v",   "verbose mode", ],
+        [ "device=s",  "png or pdf", { default => "pdf" }, ],
         { show_defaults => 1, }
     );
 }
@@ -27,7 +27,7 @@ sub description {
 
 * <infile> should be a newick file (*.nwk)
 * --outfile can't be stdout
-* Two R packages are needed, `getopt` and `ape`
+* The R package `ape` is needed
 * .travis.yml contains the installation guide
 
 MARKDOWN
@@ -50,17 +50,63 @@ sub validate_args {
         }
     }
 
+    if ( !exists $opt->{outfile} ) {
+        $opt->{outfile} = Path::Tiny::path( $args->[0] )->absolute . ".$opt->{device}";
+    }
+
 }
 
 sub execute {
     my ( $self, $opt, $args ) = @_;
 
-    my $r_file = File::ShareDir::dist_file( 'App-Egaz', 'plot_tree.R' );
-    my $cmd = "Rscript $r_file";
-    $cmd .= " -i $args->[0]";
-    $cmd .= " -o $opt->{outfile}" if $opt->{outfile};
+    my $R = Statistics::R->new;
 
-    App::Egaz::Common::exec_cmd( $cmd, { verbose => $opt->{verbose}, } );
+    $R->set( 'datafile', $args->[0] );
+    $R->set( 'figfile',  $opt->{outfile} );
+
+    $R->run(q{ library(ape) });
+    $R->run(
+        q{
+        plot_tree <- function(tree) {
+            barlen <- min(median(tree$edge.length), 0.1)
+            if (barlen < 0.1)
+                barlen <- 0.01
+            tree <- ladderize(tree)
+            plot.phylo(
+                tree,
+                cex = 0.8,
+                font = 1,
+                adj = 0,
+                xpd = TRUE,
+                label.offset = 0.001,
+                no.margin = TRUE,
+                underscore = TRUE
+            )
+            nodelabels(
+                tree$node.label,
+                adj = c(1.3,-0.5),
+                frame = "n",
+                cex = 0.8,
+                font = 3,
+                xpd = TRUE
+            )
+            add.scale.bar(cex = 0.8, lwd = 2, length = barlen)
+        }}    # Don't start a new line here
+    );
+    $R->run(q{ tree <- read.tree(datafile) });
+
+    if ( $opt->{device} eq 'pdf' ) {
+        $R->run(q{ pdf(file=figfile) });
+    }
+    elsif ( $opt->{device} eq 'png' ) {
+        $R->run(q{ png(file=figfile) });
+    }
+    else {
+        Carp::croak "Unrecognized device: [$opt->{device}]\n";
+    }
+
+    $R->run(q{ plot_tree(tree) });
+    $R->run(q{ dev.off() });
 
 }
 

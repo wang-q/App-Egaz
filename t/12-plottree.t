@@ -31,8 +31,8 @@ SKIP: {
     ok( $tempdir->child("YDL184C.pdf")->is_file, 'pdf created' );
 
     Path::Tiny::path("$t_path/YDL184C.nwk")->copy("temp.nwk");
-    test_app( 'App::Egaz' => [ "plottree", "temp.nwk", ] );
-    ok( $tempdir->child("temp.nwk.pdf")->is_file, 'pdf with default name' );
+    test_app( 'App::Egaz' => [ "plottree", "temp.nwk", "--device", "png",] );
+    ok( $tempdir->child("temp.nwk.png")->is_file, 'png with default name' );
 
     chdir $cwd;    # Won't keep tempdir
 }
