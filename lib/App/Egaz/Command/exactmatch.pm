@@ -6,7 +6,7 @@ use autodie;
 use App::Egaz -command;
 use App::Egaz::Common;
 
-use constant abstract => 'partitions fasta files by size';
+use constant abstract => 'exact matched positions in genome sequences';
 
 sub opt_spec {
     return (
