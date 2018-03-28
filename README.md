@@ -14,7 +14,7 @@ App::Egaz - Backend of **E**asy **G**enome **A**ligner
             help: display a command's help screen
 
           blastn: blastn wrapper between two fasta files
-      exactmatch: partitions fasta files by size
+      exactmatch: exact matched positions in genome sequences
          formats: formats of files use in this project
          lav2axt: convert .lav files to .axt files
          lav2psl: convert .lav files to .psl files
