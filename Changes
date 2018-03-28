@@ -1,6 +1,8 @@
 Revision history for Perl extension App-Egaz
 
 {{$NEXT}}
+    - Add `egaz plottree`
+    - Test installations of R and its packages
 
 0.0.10 2018-03-26T14:26:50Z
     - Add `egaz raxml`
