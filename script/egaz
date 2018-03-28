@@ -56,7 +56,9 @@ perl -I lib/ t/11-raxml.t
 perl -I lib/ script/egaz plottree t/YDL184C.nwk --verbose
 perl -I lib/ t/12-plottree.t
 
-blastn
+perl -I lib/ script/egaz blastn t/pig2.fa t/pseudopig.fa --verbose
+perl -I lib/ t/13-blastn.t
+
 
 sortaxt
 
