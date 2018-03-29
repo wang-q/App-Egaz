@@ -18,7 +18,7 @@ $result = test_app( 'App::Egaz' => [qw(lastz t/not_exists t/pseudopig.fa)] );
 like( $result->error, qr{doesn't exist}, 'infile not exists' );
 
 SKIP: {
-    skip "lastz not installed", 3 unless IPC::Cmd::can_run('lastz');
+    skip "lastz not installed", 6 unless IPC::Cmd::can_run('lastz');
 
     my $t_path = Path::Tiny::path("t/")->absolute->stringify;
     my $cwd    = Path::Tiny->cwd;
