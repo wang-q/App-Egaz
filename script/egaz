@@ -59,6 +59,8 @@ perl -I lib/ t/12-plottree.t
 perl -I lib/ script/egaz blastn t/pig2.fa t/pseudopig.fa --verbose
 perl -I lib/ t/13-blastn.t
 
+perl -I lib/ script/egaz lastz t/pseudocat.fa t/pseudopig.fa -v
+perl -I lib/ t/14-lastz.t
 
 sortaxt
 

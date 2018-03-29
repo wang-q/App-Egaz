@@ -77,7 +77,7 @@ sub validate_args {
 
     # load parameter sets
     if ( $opt->{set} ) {
-        printf STDERR "* Use parameter set $opt->{set}\n";
+        print STDERR "* Use parameter set $opt->{set}\n";
         my $yml_file = File::ShareDir::dist_file( 'App-Egaz', 'parameters.yml' );
         my $yml = YAML::Syck::LoadFile($yml_file);
 
@@ -90,7 +90,7 @@ sub validate_args {
         for my $key ( map {lc} keys %{$para_set} ) {
             next if $key eq "comment";
             next if defined $opt->{$key};
-            $opt->{$key} = $para_set->{uc $key};
+            $opt->{$key} = $para_set->{ uc $key };
         }
     }
 
@@ -122,7 +122,99 @@ sub execute {
     my $outdir = Path::Tiny::path( $opt->{outdir} );
     $outdir->mkpath();
 
-    print YAML::Syck::Dump $opt;
+    #----------------------------#
+    # inputs
+    #----------------------------#
+    my ( @t_files, @q_files );
+    if ( $opt->{tp} ) {
+        @t_files = File::Find::Rule->file->name(qr{\.fa\[.+\]$})->in( $args->[0] );
+    }
+    else {
+        @t_files = File::Find::Rule->file->name('*.fa')->in( $args->[0] );
+    }
+    if ( $opt->{qp} ) {
+        @q_files = File::Find::Rule->file->name(qr{\.fa\[.+\]$})->in( $args->[1] );
+    }
+    else {
+        @q_files = File::Find::Rule->file->name('*.fa')->in( $args->[1] );
+    }
+    printf STDERR "* T files: [%d]; Q files: [%d]\n", scalar @t_files, scalar @q_files;
+
+    #----------------------------#
+    # lastz
+    #----------------------------#
+    {
+        my $lz_opt;
+        for my $key (qw{O E Q C T M K L H Y Z }) {
+            my $value = $opt->{ lc $key };
+            if ( defined $value ) {
+                $lz_opt .= " $key=$value";
+            }
+        }
+        print STDERR $lz_opt if $lz_opt and $opt->{verbose};
+
+        my $worker = sub {
+            my ( $self, $chunk_ref, $chunk_id ) = @_;
+
+            my $job = $chunk_ref->[0];
+
+            my ( $target, $query ) = split /\t/, $job;
+
+            # naming the .lav file
+            # remove .fa or .fa[1,10000]
+            my $t_base = Path::Tiny::path($target)->basename;
+            $t_base =~ s/\..+?$//;
+            my $q_base = Path::Tiny::path($query)->basename;
+            $q_base =~ s/\..+?$//;
+
+            my $lav_file;
+            my $i = 0;
+            while (1) {
+                my $file = "[${t_base}]vs[${q_base}].$i.lav";
+                $file = $outdir . "/" . $file;
+                if ( !-e $file ) {
+                    $lav_file = $file;
+                    last;
+                }
+                $i++;
+            }
+
+            my $cmd = "lastz $target $query";
+            if ( $opt->{isself} and $target eq $query ) {
+                $cmd = "lastz $target --self";
+            }
+            $cmd .= " $lz_opt" if $lz_opt;
+            $cmd .= " > $lav_file";
+
+            App::Egaz::Common::exec_cmd( $cmd, { verbose => $opt->{verbose}, } );
+
+            return;
+        };
+
+        # All jobs to be done
+        my @jobs;
+        if ( $opt->{paired} ) {    # use the most similar chr name
+            for my $t_file ( sort @t_files ) {
+                my $t_base = Path::Tiny::path($t_file)->basename;
+                my ($q_file) = map { $_->[0] }
+                    sort { $b->[1] <=> $a->[1] }
+                    map { [ $_, similarity( Path::Tiny::path($_)->basename, $t_base ) ] } @q_files;
+                push @jobs, "$t_file\t$q_file";
+            }
+        }
+        else {
+            for my $t_file ( sort @t_files ) {
+                for my $q_file ( sort @q_files ) {
+                    push @jobs, "$t_file\t$q_file";
+                }
+            }
+        }
+
+        my $mce = MCE->new( chunk_size => 1, max_workers => $opt->{parallel}, );
+        $mce->foreach( \@jobs, $worker );
+    }
+
+    return;
 }
 
 1;
