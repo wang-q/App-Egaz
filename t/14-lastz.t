@@ -44,7 +44,6 @@ SKIP: {
     like( $result->stderr, qr{C=0}, '-C passed' );
     like( $result->stderr, qr{matrix/similar}, '-Q passed' );
 
-    print STDERR YAML::Syck::Dump $result;
     chdir $cwd;    # Won't keep tempdir
 }
 

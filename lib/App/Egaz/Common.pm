@@ -6,13 +6,16 @@ use autodie;
 use 5.010001;
 
 use Carp qw();
+use File::Find::Rule;
 use File::ShareDir qw();
 use IO::Zlib;
 use IPC::Cmd qw();
 use JSON qw();
 use List::Util qw();
+use MCE;
 use Path::Tiny qw();
 use Statistics::R;
+use String::Similarity;
 use Template;
 use YAML::Syck qw();
 
