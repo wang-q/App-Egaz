@@ -6,7 +6,9 @@ use autodie;
 use App::Egaz -command;
 use App::Egaz::Common;
 
-use constant abstract => 'formats of files use in this project';
+sub abstract {
+    return 'formats of files use in this project';
+}
 
 sub opt_spec {
     return ( [ "outfile|o=s", "Output filename. [stdout] for screen", { default => "stdout" }, ],

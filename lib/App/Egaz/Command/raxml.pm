@@ -6,7 +6,9 @@ use autodie;
 use App::Egaz -command;
 use App::Egaz::Common;
 
-use constant abstract => 'raxml wrapper to construct phylogenetic trees';
+sub abstract {
+    return 'raxml wrapper to construct phylogenetic trees';
+}
 
 sub opt_spec {
     return (

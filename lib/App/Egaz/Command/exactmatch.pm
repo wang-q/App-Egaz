@@ -6,7 +6,9 @@ use autodie;
 use App::Egaz -command;
 use App::Egaz::Common;
 
-use constant abstract => 'exact matched positions in genome sequences';
+sub abstract {
+    return 'exact matched positions in genome sequences';
+}
 
 sub opt_spec {
     return (

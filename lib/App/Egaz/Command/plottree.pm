@@ -6,7 +6,9 @@ use autodie;
 use App::Egaz -command;
 use App::Egaz::Common;
 
-use constant abstract => 'use the ape package to draw newick trees';
+sub abstract {
+    return 'use the ape package to draw newick trees';
+}
 
 sub opt_spec {
     return (

@@ -6,7 +6,9 @@ use autodie;
 use App::Egaz -command;
 use App::Egaz::Common;
 
-use constant abstract => 'blastn wrapper between two fasta files';
+sub abstract {
+    return 'blastn wrapper between two fasta files';
+}
 
 sub opt_spec {
     return (
