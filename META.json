@@ -44,6 +44,7 @@
          "requires" : {
             "App::Cmd" : "0.330",
             "App::Fasops" : "v0.5.11",
+            "File::Find::Rule" : "0.34",
             "File::ShareDir" : "1.102",
             "IO::Zlib" : "0",
             "IPC::Cmd" : "0",

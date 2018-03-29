@@ -1,5 +1,6 @@
-requires 'App::Cmd',       '0.330';
-requires 'File::ShareDir', '1.102';
+requires 'App::Cmd',         '0.330';
+requires 'File::Find::Rule', '0.34';
+requires 'File::ShareDir',   '1.102';
 requires 'List::Util';
 requires 'IO::Zlib';
 requires 'IPC::Cmd';
