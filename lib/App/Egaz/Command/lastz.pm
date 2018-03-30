@@ -13,7 +13,6 @@ sub abstract {
 sub opt_spec {
     return (
         [ "outdir|o=s",   "Output directory",  { default => "." }, ],
-        [ "tmp=s",        "user defined tempdir", ],
         [ "tp",           "target sequences are partitioned", ],
         [ "qp",           "query sequences are partitioned", ],
         [ "paired",       "relationships between target and query are one-to-one", ],
