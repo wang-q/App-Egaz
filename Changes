@@ -2,6 +2,10 @@ Revision history for Perl extension App-Egaz
 
 {{$NEXT}}
 
+0.0.12 2018-03-30T12:11:11Z
+    - Add `egaz lastz`
+    - Use `abstract()` to replace `use constant abstract =>`
+
 0.0.11 2018-03-28T00:36:36Z
     - Add `egaz plottree`
     - Test installations of R and its packages
