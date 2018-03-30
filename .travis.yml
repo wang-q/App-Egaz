@@ -18,9 +18,19 @@ before_install:
   # $HOME/bin
   - mkdir -p $HOME/bin
   - export PATH="$HOME/bin:$PATH"
+  # lastz
   - git clone https://github.com/lastz/lastz
   - make -C lastz/
   - cp lastz/src/lastz $HOME/bin
+  # fasops
+  - git clone https://github.com/wang-q/faops
+  - make -C faops/
+  - cp faops/faops $HOME/bin
+  # kent-tools
+  - for f in faToTwoBit lavToPsl axtChain chainAntiRepeat chainMergeSort chainPreNet chainNet netSyntenic netChainSubset chainStitchId netSplit netToAxt axtSort; do
+      wget http://hgdownload.soe.ucsc.edu/admin/exe/linux.x86_64/${f};
+    done
+  - chmod +x $HOME/bin/*
 install:
   - cpanm -nq --installdeps --with-develop .
 before_script:
