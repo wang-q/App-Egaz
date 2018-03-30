@@ -29,8 +29,9 @@ before_install:
   # kent-tools
   - for f in faToTwoBit lavToPsl axtChain chainAntiRepeat chainMergeSort chainPreNet chainNet netSyntenic netChainSubset chainStitchId netSplit netToAxt axtSort; do
       wget http://hgdownload.soe.ucsc.edu/admin/exe/linux.x86_64/${f};
+      mv ./${f} $HOME/bin/;
+      chmod +x $HOME/bin/${f};
     done
-  - chmod +x $HOME/bin/*
 install:
   - cpanm -nq --installdeps --with-develop .
 before_script:
