@@ -57,7 +57,7 @@
             "Template" : "2.26",
             "Tie::IxHash" : "1.23",
             "YAML::Syck" : "1.29",
-            "perl" : "5.010001"
+            "perl" : "5.018001"
          }
       },
       "test" : {
