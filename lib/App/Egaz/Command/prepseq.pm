@@ -32,6 +32,7 @@ sub description {
     * call `faops split-name` to separate each sequences into `--outdir`
 * Create chr.sizes via `faops size`
 * Create chr.2bit via `faToTwoBit`
+* `faops` and `faToTwoBit` should be in $PATH
 
 MARKDOWN
 
