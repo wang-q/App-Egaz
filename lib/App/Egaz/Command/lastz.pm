@@ -45,8 +45,8 @@ sub description {
     $desc .= <<'MARKDOWN';
 
 * <path/target> or <path/query> can be .fa files or directory containing multiple .fa files
-* Lastz will take the first sequence in target fasta file and all sequences in query fasta file.
-* For less confusions, each fasta files should contain only one sequence. `faops split-name` can be use to do this.
+* Lastz will take the first sequence in target fasta files and all sequences in query fasta files.
+* For less confusions, each fasta files should contain only one sequence. Use `egaz prepseq` to do this.
 * Fasta file naming rules: "seqfile.fa" or "seqfile.fa[from,to]"
 * Lav file naming rules: "[target]vs[query].N.lav"
 * Predefined parameter sets and scoring matrix can be found in `share/`
