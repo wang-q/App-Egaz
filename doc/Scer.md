@@ -94,3 +94,42 @@ fasops covers S288cvsRM11_1a_lpcnam_syn.fas -n S288c -o stdout |
 
 ```
 
+
+# lastz with partitioned sequences
+
+```bash
+cd ~/data/alignment/egaz
+
+find S288c -type f -name "*.fa" |
+    parallel --no-run-if-empty --linebuffer -k -j 8 '
+        echo >&2 {}
+        egaz partition {} --chunk 500000 --overlap 10000
+    '
+
+find RM11_1a -type f -name "*.fa" |
+    parallel --no-run-if-empty --linebuffer -k -j 8 '
+        echo >&2 {}
+        egaz partition {} --chunk 500000 --overlap 0
+    '
+
+egaz lastz \
+    --set set01 -C 0 --parallel 8 --verbose \
+    S288c RM11_1a --tp --qp \
+    -o S288cvsRM11_1a_partition
+
+egaz lpcnam \
+    --parallel 8 --verbose \
+    S288c RM11_1a S288cvsRM11_1a_partition
+
+fasops axt2fas \
+    -l 1000 -t S288c -q RM11_1a -s RM11_1a/chr.sizes \
+    S288cvsRM11_1a_partition/axtNet/*.net.axt.gz -o S288cvsRM11_1a_partition.fas
+
+fasops check S288cvsRM11_1a_partition.fas S288c.fa --name S288c -o stdout | grep -v "OK"
+fasops check S288cvsRM11_1a_partition.fas RM11_1a.fa --name RM11_1a -o stdout | grep -v "OK"
+
+fasops covers S288cvsRM11_1a_partition.fas -n S288c -o stdout |
+    runlist stat -s S288c/chr.sizes stdin -o S288cvsRM11_1a_partition.csv
+
+```
+
