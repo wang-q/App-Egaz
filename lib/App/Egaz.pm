@@ -48,6 +48,7 @@ App::Egaz is the backend of B<E>asy B<G>enome B<A>ligner.
 =head1 INSTALLATION
 
     cpanm --installdeps https://github.com/wang-q/App-Egaz/archive/0.0.11.tar.gz
+    curl -fsSL https://raw.githubusercontent.com/wang-q/App-Egaz/master/share/check_dep.sh | bash
     cpanm -nq https://github.com/wang-q/App-Egaz/archive/0.0.11.tar.gz
     # cpanm -nq https://github.com/wang-q/App-Egaz.git
 
