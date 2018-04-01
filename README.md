@@ -34,11 +34,21 @@ Run `egaz help command-name` for usage information.
 
 App::Egaz is the backend of **E**asy **G**enome **A**ligner.
 
+**Caution**: `egaz lpcnam` implement UCSC's chain-net pipeline, but some parts,
+e.g. `axtChain` don't work correctly under macOS. Use `egaz lastz`'s build in
+chaining mechanism (`C=2`) instead.
+
 # INSTALLATION
 
     cpanm --installdeps https://github.com/wang-q/App-Egaz/archive/0.0.11.tar.gz
+    curl -fsSL https://raw.githubusercontent.com/wang-q/App-Egaz/master/share/check_dep.sh | bash
     cpanm -nq https://github.com/wang-q/App-Egaz/archive/0.0.11.tar.gz
     # cpanm -nq https://github.com/wang-q/App-Egaz.git
+
+# EXAMPLE
+
+- Procedures of multiple genome alignments
+    - Detailed/alternative steps for _Saccharomyces cerevisiae_ strains [https://github.com/wang-q/App-Egaz/blob/master/doc/Scer.md](https://github.com/wang-q/App-Egaz/blob/master/doc/Scer.md)
 
 # AUTHOR
 
