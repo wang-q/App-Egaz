@@ -27,20 +27,23 @@ App::Egaz - Backend of B<E>asy B<G>enome B<A>ligner
           blastn: blastn wrapper between two fasta files
       exactmatch: exact matched positions in genome sequences
          formats: formats of files use in this project
+           lastz: lastz wrapper for two genomes or self alignments
          lav2axt: convert .lav files to .axt files
          lav2psl: convert .lav files to .psl files
+          lpcnam: the pipeline of pairwise lav-psl-chain-net-axt-maf
           masked: masked (or gaps) regions in fasta files
        maskfasta: soft/hard-masking sequences in a fasta file
        normalize: normalize lav files
        partition: partitions fasta files by size
         plottree: use the ape package to draw newick trees
+         prepseq: preparing steps for lastz
            raxml: raxml wrapper to construct phylogenetic trees
 
 Run C<egaz help command-name> for usage information.
 
 =head1 DESCRIPTION
 
-App::Egaz is ...
+App::Egaz is the backend of B<E>asy B<G>enome B<A>ligner.
 
 =head1 INSTALLATION
 
