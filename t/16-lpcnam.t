@@ -19,8 +19,7 @@ like( $result->error, qr{doesn't exist}, 'infile not exists' );
 
 SKIP: {
     skip "kent-tools not installed", 12
-        unless IPC::Cmd::can_run('lavToPsl')
-        and IPC::Cmd::can_run('axtChain')
+        unless IPC::Cmd::can_run('axtChain')
         and IPC::Cmd::can_run('chainAntiRepeat')
         and IPC::Cmd::can_run('chainMergeSort')
         and IPC::Cmd::can_run('chainPreNet')

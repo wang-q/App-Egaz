@@ -36,7 +36,6 @@ sub description {
 * <path/target> and <path/query> are directories containing .fa, chr.sizes and chr.2bit files
 * <path/lav> can be a .lav file, lav.tar.gz or a directory containing .lav files
 * Many binaries from kent-tools are needed and should be found in $PATH:
-    * lavToPsl
     * axtChain
     * chainAntiRepeat
     * chainMergeSort
@@ -144,10 +143,7 @@ sub execute {
                 my $output = $file;
                 $output =~ s/lav$/psl/;
 
-                # lavToPsl - Convert lav to psl format
-                # usage:
-                #   lavToPsl in.lav out.psl
-                my $cmd = "lavToPsl" . " $file" . " $output";
+                my $cmd = "egaz lav2psl" . " $file" . " -o $output";
                 App::Egaz::Common::exec_cmd( $cmd, { verbose => $opt->{verbose}, } );
             }
         );
