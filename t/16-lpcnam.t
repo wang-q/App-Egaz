@@ -29,7 +29,10 @@ SKIP: {
         and IPC::Cmd::can_run('chainStitchId')
         and IPC::Cmd::can_run('netSplit')
         and IPC::Cmd::can_run('netToAxt')
-        and IPC::Cmd::can_run('axtSort');
+        and IPC::Cmd::can_run('axtSort')
+        and IPC::Cmd::can_run('axtToMaf')
+        and IPC::Cmd::can_run('netFilter')
+        and IPC::Cmd::can_run('chainSplit');
 
     my $t_path = Path::Tiny::path("t/")->absolute->stringify;
     my $cwd    = Path::Tiny->cwd;

@@ -47,6 +47,9 @@ sub description {
     * netSplit
     * netToAxt
     * axtSort
+    * axtToMaf
+    * netFilter
+    * chainSplit
 * [Prebuild binaries](http://hgdownload.soe.ucsc.edu/admin/exe/linux.x86_64/)
 * `--lineargap` and `--minscore`:
     * Human18vsChimp2 use loose and 1000
