@@ -19,9 +19,7 @@ aria2c -x 9 -s 3 -c ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCA/000/149/365/GCA_0
 
 cd ~/data/alignment/egaz
 
-faops order download/Saccharomyces_cerevisiae.R64-1-1.dna_sm.toplevel.fa.gz \
-    <(for chr in {I,II,III,IV,V,VI,VII,VIII,IX,X,XI,XII,XIII,XIV,XV,XVI,Mito}; do echo $chr; done) \
-    S288c.fa
+faops filter -N -s  download/Saccharomyces_cerevisiae.R64-1-1.dna_sm.toplevel.fa.gz S288c.fa
 faops filter -N -s download/GCA_000149365.1_ASM14936v1_genomic.fna.gz RM11_1a.fa
 
 egaz prepseq S288c.fa -o S288c -v
