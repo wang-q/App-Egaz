@@ -40,11 +40,28 @@ SKIP: {
         ]
     );
     ok( $tempdir->child("[pseudocat]vs[pseudopig].1.lav")->is_file, 'second lav file exists' );
-    like( $result->stderr, qr{set01}, '--set passed' );
-    like( $result->stderr, qr{C=0}, '-C passed' );
+    like( $result->stderr, qr{set01},          '--set passed' );
+    like( $result->stderr, qr{C=0},            '-C passed' );
     like( $result->stderr, qr{matrix/similar}, '-Q passed' );
 
     chdir $cwd;    # Won't keep tempdir
 }
 
-done_testing(10);
+SKIP: {
+    skip "lastz not installed", 2 unless IPC::Cmd::can_run('lastz') and IPC::Cmd::can_run('egaz');
+
+    my $t_path = Path::Tiny::path("t/")->absolute->stringify;
+    my $cwd    = Path::Tiny->cwd;
+
+    my $tempdir = Path::Tiny->tempdir;
+    chdir $tempdir;
+
+    test_app(
+        'App::Egaz' => [ "lastz", "$t_path/pseudocat", "$t_path/pseudopig", "--tp", "--qp", ] );
+    ok( $tempdir->child("[cat]vs[pig1].3.norm.lav")->is_file, 'normalized lav file exists' );
+    ok( $tempdir->child("[cat]vs[pig2].5.norm.lav")->is_file, 'normalized lav file exists' );
+
+    chdir $cwd;    # Won't keep tempdir
+}
+
+done_testing(12);

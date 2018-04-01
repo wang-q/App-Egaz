@@ -213,6 +213,55 @@ sub execute {
         $mce->foreach( \@jobs, $worker );
     }
 
+    #----------------------------#
+    # normalize
+    #----------------------------#
+    if ( $opt->{tp} or $opt->{qp} ) {
+        my @files = File::Find::Rule->file->name('*.lav')->in( $outdir->stringify );
+        printf STDERR "* .lav files: [%d]\n", scalar @files;
+
+        my ( %t_length, %q_length );
+        if ( $opt->{tp} ) {
+            %t_length = %{
+                App::RL::Common::read_sizes(
+                    Path::Tiny::path( $args->[0], 'chr.sizes' )->stringify
+                )
+            };
+        }
+        if ( $opt->{qp} ) {
+            %q_length = %{
+                App::RL::Common::read_sizes(
+                    Path::Tiny::path( $args->[1], 'chr.sizes' )->stringify
+                )
+            };
+        }
+
+        my $mce = MCE->new( chunk_size => 1, max_workers => $opt->{parallel}, );
+        $mce->foreach(
+            [ sort @files ],
+            sub {
+                my ( $self, $chunk_ref, $chunk_id ) = @_;
+
+                my $file = $chunk_ref->[0];
+
+                $file =~ /\[(.+?)\]vs\[(.+?)\]/;
+                my $t_name = $1;
+                my $q_name = $2;
+
+                my $outfile = $file;
+                $outfile =~ s/\.lav$/\.norm\.lav/;
+
+                my $t_len = $opt->{tp} ? $t_length{$t_name} : 0;
+                my $q_len = $opt->{qp} ? $q_length{$q_name} : 0;
+
+                my $cmd = "egaz normalize" . " --tlen $t_len --qlen $q_len" . " $file -o $outfile";
+
+                App::Egaz::Common::exec_cmd( $cmd, { verbose => $opt->{verbose}, } );
+                Path::Tiny::path($file)->remove;
+            }
+        );
+    }
+
     return;
 }
 
