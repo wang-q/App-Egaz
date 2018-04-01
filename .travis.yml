@@ -32,8 +32,11 @@ before_install:
       mv ./${f} $HOME/bin/;
       chmod +x $HOME/bin/${f};
     done
+
 install:
   - cpanm -nq --installdeps --with-develop .
+  - cpanm -nq . # install App::Egaz prior as some commands need `egaz` in $PATH
+
 before_script:
   - cpanm --quiet --notest --skip-satisfied Devel::Cover Devel::Cover::Report::Codecov
 script:
