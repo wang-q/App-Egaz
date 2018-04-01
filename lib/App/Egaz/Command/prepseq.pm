@@ -57,7 +57,7 @@ sub validate_args {
     # set default --outdir
     if ( Path::Tiny::path( $args->[0] )->is_file ) {
         $opt->{outdir} = "." if ( !$opt->{outdir} );
-        print STDERR "--outdir set to [.]\n" if $opt->{verbose};
+        printf STDERR "--outdir set to [%s]\n", $opt->{outdir} if $opt->{verbose};
     }
     if ( Path::Tiny::path( $args->[0] )->is_dir ) {
         $opt->{outdir} = $args->[0];
