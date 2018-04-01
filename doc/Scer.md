@@ -5,6 +5,7 @@
 - [Prepare sequences](#prepare-sequences)
 - [lastz and lav2axt](#lastz-and-lav2axt)
 - [lastz and lpcnam](#lastz-and-lpcnam)
+- [lastz with partitioned sequences](#lastz-with-partitioned-sequences)
 
 
 # Prepare sequences
@@ -93,7 +94,6 @@ fasops covers S288cvsRM11_1a_lpcnam_syn.fas -n S288c -o stdout |
     runlist stat -s S288c/chr.sizes stdin -o S288cvsRM11_1a_lpcnam_syn.csv
 
 ```
-
 
 # lastz with partitioned sequences
 
