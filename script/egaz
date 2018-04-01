@@ -65,5 +65,7 @@ perl -I lib/ t/14-lastz.t
 perl -I lib/ script/egaz prepseq t/pseudopig.fa -v
 perl -I lib/ t/15-prepseq.t
 
+perl -I lib/ script/egaz prepseq t/pseudocat.fa -o t/pseudocat
+perl -I lib/ script/egaz prepseq t/pseudopig.fa -o t/pseudopig
 sortaxt
 
