@@ -67,5 +67,11 @@ perl -I lib/ t/15-prepseq.t
 
 perl -I lib/ script/egaz prepseq t/pseudocat.fa -o t/pseudocat
 perl -I lib/ script/egaz prepseq t/pseudopig.fa -o t/pseudopig
+
+perl -I lib/ script/egaz lpcnam t/pseudocat t/pseudopig t/default.lav -o t/lpcnam -v
+perl -I lib/ script/egaz lpcnam t/pseudocat t/pseudopig t/lav.tar.gz -o t/lpcnam -v
+rm -fr t/lpcnam
+perl -I lib/ t/16-lpcnam.t
+
 sortaxt
 
