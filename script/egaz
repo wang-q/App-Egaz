@@ -53,7 +53,7 @@ perl -I lib/ script/egaz raxml t/YDL184C.fas --verbose
 perl -I lib/ script/egaz raxml t/YDL184C.fas --seed 999 --tmp . --outgroup Spar -o t/YDL184C.nwk
 perl -I lib/ t/11-raxml.t
 
-perl -I lib/ script/egaz plottree t/YDL184C.nwk --verbose
+perl -I lib/ script/egaz plottree t/YDL184C.nwk
 perl -I lib/ t/12-plottree.t
 
 perl -I lib/ script/egaz blastn t/pig2.fa t/pseudopig.fa --verbose
