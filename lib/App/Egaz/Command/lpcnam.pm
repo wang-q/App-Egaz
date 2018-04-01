@@ -12,7 +12,7 @@ sub abstract {
 
 sub opt_spec {
     return (
-        [ "outdir|o=s",   "Output directory",                    { default => "." }, ],
+        [ "outdir|o=s", "Output directory", ],
         [ "lineargap=s",  "axtChain linearGap, loose or medium", { default => "loose" }, ],
         [ "minscore=i",   "minimum score for axtChain",          { default => 1000 }, ],
         [ "tname|t=s",    "target name", ],
