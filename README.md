@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/wang-q/App-Egaz.svg?branch=master)](https://travis-ci.org/wang-q/App-Egaz) [![Coverage Status](http://codecov.io/github/wang-q/App-Egaz/coverage.svg?branch=master)](https://codecov.io/github/wang-q/App-Egaz?branch=master)
+[![Build Status](https://travis-ci.org/wang-q/App-Egaz.svg?branch=master)](https://travis-ci.org/wang-q/App-Egaz) [![Coverage Status](http://codecov.io/github/wang-q/App-Egaz/coverage.svg?branch=master)](https://codecov.io/github/wang-q/App-Egaz?branch=master) [![MetaCPAN Release](https://badge.fury.io/pl/App-Egaz.svg)](https://metacpan.org/release/App-Egaz)
 # NAME
 
 App::Egaz - Backend of **E**asy **G**enome **A**ligner
