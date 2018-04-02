@@ -154,8 +154,8 @@ sub ladder {
         }
         my @sorted = map { $_->[0] }
             sort { $a->[1] <=> $b->[1] }
-                map { [ $_, $distance_of->{$_} ] }
-                    keys %{$distance_of};
+            map { [ $_, $distance_of->{$_} ] }
+            keys %{$distance_of};
         push @ladder, [@sorted];
 
         $start = $parent;

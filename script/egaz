@@ -77,5 +77,9 @@ perl -I lib/ script/egaz lpcnam t/pseudocat t/pseudopig t/lav.tar.gz -o t/lpcnam
 rm -fr t/lpcnam
 perl -I lib/ t/16-lpcnam.t
 
+perl -I lib/ script/egaz multiz t/Q_rubravsQ_aliena t/Q_rubravsQ_aquifolioides t/Q_rubravsQ_baronii --tree t/Quercus.nwk
+rm -fr Q_rubra_n4
+perl -I lib/ t/17-multiz.t
+
 sortaxt
 
