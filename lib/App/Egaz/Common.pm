@@ -12,6 +12,7 @@ use IO::Zlib;
 use IPC::Cmd qw();
 use JSON qw();
 use List::Util qw();
+use List::MoreUtils qw();
 use MCE;
 use Path::Tiny qw();
 use Statistics::R;

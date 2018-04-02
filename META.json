@@ -50,6 +50,7 @@
             "IO::Zlib" : "0",
             "IPC::Cmd" : "0",
             "JSON" : "2.97001",
+            "List::MoreUtils" : "0.428",
             "List::Util" : "0",
             "MCE" : "1.835",
             "Path::Tiny" : "0.076",
