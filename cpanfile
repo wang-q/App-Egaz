@@ -1,4 +1,5 @@
 requires 'App::Cmd',         '0.330';
+requires 'Bio::Phylo',       'v2.0.1';
 requires 'File::Find::Rule', '0.34';
 requires 'File::ShareDir',   '1.102';
 requires 'IO::Zlib';
