@@ -35,6 +35,11 @@ hash faops 2>/dev/null || {
     exit 1;
 }
 
+hash multiz 2>/dev/null || {
+    echo >&2 "multiz is required but it's not installed.";
+    exit 1;
+}
+
 for f in faToTwoBit axtChain chainAntiRepeat chainMergeSort chainPreNet chainNet netSyntenic netChainSubset chainStitchId netSplit netToAxt axtSort axtToMaf netFilter chainSplit; do
     hash ${f} 2>/dev/null || {
         echo >&2 "kent-tools ${f} is required but it's not installed.";
