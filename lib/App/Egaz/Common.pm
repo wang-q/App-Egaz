@@ -15,6 +15,7 @@ use List::Util qw();
 use List::MoreUtils qw();
 use MCE;
 use Path::Tiny qw();
+use Set::Scalar;
 use Statistics::R;
 use String::Similarity;
 use Template;

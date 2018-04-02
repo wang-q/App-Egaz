@@ -54,6 +54,7 @@
             "List::Util" : "0",
             "MCE" : "1.835",
             "Path::Tiny" : "0.076",
+            "Set::Scalar" : "1.29",
             "Statistics::R" : "0.34",
             "String::Similarity" : "1.04",
             "Template" : "2.26",

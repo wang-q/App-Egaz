@@ -9,6 +9,7 @@ requires 'List::MoreUtils',    '0.428';
 requires 'MCE',                '1.835';
 requires 'JSON',               '2.97001';
 requires 'Path::Tiny',         '0.076';
+requires 'Set::Scalar',        '1.29';
 requires 'Statistics::R',      '0.34';
 requires 'String::Similarity', '1.04';
 requires 'Template',           '2.26';
