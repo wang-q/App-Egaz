@@ -2,6 +2,14 @@ Revision history for Perl extension App-Egaz
 
 {{$NEXT}}
 
+0.0.14 2018-04-02T20:22:09Z
+    - Add `egaz multiz`
+    - Add normalize section to `egaz lastz`
+    - Add `share/check_dep.sh`
+    - Update README
+    - Install multiz to $HOME/bin on CI
+    - Add ladder() to Common.pm
+
 0.0.13 2018-04-01T17:32:38Z
     - Add `egaz prepseq`
     - Add `egaz lpcnam`

@@ -1,6 +1,6 @@
 package App::Egaz;
 
-our $VERSION = "0.0.13";
+our $VERSION = "0.0.14";
 
 use strict;
 use warnings;

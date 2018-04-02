@@ -38,7 +38,7 @@ SKIP: {
 }
 
 SKIP: {
-    skip "multiz not installed", 4 unless IPC::Cmd::can_run('multiz');
+    skip "multiz not installed", 9 unless IPC::Cmd::can_run('multiz');
 
     my $t_path = Path::Tiny::path("t/")->absolute->stringify;
     my $cwd    = Path::Tiny->cwd;
