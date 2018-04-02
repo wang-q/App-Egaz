@@ -7,6 +7,7 @@ requires 'IPC::Cmd';
 requires 'List::Util';
 requires 'List::MoreUtils',    '0.428';
 requires 'MCE',                '1.835';
+requires 'Number::Format',     '1.75';
 requires 'JSON',               '2.97001';
 requires 'Path::Tiny',         '0.076';
 requires 'Set::Scalar',        '1.29';
