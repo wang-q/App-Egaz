@@ -31,6 +31,10 @@ before_install:
       mv ./${f} $HOME/bin/;
       chmod +x $HOME/bin/${f};
     done
+  # multiz
+  - git clone https://github.com/wang-q/multiz
+  - make -C multiz/
+  - cp multiz/multiz $HOME/bin
 
 install:
   - cpanm -nq --installdeps --with-develop .
