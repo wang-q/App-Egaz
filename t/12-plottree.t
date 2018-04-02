@@ -16,8 +16,6 @@ like( $result->error, qr{doesn't exist}, 'infile not exists' );
 
 SKIP: {
     skip "R not installed", 2 unless IPC::Cmd::can_run('Rscript');
-    skip "R package getopt not installed", 2
-        unless IPC::Cmd::run( command => q{ Rscript -e 'if(!require(getopt)){ q(status = 1) }' } );
     skip "R package ape not installed", 2
         unless IPC::Cmd::run( command => q{ Rscript -e 'if(!require(ape)){ q(status = 1) }' } );
 
