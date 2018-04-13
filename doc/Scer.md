@@ -14,16 +14,23 @@
 mkdir -p ~/data/alignment/egaz/download
 cd ~/data/alignment/egaz/download
 
+# small-masked by ensembl
 aria2c -x 9 -s 3 -c ftp://ftp.ensembl.org/pub/release-82/fasta/saccharomyces_cerevisiae/dna/Saccharomyces_cerevisiae.R64-1-1.dna_sm.toplevel.fa.gz
+
+# NCBI assembly
 aria2c -x 9 -s 3 -c ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCA/000/149/365/GCA_000149365.1_ASM14936v1/GCA_000149365.1_ASM14936v1_genomic.fna.gz
 
 cd ~/data/alignment/egaz
 
-faops filter -N -s  download/Saccharomyces_cerevisiae.R64-1-1.dna_sm.toplevel.fa.gz S288c.fa
+# for `fasops check`
+faops filter -N -s download/Saccharomyces_cerevisiae.R64-1-1.dna_sm.toplevel.fa.gz S288c.fa
 faops filter -N -s download/GCA_000149365.1_ASM14936v1_genomic.fna.gz RM11_1a.fa
 
 egaz prepseq S288c.fa -o S288c -v
-egaz prepseq RM11_1a.fa -o RM11_1a -v
+
+egaz prepseq \
+    RM11_1a.fa -o RM11_1a \
+    --about 2000000 --repeatmasker '--species Fungi --parallel 8' -v
 
 ```
 
@@ -104,15 +111,9 @@ find S288c -type f -name "*.fa" |
         egaz partition {} --chunk 500000 --overlap 10000
     '
 
-find RM11_1a -type f -name "*.fa" |
-    parallel --no-run-if-empty --linebuffer -k -j 8 '
-        echo >&2 {}
-        egaz partition {} --chunk 500000 --overlap 0
-    '
-
 egaz lastz \
     --set set01 -C 0 --parallel 8 --verbose \
-    S288c RM11_1a --tp --qp \
+    S288c RM11_1a --tp \
     -o S288cvsRM11_1a_partition
 
 egaz lpcnam \
