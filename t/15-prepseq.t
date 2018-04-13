@@ -61,7 +61,8 @@ SKIP: {
     $result = test_app(
         'App::Egaz' => [
             "prepseq", "$t_path/pseudopig.fa", "--about", "1000000",
-            "-v",      "--repeatmasker",       "--parallel 2"
+            "--min",   "1",                    "-v",      "--repeatmasker",
+            "--parallel 2"
         ]
     );
     ok( !$tempdir->child("pig1.fa")->is_file,   'pig1.fa not exists' );

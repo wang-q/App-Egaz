@@ -13,6 +13,7 @@ sub abstract {
 sub opt_spec {
     return (
         [ "outdir|o=s",     "Output directory", ],
+        [ "min=i",          "minimal length of sequences", ],
         [ "about=i",        "split sequences to chunks about approximate size", ],
         [ "repeatmasker=s", "call `egaz repeatmasker` with these options", ],
         [ "verbose|v",      "verbose mode", ],
@@ -84,7 +85,9 @@ sub execute {
     #----------------------------#
     if ( Path::Tiny::path( $args->[0] )->is_file ) {
         my $cmd;
-        $cmd .= "faops filter -N -s $args->[0] stdout";
+        $cmd .= "faops filter -N -s";
+        $cmd .= " -a $opt->{min}" if $opt->{min};
+        $cmd .= " $args->[0] stdout";
         $cmd .= " |";
         if ( $opt->{about} ) {
             $cmd .= " faops split-about stdin $opt->{about} $outdir";
