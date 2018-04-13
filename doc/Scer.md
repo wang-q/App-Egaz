@@ -14,11 +14,14 @@
 mkdir -p ~/data/alignment/egaz/download
 cd ~/data/alignment/egaz/download
 
-# small-masked by ensembl
+# small-masked S288c from Ensembl
 aria2c -x 9 -s 3 -c ftp://ftp.ensembl.org/pub/release-82/fasta/saccharomyces_cerevisiae/dna/Saccharomyces_cerevisiae.R64-1-1.dna_sm.toplevel.fa.gz
 
-# NCBI assembly
+# RM11_1a from NCBI assembly
 aria2c -x 9 -s 3 -c ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCA/000/149/365/GCA_000149365.1_ASM14936v1/GCA_000149365.1_ASM14936v1_genomic.fna.gz
+
+# YJM789 from NCBI WGS
+aria2c -x 9 -s 3 -c ftp://ftp.ncbi.nlm.nih.gov/sra/wgs_aux/AA/FW/AAFW02/AAFW02.1.fsa_nt.gz
 
 cd ~/data/alignment/egaz
 
@@ -31,6 +34,10 @@ egaz prepseq S288c.fa -o S288c -v
 egaz prepseq \
     RM11_1a.fa -o RM11_1a \
     --about 2000000 --repeatmasker '--species Fungi --parallel 8' -v
+
+egaz prepseq \
+    download/AAFW02.1.fsa_nt.gz -o YJM789 \
+    --about 2000000 --repeatmasker '--species Fungi --parallel 8' --min 1000 -v
 
 ```
 
