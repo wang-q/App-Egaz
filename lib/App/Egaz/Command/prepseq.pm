@@ -33,6 +33,7 @@ sub description {
     * call `faops filter -N -s to convert IUPAC codes to 'N' and simplify sequence names
     * call `faops split-name` to separate each sequences into `--outdir`
     * with --about, call `faops split-about` to split sequences to chunks about specified size
+    * gzipped file is OK
 * If <path/> is a directory
     * --outdir will be omitted and set to <path/>
     * only files with suffix of '.fa' will be processed
