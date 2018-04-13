@@ -84,5 +84,7 @@ perl -I lib/ t/17-multiz.t
 perl -I lib/ script/egaz repeatmasker t/pseudocat.fa -v
 perl -I lib/ t/18-repeatmasker.t
 
+perl -I lib/ script/egaz template
+
 sortaxt
 
