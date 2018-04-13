@@ -1,6 +1,7 @@
 Revision history for Perl extension App-Egaz
 
 {{$NEXT}}
+    - Add `egaz repeatmasker`
 
 0.0.14 2018-04-02T20:22:09Z
     - Add `egaz multiz`
