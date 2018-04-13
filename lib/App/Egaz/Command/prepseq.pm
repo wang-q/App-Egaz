@@ -12,9 +12,10 @@ sub abstract {
 
 sub opt_spec {
     return (
-        [ "outdir|o=s", "Output directory", ],
-        [ "about=i",    "split sequences to chunks about approximate size", ],
-        [ "verbose|v",  "verbose mode", ],
+        [ "outdir|o=s",     "Output directory", ],
+        [ "about=i",        "split sequences to chunks about approximate size", ],
+        [ "repeatmasker=s", "call `egaz repeatmasker` with these options", ],
+        [ "verbose|v",      "verbose mode", ],
         { show_defaults => 1, }
     );
 }
@@ -90,6 +91,15 @@ sub execute {
         else {
             $cmd .= " faops split-name stdin $outdir";
         }
+        App::Egaz::Common::exec_cmd( $cmd, { verbose => $opt->{verbose}, } );
+    }
+
+    #----------------------------#
+    # repeatmasker
+    #----------------------------#
+    if ( $opt->{repeatmasker} ) {
+        my $cmd = "egaz repeatmasker $outdir/*.fa -o $outdir";
+        $cmd .= " $opt->{repeatmasker}";
         App::Egaz::Common::exec_cmd( $cmd, { verbose => $opt->{verbose}, } );
     }
 
