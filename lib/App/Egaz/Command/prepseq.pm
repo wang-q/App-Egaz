@@ -13,6 +13,7 @@ sub abstract {
 sub opt_spec {
     return (
         [ "outdir|o=s", "Output directory", ],
+        [ "about=i",    "split sequences to chunks about approximate size", ],
         [ "verbose|v",  "verbose mode", ],
         { show_defaults => 1, }
     );
@@ -30,6 +31,7 @@ sub description {
 * If <path/target> is a file
     * call `faops filter -N -s to convert IUPAC codes to 'N' and simplify sequence names
     * call `faops split-name` to separate each sequences into `--outdir`
+    * with --about, call `faops split-about` to split sequences to chunks about specified size
 * Create chr.sizes via `faops size`
 * Create chr.2bit via `faToTwoBit`
 * `faops` and `faToTwoBit` should be in $PATH
@@ -79,7 +81,12 @@ sub execute {
         my $cmd;
         $cmd .= "faops filter -N -s $args->[0] stdout";
         $cmd .= " |";
-        $cmd .= " faops split-name stdin $outdir";
+        if ( $opt->{about} ) {
+            $cmd .= " faops split-about stdin $opt->{about} $outdir";
+        }
+        else {
+            $cmd .= " faops split-name stdin $outdir";
+        }
         App::Egaz::Common::exec_cmd( $cmd, { verbose => $opt->{verbose}, } );
     }
 

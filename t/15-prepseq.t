@@ -36,9 +36,31 @@ SKIP: {
 
     $tempdir->child("chr.sizes")->remove;
     $tempdir->child("chr.2bit")->remove;
+
     $result = test_app( 'App::Egaz' => [ "prepseq", ".", "-v", ] );
     is( ( scalar grep {/^CMD/} grep {/\S/} split( /\n/, $result->stderr ) ),
         2, '3 commands executed' );
+    ok( $tempdir->child("chr.sizes")->is_file, 'chr.sizes exists' );
+    ok( $tempdir->child("chr.2bit")->is_file,  'chr.2bit exists' );
+
+    chdir $cwd;    # Won't keep tempdir
+}
+
+SKIP: {
+    skip "faops or faToTwoBit not installed", 4
+        unless IPC::Cmd::can_run('faops')
+        and IPC::Cmd::can_run('faToTwoBit');
+
+    my $t_path = Path::Tiny::path("t/")->absolute->stringify;
+    my $cwd    = Path::Tiny->cwd;
+
+    my $tempdir = Path::Tiny->tempdir;
+    chdir $tempdir;
+
+    $result = test_app(
+        'App::Egaz' => [ "prepseq", "$t_path/pseudopig.fa", "--about", "1000000", "-v", ] );
+    ok( !$tempdir->child("pig1.fa")->is_file,  'pig1.fa not exists' );
+    ok( $tempdir->child("000.fa")->is_file,    '000.fa exists' );
     ok( $tempdir->child("chr.sizes")->is_file, 'chr.sizes exists' );
     ok( $tempdir->child("chr.2bit")->is_file,  'chr.2bit exists' );
 
