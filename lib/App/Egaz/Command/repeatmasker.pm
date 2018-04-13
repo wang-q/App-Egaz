@@ -32,6 +32,7 @@ sub description {
     $desc .= <<'MARKDOWN';
 
 * <infile> should be fasta files (*.fa, *.fasta)
+* setting --outdir to the same as infiles will replace original files
 * `repeatmasker` should be in $PATH
 
 MARKDOWN
