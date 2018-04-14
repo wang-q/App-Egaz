@@ -1,7 +1,17 @@
 Revision history for Perl extension App-Egaz
 
 {{$NEXT}}
+
+0.1.0 2018-04-14T21:55:22Z
+    - Add `egaz template`
+        - Add --outdir, --taxon
+        - Add 1_pair_cmd.sh
+        - Add 2_rawphylo.sh
+        - Add 3_multi_cmd.sh
     - Add `egaz repeatmasker`
+    - Add --about, --repeatmasker, --min, and --gi to `egaz prepseq`
+    - `egaz raxml` supports one or more infiles
+    - Requires pigz
 
 0.0.14 2018-04-02T20:22:09Z
     - Add `egaz multiz`
