@@ -187,13 +187,15 @@ mkdir -p Pairwise
 
 [% ELSE -%]
 if [ -e Pairwise/[% opt.data.0.name %]vs[% item.name %] ]; then
-    log_debug Skip Pairwise/[% opt.data.0.name %]vs[% item.name %]
+    log_info Skip Pairwise/[% opt.data.0.name %]vs[% item.name %]
 else
+    log_info lastz Pairwise/[% opt.data.0.name %]vs[% item.name %]
     egaz lastz \
         --set set01 -C 0 --parallel [% opt.parallel %] --verbose \
         [% opt.data.0.dir %] [% item.dir %] \
         -o Pairwise/[% opt.data.0.name %]vs[% item.name %]
 
+    log_info lpcnam Pairwise/[% opt.data.0.name %]vs[% item.name %]
     egaz lpcnam \
         --parallel [% opt.parallel %] --verbose \
         [% opt.data.0.dir %] [% item.dir %] Pairwise/[% opt.data.0.name %]vs[% item.name %]
