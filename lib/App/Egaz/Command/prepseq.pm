@@ -16,6 +16,7 @@ sub opt_spec {
         [ "min=i",          "minimal length of sequences", ],
         [ "about=i",        "split sequences to chunks about approximate size", ],
         [ "repeatmasker=s", "call `egaz repeatmasker` with these options", ],
+        [ "gi",             "remove GI numbers from fasta header", ],
         [ "verbose|v",      "verbose mode", ],
         { show_defaults => 1, }
     );
@@ -34,6 +35,7 @@ sub description {
     * call `faops filter -N -s to convert IUPAC codes to 'N' and simplify sequence names
     * call `faops split-name` to separate each sequences into `--outdir`
     * with --about, call `faops split-about` to split sequences to chunks about specified size
+    * for --gi, see [this link](https://ncbiinsights.ncbi.nlm.nih.gov/2016/07/15/ncbi-is-phasing-out-sequence-gis-heres-what-you-need-to-know/)
     * gzipped file is OK
 * If <path/> is a directory
     * --outdir will be omitted and set to <path/>
@@ -85,9 +87,13 @@ sub execute {
     #----------------------------#
     if ( Path::Tiny::path( $args->[0] )->is_file ) {
         my $cmd;
-        $cmd .= "faops filter -N -s";
+        $cmd .= " faops filter -N -s";
         $cmd .= " -a $opt->{min}" if $opt->{min};
         $cmd .= " $args->[0] stdout";
+        if ( $opt->{gi} ) {
+            $cmd .= " |";
+            $cmd .= q{ perl -p -e '/\>gi\|/ and s/gi\|\d+\|gb\|//'};
+        }
         $cmd .= " |";
         if ( $opt->{about} ) {
             $cmd .= " faops split-about stdin $opt->{about} $outdir";

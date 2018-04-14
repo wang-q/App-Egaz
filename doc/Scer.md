@@ -32,6 +32,7 @@ aria2c -x 6 -s 3 -c ftp://ftp.ncbi.nlm.nih.gov/sra/wgs_aux/AA/BY/AABY01/AABY01.1
 aria2c -x 6 -s 3 -c ftp://ftp.ncbi.nlm.nih.gov/sra/wgs_aux/AZ/CJ/AZCJ01/AZCJ01.1.fsa_nt.gz
 
 # Saccharomyces eubayanus FM1318
+# WGS >gi|918735454|gb|JMCK01000001
 aria2c -x 6 -s 3 -c ftp://ftp.ncbi.nlm.nih.gov/sra/wgs_aux/JM/CK/JMCK01/JMCK01.1.fsa_nt.gz
 
 find . -name "*.gz" | xargs gzip -t
@@ -62,7 +63,7 @@ egaz prepseq \
 
 egaz prepseq \
     download/JMCK01.1.fsa_nt.gz -o Seub \
-    --about 2000000 --repeatmasker '--species Fungi --parallel 8' --min 1000 -v
+    --about 2000000 --repeatmasker '--species Fungi --parallel 8' --min 1000 --gi -v
 
 ```
 
@@ -168,3 +169,10 @@ fasops covers S288cvsRM11_1a_partition.fas -n S288c -o stdout |
 
 # Template steps
 
+```bash
+cd ~/data/alignment/egaz
+
+egaz template S288c RM11_1a YJM789 Spar Spas Seub --multi -o multi6/ -v
+
+bash multi6/1_pair_cmd.sh
+```
