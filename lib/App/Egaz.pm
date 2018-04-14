@@ -70,6 +70,8 @@ chaining mechanism (C<C=2>) instead.
 
 =item Detailed/alternative steps L<https://github.com/wang-q/App-Egaz/blob/master/doc/Scer.md#detailedalternative-steps>
 
+=item C<egaz template> steps L<https://github.com/wang-q/App-Egaz/blob/master/doc/Scer.md#template-steps>
+
 =back
 
 =back
