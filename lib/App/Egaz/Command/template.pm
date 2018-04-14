@@ -25,6 +25,7 @@ sub opt_spec {
         [ "length=i",     "minimal length of alignment fragments",  { default => 1000 }, ],
         [ "msa=s",        "aligning program for refine alignments", { default => "mafft" }, ],
         [ "queue=s",      "QUEUE_NAME",                             { default => "mpi" }, ],
+        [ "taxon=s",      "taxons in this project", ],
         [ "separate",     "separate each Target-Query groups", ],
         [ "tmp=s",        "user defined tempdir", ],
         [ "parallel|p=i", "number of threads",                      { default => 2 }, ],
@@ -56,6 +57,7 @@ sub description {
 * Default --multiname is the basename of --outdir. This option is for more than one aligning combinations
 * without --tree and --rawphylo, the order of multiz stitch is the same as the one from command line
 * --outgroup uses basename, not full path. *DON'T* set --outgroup to target
+* --taxon may also contain unused taxons, for constructing chr_length.csv
 
 MARKDOWN
 
@@ -84,6 +86,12 @@ sub validate_args {
     if ( $opt->{tree} ) {
         if ( !Path::Tiny::path( $opt->{tree} )->is_file ) {
             $self->usage_error("The tree file [$opt->{tree}] doesn't exist.");
+        }
+    }
+
+    if ( $opt->{taxon} ) {
+        if ( !Path::Tiny::path( $opt->{taxon} )->is_file ) {
+            $self->usage_error("The taxon file [$opt->{taxon}] doesn't exist.");
         }
     }
 
@@ -125,7 +133,23 @@ sub execute {
     #----------------------------#
     print STDERR "Associate names and directories\n";
     my @data;
-    @data = map { { name => Path::Tiny::path($_)->basename(), dir => $_, } } @{$args};
+    {
+        my %taxon_of;
+        if ( $opt->{taxon} ) {
+            for my $line ( Path::Tiny::path( $opt->{taxon} )->lines ) {
+                my @fields = split /,/, $line;
+                if ( $#fields >= 2 ) {
+                    $taxon_of{ $fields[0] } = $fields[1];
+                }
+            }
+        }
+        @data = map {
+            {   dir   => $_,
+                name  => Path::Tiny::path($_)->basename(),
+                taxon => exists $taxon_of{$_} ? $taxon_of{$_} : 0,
+            }
+        } @{$args};
+    }
 
     # move $opt->{outgroup} to last
     if ( $opt->{outgroup} ) {
