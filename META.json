@@ -4,7 +4,7 @@
       "Qiang Wang <wang-q@outlook.com>"
    ],
    "dynamic_config" : 0,
-   "generated_by" : "Minilla/v3.0.16, CPAN::Meta::Converter version 2.150001",
+   "generated_by" : "Minilla/v3.0.16, CPAN::Meta::Converter version 2.150010",
    "license" : [
       "perl_5"
    ],
@@ -83,5 +83,6 @@
       }
    },
    "version" : "0.0.14",
-   "x_authority" : "cpan:WANGQ"
+   "x_authority" : "cpan:WANGQ",
+   "x_serialization_backend" : "JSON::PP version 2.27400_02"
 }
