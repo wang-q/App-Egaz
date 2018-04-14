@@ -21,7 +21,6 @@ sub opt_spec {
             }
         ],
         [],
-        [ "basename=s", "the basename of this genome, default is the working directory", ],
         [ "length=i",     "minimal length of alignment fragments",  { default => 1000 }, ],
         [ "msa=s",        "aligning program for refine alignments", { default => "mafft" }, ],
         [ "queue=s",      "QUEUE_NAME",                             { default => "mpi" }, ],
@@ -42,8 +41,7 @@ sub opt_spec {
 }
 
 sub usage_desc {
-    return
-        "egaz template [options] <working directory> <path/target> [path/query] [more path/queries]";
+    return "egaz template [options] <working directory> <path/seqdir> [more path/seqdir]";
 }
 
 sub description {
@@ -51,8 +49,12 @@ sub description {
     $desc .= ucfirst(abstract) . ".\n";
     $desc .= <<'MARKDOWN';
 
-* Default --multiname is --basename. This option is for more than one aligning combinations.
+* <path/seqdir> are directories containing multiple .fa files that represent genomes
+* Each .fa files in <path/target> should contain only one sequences, otherwise second or latter sequences will be omitted
+* Species/strain names in result files are the basenames of <path/seqdir>
+* Default --multiname is the working directory. This option is for more than one aligning combinations
 * without --tree and --rawphylo, the order of multiz stitch is the same as the one from command line
+* --outgroup uses basename, not full path
 
 MARKDOWN
 
@@ -78,10 +80,14 @@ sub validate_args {
         $self->usage_error("Multiple alignments need at least 1 query.");
     }
 
-    $args->[0] = Path::Tiny::path( $args->[0] )->absolute;
+    if ( $opt->{tree} ) {
+        if ( !Path::Tiny::path( $opt->{tree} )->is_file ) {
+            $self->usage_error("The tree file [$opt->{tree}] doesn't exist.");
+        }
+    }
 
-    if ( !$opt->{basename} ) {
-        $opt->{basename} = Path::Tiny::path( $args->[0] )->basename();
+    if ( !$opt->{multiname} ) {
+        $opt->{multiname} = Path::Tiny::path( $args->[0] )->basename();
     }
 
 }
@@ -89,54 +95,124 @@ sub validate_args {
 sub execute {
     my ( $self, $opt, $args ) = @_;
 
-    print STDERR "Create templates for [$opt->{mode}] genome alignments\n" if $opt->{verbose};
+    print STDERR "Create templates for [$opt->{mode}] genome alignments\n";
 
-    # fastqc
-    $self->gen_fastqc( $opt, $args );
+    #----------------------------#
+    # prepare working dir
+    #----------------------------#
+    my $dir = Path::Tiny::path( $args->[0] )->absolute();
+    $dir->mkpath();
+    $dir = $dir->stringify();
+    print STDERR "Working directory [$dir]\n";
+    $opt->{dir} = $dir;    # store in $opt
+
+    if ( $opt->{multi} ) {
+        Path::Tiny::path( $dir, 'Pairwise' )->mkpath();
+        Path::Tiny::path( $dir, 'Stats' )->mkpath();
+    }
+    else {
+        Path::Tiny::path( $dir, 'Pairwise' )->mkpath();
+        Path::Tiny::path( $dir, 'Processing' )->mkpath();
+        Path::Tiny::path( $dir, 'Results' )->mkpath();
+    }
+
+    #----------------------------#
+    # names and directories
+    #----------------------------#
+    print STDERR "Associate names and directories\n";
+    my @data = @{$args};
+    shift @data;    # remove working dir
+    @data = map {
+        {   name => Path::Tiny::path($_)->basename(),
+            dir  => Path::Tiny::path($_)->absolute()->stringify(),
+        }
+    } @data;
+
+    # move $opt->{outgroup} to last
+    if ( $opt->{outgroup} ) {
+        my ($exist) = grep { $_->{name} eq $opt->{outgroup} } @data;
+        if ( !defined $exist ) {
+            Carp::croak "--outgroup [$opt->{outgroup}] does not exist!\n";
+        }
+
+        @data = grep { $_->{name} ne $opt->{outgroup} } @data;
+        push @data, $exist;
+    }
+    $opt->{data} = \@data;    # store in $opt
+
+    print STDERR YAML::Syck::Dump( $opt->{data} );
+
+    # If there's no phylo tree, generate a fake one.
+    if ( $opt->{multi} and !$opt->{tree} ) {
+        print STDERR "Create fake_tree.nwk\n";
+        my $fh = Path::Tiny::path( $dir, "fake_tree.nwk" )->openw;
+        print {$fh} "(" x ( scalar(@data) - 1 ) . "$data[0]->{name}";
+        for my $i ( 1 .. $#data ) {
+            print {$fh} ",$data[$i]->{name})";
+        }
+        print {$fh} ";\n";
+        close $fh;
+    }
+
+    #----------------------------#
+    # *.sh files
+    #----------------------------#
+    $self->gen_pair_cmd( $opt, );
 
 }
 
-sub gen_fastqc {
-    my ( $self, $opt, $args ) = @_;
+sub gen_pair_cmd {
+    my ( $self, $opt, ) = @_;
 
     my $tt = Template->new( INCLUDE_PATH => [ File::ShareDir::dist_dir('App-Egaz') ], );
     my $template;
     my $sh_name;
 
-    return unless $opt->{fastqc};
+    return unless $opt->{multi};
 
-    $sh_name = "2_fastqc.sh";
-    print "Create $sh_name\n";
+    $sh_name = "1_pair_cmd.sh";
+    print STDERR "Create $sh_name\n";
     $template = <<'EOF';
 [% INCLUDE header.tt2 %]
+
+#----------------------------#
+# [% sh %]
+#----------------------------#
 log_warn [% sh %]
 
-mkdir -p 2_illumina/fastqc
-cd 2_illumina/fastqc
+mkdir -p Pairwise
 
-for PREFIX in R S T; do
-    if [ ! -e ../${PREFIX}1.fq.gz ]; then
-        continue;
-    fi
+[% FOREACH item IN opt.data -%]
+[% IF loop.first -%]
+# Target [% item.name %]
 
-    if [ ! -e ${PREFIX}1_fastqc.html ]; then
-        fastqc -t [% opt.parallel %] \
-            ../${PREFIX}1.fq.gz [% IF not opt.se %]../${PREFIX}2.fq.gz[% END %] \
-            -o .
-    fi
-done
+[% ELSE -%]
+if [ -e Pairwise/[% opt.data.0.name %]vs[% item.name %] ]; then
+    log_debug Skip Pairwise/[% opt.data.0.name %]vs[% item.name %]
+else
+    egaz lastz \
+        --set set01 -C 0 --parallel [% opt.parallel %] --verbose \
+        [% opt.data.0.dir %] [% item.dir %] \
+        -o Pairwise/[% opt.data.0.name %]vs[% item.name %]
+
+    egaz lpcnam \
+        --parallel [% opt.parallel %] --verbose \
+        [% opt.data.0.dir %] [% item.dir %] Pairwise/[% opt.data.0.name %]vs[% item.name %]
+fi
+
+[% END -%]
+[% END -%]
 
 exit;
 
 EOF
     $tt->process(
         \$template,
-        {   args => $args,
-            opt  => $opt,
-            sh   => $sh_name,
+        {   opt => $opt,
+            sh  => $sh_name,
         },
-        Path::Tiny::path( $args->[0], $sh_name )->stringify
-    ) or die Template->error;
+        Path::Tiny::path( $opt->{dir}, $sh_name )->stringify
+    ) or Carp::croak Template->error;
 }
 
 1;
