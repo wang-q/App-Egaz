@@ -5,6 +5,11 @@
 #----------------------------#
 # prepare
 #----------------------------#
+hash pigz 2>/dev/null ||{
+    echo >&2 "pigz is required but it's not installed.";
+    exit 1;
+}
+
 hash mummer 2>/dev/null || hash sparsemem 2>/dev/null ||{
     echo >&2 "mummer or sparsemem is required but it's not installed.";
     exit 1;
