@@ -7,6 +7,7 @@
     - [lastz and lav2axt](#lastz-and-lav2axt)
     - [lastz and lpcnam](#lastz-and-lpcnam)
     - [lastz with partitioned sequences](#lastz-with-partitioned-sequences)
+- [Template steps](#template-steps)
 
 
 # Prepare sequences
@@ -141,4 +142,6 @@ fasops covers S288cvsRM11_1a_partition.fas -n S288c -o stdout |
     runlist stat -s S288c/chr.sizes stdin -o S288cvsRM11_1a_partition.csv
 
 ```
+
+# Template steps
 

@@ -47,8 +47,8 @@ chaining mechanism (`C=2`) instead.
 
 # EXAMPLE
 
-- Procedures of multiple genome alignments
-    - Detailed/alternative steps for _Saccharomyces cerevisiae_ strains [https://github.com/wang-q/App-Egaz/blob/master/doc/Scer.md](https://github.com/wang-q/App-Egaz/blob/master/doc/Scer.md)
+- Multiple genome alignments of _Saccharomyces cerevisiae_ strains
+    - Detailed/alternative steps [https://github.com/wang-q/App-Egaz/blob/master/doc/Scer.md#detailedalternative-steps](https://github.com/wang-q/App-Egaz/blob/master/doc/Scer.md#detailedalternative-steps)
 
 # AUTHOR
 

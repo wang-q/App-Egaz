@@ -60,11 +60,11 @@ chaining mechanism (C<C=2>) instead.
 
 =over 4
 
-=item Procedures of multiple genome alignments
+=item Multiple genome alignments of I<Saccharomyces cerevisiae> strains
 
 =over 8
 
-=item Detailed/alternative steps for I<Saccharomyces cerevisiae> strains L<https://github.com/wang-q/App-Egaz/blob/master/doc/Scer.md>
+=item Detailed/alternative steps L<https://github.com/wang-q/App-Egaz/blob/master/doc/Scer.md#detailedalternative-steps>
 
 =back
 
