@@ -16,7 +16,7 @@
 mkdir -p ~/data/alignment/egaz/download
 cd ~/data/alignment/egaz/download
 
-# small-masked S288c from Ensembl
+# S288c (soft-masked) from Ensembl
 aria2c -x 6 -s 3 -c ftp://ftp.ensembl.org/pub/release-82/fasta/saccharomyces_cerevisiae/dna/Saccharomyces_cerevisiae.R64-1-1.dna_sm.toplevel.fa.gz
 
 # RM11_1a from NCBI assembly
@@ -27,6 +27,12 @@ aria2c -x 6 -s 3 -c ftp://ftp.ncbi.nlm.nih.gov/sra/wgs_aux/AA/FW/AAFW02/AAFW02.1
 
 # Saccharomyces paradoxus NRRL Y-17217
 aria2c -x 6 -s 3 -c ftp://ftp.ncbi.nlm.nih.gov/sra/wgs_aux/AA/BY/AABY01/AABY01.1.fsa_nt.gz
+
+# Saccharomyces pastorianus CBS 1513
+aria2c -x 6 -s 3 -c ftp://ftp.ncbi.nlm.nih.gov/sra/wgs_aux/AZ/CJ/AZCJ01/AZCJ01.1.fsa_nt.gz
+
+# Saccharomyces eubayanus FM1318
+aria2c -x 6 -s 3 -c ftp://ftp.ncbi.nlm.nih.gov/sra/wgs_aux/JM/CK/JMCK01/JMCK01.1.fsa_nt.gz
 
 find . -name "*.gz" | xargs gzip -t
 
@@ -48,6 +54,14 @@ egaz prepseq \
 
 egaz prepseq \
     download/AABY01.1.fsa_nt.gz -o Spar \
+    --about 2000000 --repeatmasker '--species Fungi --parallel 8' --min 1000 -v
+
+egaz prepseq \
+    download/AZCJ01.1.fsa_nt.gz -o Spas \
+    --about 2000000 --repeatmasker '--species Fungi --parallel 8' --min 1000 -v
+
+egaz prepseq \
+    download/JMCK01.1.fsa_nt.gz -o Seub \
     --about 2000000 --repeatmasker '--species Fungi --parallel 8' --min 1000 -v
 
 ```
