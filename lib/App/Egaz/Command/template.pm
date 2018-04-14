@@ -21,6 +21,7 @@ sub opt_spec {
             }
         ],
         [],
+        [ "outdir|o=s",   "Output directory",                       { default => "." }, ],
         [ "length=i",     "minimal length of alignment fragments",  { default => 1000 }, ],
         [ "msa=s",        "aligning program for refine alignments", { default => "mafft" }, ],
         [ "queue=s",      "QUEUE_NAME",                             { default => "mpi" }, ],
@@ -41,7 +42,7 @@ sub opt_spec {
 }
 
 sub usage_desc {
-    return "egaz template [options] <working directory> <path/seqdir> [more path/seqdir]";
+    return "egaz template [options] <path/seqdir> [more path/seqdir]";
 }
 
 sub description {
@@ -64,8 +65,8 @@ MARKDOWN
 sub validate_args {
     my ( $self, $opt, $args ) = @_;
 
-    if ( @{$args} < 2 ) {
-        my $message = "This command need two or more directories.\n\tIt found";
+    if ( @{$args} < 1 ) {
+        my $message = "This command need one or more directories.\n\tIt found";
         $message .= sprintf " [%s]", $_ for @{$args};
         $message .= ".\n";
         $self->usage_error($message);
@@ -76,8 +77,8 @@ sub validate_args {
         }
     }
 
-    if ( $opt->{multi} and @{$args} < 3 ) {
-        $self->usage_error("Multiple alignments need at least 1 query.");
+    if ( $opt->{multi} and @{$args} < 2 ) {
+        $self->usage_error("Multiple alignments need at least 2 directories");
     }
 
     if ( $opt->{tree} ) {
@@ -100,33 +101,31 @@ sub execute {
     #----------------------------#
     # prepare working dir
     #----------------------------#
-    my $dir = Path::Tiny::path( $args->[0] )->absolute();
-    $dir->mkpath();
-    $dir = $dir->stringify();
-    print STDERR "Working directory [$dir]\n";
-    $opt->{dir} = $dir;    # store in $opt
+    $opt->{outdir} = Path::Tiny::path( $opt->{outdir} )->absolute();
+    $opt->{outdir}->mkpath();
+    $opt->{outdir} = $opt->{outdir}->stringify();
+    print STDERR "Working directory [$opt->{outdir}]\n";
 
     if ( $opt->{multi} ) {
-        Path::Tiny::path( $dir, 'Pairwise' )->mkpath();
-        Path::Tiny::path( $dir, 'Stats' )->mkpath();
+        Path::Tiny::path( $opt->{outdir}, 'Pairwise' )->mkpath();
+        Path::Tiny::path( $opt->{outdir}, 'Stats' )->mkpath();
     }
     else {
-        Path::Tiny::path( $dir, 'Pairwise' )->mkpath();
-        Path::Tiny::path( $dir, 'Processing' )->mkpath();
-        Path::Tiny::path( $dir, 'Results' )->mkpath();
+        Path::Tiny::path( $opt->{outdir}, 'Pairwise' )->mkpath();
+        Path::Tiny::path( $opt->{outdir}, 'Processing' )->mkpath();
+        Path::Tiny::path( $opt->{outdir}, 'Results' )->mkpath();
     }
 
     #----------------------------#
     # names and directories
     #----------------------------#
     print STDERR "Associate names and directories\n";
-    my @data = @{$args};
-    shift @data;    # remove working dir
+    my @data;
     @data = map {
         {   name => Path::Tiny::path($_)->basename(),
             dir  => Path::Tiny::path($_)->absolute()->stringify(),
         }
-    } @data;
+    } @{$args};
 
     # move $opt->{outgroup} to last
     if ( $opt->{outgroup} ) {
@@ -145,7 +144,7 @@ sub execute {
     # If there's no phylo tree, generate a fake one.
     if ( $opt->{multi} and !$opt->{tree} ) {
         print STDERR "Create fake_tree.nwk\n";
-        my $fh = Path::Tiny::path( $dir, "fake_tree.nwk" )->openw;
+        my $fh = Path::Tiny::path( $opt->{outdir}, "fake_tree.nwk" )->openw;
         print {$fh} "(" x ( scalar(@data) - 1 ) . "$data[0]->{name}";
         for my $i ( 1 .. $#data ) {
             print {$fh} ",$data[$i]->{name})";
@@ -211,7 +210,7 @@ EOF
         {   opt => $opt,
             sh  => $sh_name,
         },
-        Path::Tiny::path( $opt->{dir}, $sh_name )->stringify
+        Path::Tiny::path( $opt->{outdir}, $sh_name )->stringify
     ) or Carp::croak Template->error;
 }
 
