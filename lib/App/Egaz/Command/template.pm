@@ -87,12 +87,19 @@ sub validate_args {
         if ( !Path::Tiny::path( $opt->{tree} )->is_file ) {
             $self->usage_error("The tree file [$opt->{tree}] doesn't exist.");
         }
+        else {
+            $opt->{tree} = Path::Tiny::path( $opt->{tree} )->absolute()->stringify();
+        }
     }
 
     if ( $opt->{taxon} ) {
         if ( !Path::Tiny::path( $opt->{taxon} )->is_file ) {
             $self->usage_error("The taxon file [$opt->{taxon}] doesn't exist.");
         }
+        else {
+            $opt->{taxon} = Path::Tiny::path( $opt->{taxon} )->absolute()->stringify();
+        }
+
     }
 
     $opt->{outdir} = Path::Tiny::path( $opt->{outdir} )->absolute()->stringify();
