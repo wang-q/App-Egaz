@@ -53,9 +53,9 @@ sub description {
 * <path/seqdir> are directories containing multiple .fa files that represent genomes
 * Each .fa files in <path/target> should contain only one sequences, otherwise second or latter sequences will be omitted
 * Species/strain names in result files are the basenames of <path/seqdir>
-* Default --multiname is the working directory. This option is for more than one aligning combinations
+* Default --multiname is the basename of --outdir. This option is for more than one aligning combinations
 * without --tree and --rawphylo, the order of multiz stitch is the same as the one from command line
-* --outgroup uses basename, not full path
+* --outgroup uses basename, not full path. *DON'T* set --outgroup to target
 
 MARKDOWN
 
@@ -87,8 +87,10 @@ sub validate_args {
         }
     }
 
+    $opt->{outdir} = Path::Tiny::path( $opt->{outdir} )->absolute()->stringify();
+
     if ( !$opt->{multiname} ) {
-        $opt->{multiname} = Path::Tiny::path( $args->[0] )->basename();
+        $opt->{multiname} = Path::Tiny::path( $opt->{outdir} )->basename();
     }
 
 }
@@ -108,7 +110,7 @@ sub execute {
 
     if ( $opt->{multi} ) {
         Path::Tiny::path( $opt->{outdir}, 'Pairwise' )->mkpath();
-        Path::Tiny::path( $opt->{outdir}, 'Stats' )->mkpath();
+        Path::Tiny::path( $opt->{outdir}, 'Results' )->mkpath();
     }
     else {
         Path::Tiny::path( $opt->{outdir}, 'Pairwise' )->mkpath();
@@ -116,16 +118,14 @@ sub execute {
         Path::Tiny::path( $opt->{outdir}, 'Results' )->mkpath();
     }
 
+    $args = [ map { Path::Tiny::path($_)->absolute()->stringify() } @{$args} ];
+
     #----------------------------#
     # names and directories
     #----------------------------#
     print STDERR "Associate names and directories\n";
     my @data;
-    @data = map {
-        {   name => Path::Tiny::path($_)->basename(),
-            dir  => Path::Tiny::path($_)->absolute()->stringify(),
-        }
-    } @{$args};
+    @data = map { { name => Path::Tiny::path($_)->basename(), dir => $_, } } @{$args};
 
     # move $opt->{outgroup} to last
     if ( $opt->{outgroup} ) {
@@ -156,18 +156,19 @@ sub execute {
     #----------------------------#
     # *.sh files
     #----------------------------#
-    $self->gen_pair_cmd( $opt, );
+    $self->gen_pair_cmd( $opt, $args );
+    $self->gen_rawphylo( $opt, $args );
 
 }
 
 sub gen_pair_cmd {
-    my ( $self, $opt, ) = @_;
+    my ( $self, $opt, $args ) = @_;
+
+    return unless $opt->{multi};
 
     my $tt = Template->new( INCLUDE_PATH => [ File::ShareDir::dist_dir('App-Egaz') ], );
     my $template;
     my $sh_name;
-
-    return unless $opt->{multi};
 
     $sh_name = "1_pair_cmd.sh";
     print STDERR "Create $sh_name\n";
@@ -186,19 +187,21 @@ mkdir -p Pairwise
 # Target [% item.name %]
 
 [% ELSE -%]
-if [ -e Pairwise/[% opt.data.0.name %]vs[% item.name %] ]; then
-    log_info Skip Pairwise/[% opt.data.0.name %]vs[% item.name %]
+[% t = opt.data.0.name -%]
+[% q = item.name -%]
+if [ -e Pairwise/[% t %]vs[% q %] ]; then
+    log_info Skip Pairwise/[% t %]vs[% q %]
 else
-    log_info lastz Pairwise/[% opt.data.0.name %]vs[% item.name %]
+    log_info lastz Pairwise/[% t %]vs[% q %]
     egaz lastz \
         --set set01 -C 0 --parallel [% opt.parallel %] --verbose \
         [% opt.data.0.dir %] [% item.dir %] \
-        -o Pairwise/[% opt.data.0.name %]vs[% item.name %]
+        -o Pairwise/[% t %]vs[% q %]
 
-    log_info lpcnam Pairwise/[% opt.data.0.name %]vs[% item.name %]
+    log_info lpcnam Pairwise/[% t %]vs[% q %]
     egaz lpcnam \
         --parallel [% opt.parallel %] --verbose \
-        [% opt.data.0.dir %] [% item.dir %] Pairwise/[% opt.data.0.name %]vs[% item.name %]
+        [% opt.data.0.dir %] [% item.dir %] Pairwise/[% t %]vs[% q %]
 fi
 
 [% END -%]
@@ -209,8 +212,200 @@ exit;
 EOF
     $tt->process(
         \$template,
-        {   opt => $opt,
-            sh  => $sh_name,
+        {   args => $args,
+            opt  => $opt,
+            sh   => $sh_name,
+        },
+        Path::Tiny::path( $opt->{outdir}, $sh_name )->stringify
+    ) or Carp::croak Template->error;
+}
+
+sub gen_rawphylo {
+    my ( $self, $opt, $args ) = @_;
+
+    return unless $opt->{multi} and $opt->{rawphylo};
+
+    my $tt = Template->new( INCLUDE_PATH => [ File::ShareDir::dist_dir('App-Egaz') ], );
+    my $template;
+    my $sh_name;
+
+    $sh_name = "2_rawphylo.sh";
+    print STDERR "Create $sh_name\n";
+    $template = <<'EOF';
+[% INCLUDE header.tt2 %]
+
+#----------------------------#
+# [% sh %]
+#----------------------------#
+log_warn [% sh %]
+
+mkdir -p [% opt.multiname %]_raw
+mkdir -p Results
+
+if [ -e Results/[% opt.multiname %].raw.nwk ]; then
+    log_info Results/[% opt.multiname %].raw.nwk exists
+    exit;
+fi
+
+#----------------------------#
+# maf2fas
+#----------------------------#
+log_info Convert maf to fas
+
+[% FOREACH item IN opt.data -%]
+[% IF not loop.first -%]
+[% t = opt.data.0.name -%]
+[% q = item.name -%]
+log_debug "    [% t %]vs[% q %]"
+mkdir -p [% opt.multiname %]_raw/[% t %]vs[% q %]
+
+find Pairwise/[% t %]vs[% q %] -name "*.maf" -or -name "*.maf.gz" |
+    parallel --no-run-if-empty -j 1 \
+        fasops maf2fas {} -o [% opt.multiname %]_raw/[% t %]vs[% q %]/{/}.fas
+
+fasops covers \
+    [% opt.multiname %]_raw/[% t %]vs[% q %]/*.fas \
+    -n [% t %] -l [% opt.length %] -t 10 \
+    -o [% opt.multiname %]_raw/[% t %]vs[% q %].yml
+
+[% END -%]
+[% END -%]
+
+[% IF opt.data.size > 2 -%]
+#----------------------------#
+# Intersect
+#----------------------------#
+log_info Intersect
+
+runlist compare --op intersect \
+[% FOREACH item IN opt.data -%]
+[% IF not loop.first -%]
+[% t = opt.data.0.name -%]
+[% q = item.name -%]
+    [% opt.multiname %]_raw/[% t %]vs[% q %].yml \
+[% END -%]
+[% END -%]
+    -o stdout |
+    runlist span stdin \
+        --op excise -n [% opt.length %] \
+        -o [% opt.multiname %]_raw/intersect.yml
+[% END -%]
+
+#----------------------------#
+# Coverage
+#----------------------------#
+log_info Coverage
+
+runlist merge [% opt.multiname %]_raw/*.yml \
+    -o stdout |
+    runlist stat stdin \
+        -s [% args.0 %]/chr.sizes \
+        --all --mk \
+        -o Results/pairwise.coverage.csv
+
+[% IF opt.data.size > 2 -%]
+#----------------------------#
+# Slicing
+#----------------------------#
+log_info Slicing with intersect
+
+[% FOREACH item IN opt.data -%]
+[% IF not loop.first -%]
+[% t = opt.data.0.name -%]
+[% q = item.name -%]
+log_debug "    [% t %]vs[% q %]"
+if [ -e [% opt.multiname %]_raw/[% t %]vs[% q %].slice.fas ]; then
+    rm [% opt.multiname %]_raw/[% t %]vs[% q %].slice.fas
+fi
+find [% opt.multiname %]_raw/[% t %]vs[% q %]/ -name "*.fas" -or -name "*.fas.gz" |
+    sort |
+    parallel --no-run-if-empty --keep-order -j 1 ' \
+        fasops slice {} \
+            [% opt.multiname %]_raw/intersect.yml \
+            -n [% t %] -l [% opt.length %] -o stdout \
+            >> [% opt.multiname %]_raw/[% t %]vs[% q %].slice.fas
+        '
+
+[% END -%]
+[% END -%]
+
+[% END -%]
+
+#----------------------------#
+# Joining
+#----------------------------#
+log_info Joining intersects
+
+log_debug "    fasops join"
+fasops join \
+[% FOREACH item IN opt.data -%]
+[% IF not loop.first -%]
+[% t = opt.data.0.name -%]
+[% q = item.name -%]
+    [% opt.multiname %]_raw/[% t %]vs[% q %].slice.fas \
+[% END -%]
+[% END -%]
+    -n [% opt.data.0.name %] \
+    -o [% opt.multiname %]_raw/join.raw.fas
+
+echo [% opt.data.0.name %] > [% opt.multiname %]_raw/names.list
+[% FOREACH item IN opt.data -%]
+[% IF not loop.first -%]
+[% t = opt.data.0.name -%]
+[% q = item.name -%]
+echo [% q %] >> [% opt.multiname %]_raw/names.list
+[% END -%]
+[% END -%]
+
+# Blocks not containing all queries, e.g. Mito, will be omitted
+log_debug "    fasops subset"
+fasops subset \
+    [% opt.multiname %]_raw/join.raw.fas \
+    [% opt.multiname %]_raw/names.list \
+    --required \
+    -o [% opt.multiname %]_raw/join.filter.fas
+
+log_debug "    fasops refine"
+fasops refine \
+    --msa mafft --parallel [% opt.parallel %] \
+    [% opt.multiname %]_raw/join.filter.fas \
+    -o [% opt.multiname %]_raw/join.refine.fas
+
+#----------------------------#
+# RAxML
+#----------------------------#
+[% IF opt.data.size > 3 -%]
+log_info RAxML
+
+egaz raxml \
+    --parallel [% IF opt.parallel > 8 %] 8 [% ELSIF opt.parallel > 3 %] [% opt.parallel - 1 %] [% ELSE %] 2 [% END %] \
+[% IF opt.outgroup -%]
+    --outgroup [% opt.outgroup %] \
+[% END -%]
+[% IF opt.verbose -%]
+    -v \
+[% END -%]
+    [% opt.multiname %]_raw/join.refine.fas \
+    -o Results/[% opt.multiname %].raw.nwk
+
+egaz plottree Results/[% opt.multiname %].raw.nwk
+
+[% ELSIF opt.data.size == 3 -%]
+echo "(([% opt.data.0.name %],[% opt.data.1.name %]),[% opt.data.2.name %]);" > Results/[% opt.multiname %].raw.nwk
+
+[% ELSE -%]
+echo "([% opt.data.0.name %],[% opt.data.1.name %]);" > Results/[% opt.multiname %].raw.nwk
+
+[% END -%]
+
+exit;
+
+EOF
+    $tt->process(
+        \$template,
+        {   args => $args,
+            opt  => $opt,
+            sh   => $sh_name,
         },
         Path::Tiny::path( $opt->{outdir}, $sh_name )->stringify
     ) or Carp::croak Template->error;
