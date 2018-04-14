@@ -77,7 +77,7 @@ sub validate_args {
         }
     }
 
-    if ( $opt->{multi} and @{$args} < 2 ) {
+    if ( $opt->{mode} eq "multi" and @{$args} < 2 ) {
         $self->usage_error("Multiple alignments need at least 2 directories");
     }
 
@@ -108,7 +108,7 @@ sub execute {
     $opt->{outdir} = $opt->{outdir}->stringify();
     print STDERR "Working directory [$opt->{outdir}]\n";
 
-    if ( $opt->{multi} ) {
+    if ( $opt->{mode} eq "multi" ) {
         Path::Tiny::path( $opt->{outdir}, 'Pairwise' )->mkpath();
         Path::Tiny::path( $opt->{outdir}, 'Results' )->mkpath();
     }
@@ -142,7 +142,7 @@ sub execute {
     print STDERR YAML::Syck::Dump( $opt->{data} );
 
     # If there's no phylo tree, generate a fake one.
-    if ( $opt->{multi} and !$opt->{tree} ) {
+    if ( $opt->{mode} eq "multi" and !$opt->{tree} ) {
         print STDERR "Create fake_tree.nwk\n";
         my $fh = Path::Tiny::path( $opt->{outdir}, "fake_tree.nwk" )->openw;
         print {$fh} "(" x ( scalar(@data) - 1 ) . "$data[0]->{name}";
@@ -164,7 +164,7 @@ sub execute {
 sub gen_pair_cmd {
     my ( $self, $opt, $args ) = @_;
 
-    return unless $opt->{multi};
+    return unless $opt->{mode} eq "multi";
 
     my $tt = Template->new( INCLUDE_PATH => [ File::ShareDir::dist_dir('App-Egaz') ], );
     my $template;
@@ -223,7 +223,7 @@ EOF
 sub gen_rawphylo {
     my ( $self, $opt, $args ) = @_;
 
-    return unless $opt->{multi} and $opt->{rawphylo};
+    return unless $opt->{mode} eq "multi" and $opt->{rawphylo};
 
     my $tt = Template->new( INCLUDE_PATH => [ File::ShareDir::dist_dir('App-Egaz') ], );
     my $template;
