@@ -74,6 +74,14 @@ chaining mechanism (C<C=2>) instead.
 
 =back
 
+=item Self alignments of I<S. cerevisiae> S288c
+
+=over 8
+
+=item Detailed steps L<https://github.com/wang-q/App-Egaz/blob/master/doc/Scer-self.md#detailed-steps>
+
+=back
+
 =back
 
 =head1 AUTHOR
