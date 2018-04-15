@@ -58,7 +58,7 @@ cd ~/data/alignment/egaz/S288c_proc
 find ../S288c -type f -name "*.fa" |
     sort |
     xargs cat |
-    perl -nl -e '/^>/ or $_ = uc; print' \
+    perl -nl -e "/^>/ or \$_ = uc; print" \
     > genome.fa
 faops size genome.fa > chr.sizes
 
@@ -168,7 +168,7 @@ done
 runlist merge copy2.yml copy3.yml copy4.yml copy5-50.yml -o copy.all.yml
 runlist stat --size chr.sizes copy.all.yml --mk --all -o links.copy.csv
 
-fasops mergecsv links.copy.csv links.count.csv --concat -o links.csv
+fasops mergecsv links.copy.csv links.count.csv --concat -o copy.csv
 
 echo "* Coverage figure"
 runlist stat --size chr.sizes cover.yml
@@ -198,10 +198,11 @@ find . -type f -name "copy*.yml" | xargs rm
 cd ~/data/alignment/egaz
 
 egaz template \
-    S288c RM11_1a \
+    S288c \
     --self -o self2/ --parallel 8 -v
 
 bash self2/1_self_cmd.sh
+bash self2/3_proc_cmd.sh
 
 ```
 
