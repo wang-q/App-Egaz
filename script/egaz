@@ -87,6 +87,8 @@ perl -I lib/ t/18-repeatmasker.t
 perl -I lib/ script/egaz blastmatch t/pig2.blast
 perl -I lib/ t/19-blastmatch.t
 
+perl -I lib/ t/20-blastlink.t
+
 perl -I lib/ script/egaz template t/pseudocat t/pseudopig --multi -o tmp/ -v
 rm -fr tmp/
 perl -I lib/ t/91-template.t
