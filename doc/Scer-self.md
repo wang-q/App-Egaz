@@ -167,8 +167,7 @@ done
 runlist merge copy2.yml copy3.yml copy4.yml copy5-50.yml -o copy.all.yml
 runlist stat --size chr.sizes copy.all.yml --mk --all -o links.copy.csv
 
-cat links.copy.csv links.count.csv \
-    | perl ~/Scripts/withncbi/util/merge_csv.pl --concat -o links.csv
+fasops mergecsv links.copy.csv links.count.csv --concat -o links.csv
 
 echo "* Coverage figure"
 runlist stat --size chr.sizes cover.yml
