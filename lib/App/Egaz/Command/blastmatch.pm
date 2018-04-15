@@ -71,7 +71,7 @@ sub execute {
         my ( $self, $chunk_ref, $chunk_id ) = @_;
 
         my $wid = MCE->wid;
-        print "* Process task [$chunk_id] by worker #$wid\n";
+        print STDERR "* Process task [$chunk_id] by worker #$wid\n" if $opt->{verbose};
 
         my @lines = @{$chunk_ref};
         my %heads;
