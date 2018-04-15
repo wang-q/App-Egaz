@@ -17,6 +17,7 @@ requires 'Template',           '2.26';
 requires 'Tie::IxHash',        '1.23';
 requires 'YAML::Syck',         '1.29';
 requires 'App::Fasops',        '0.5.11';
+requires 'App::Rangeops',      '0.1.0';
 requires 'perl',               '5.018001';
 
 on 'test' => sub {

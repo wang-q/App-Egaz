@@ -31,7 +31,7 @@ sub opt_spec {
         [ "length=i", "minimal length of alignment fragments",  { default => 1000 }, ],
         [ "msa=s",    "aligning program for refine alignments", { default => "mafft" }, ],
         [ "taxon=s",  "taxons in this project", ],
-        [ "aligndb",  "create aligndb script", ],
+        [ "aligndb",  "create aligndb scripts", ],
         [],
         [ "multiname=s", "naming multiply alignment", ],
         [ "outgroup=s",  "the name of outgroup", ],
