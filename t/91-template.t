@@ -24,12 +24,31 @@ like( $result->error, qr{doesn't exist}, 'not exists' );
     my $tempdir = Path::Tiny->tempdir;
     chdir $tempdir;
 
-    $result = test_app(
-        'App::Egaz' => [ "template", "$t_path/pseudocat", "$t_path/pseudopig", "--verbose", ] );
+    $result = test_app( 'App::Egaz' =>
+            [ "template", "$t_path/pseudocat", "$t_path/pseudopig", "--rawphylo", "--verbose", ] );
 
     is( $result->error, undef, 'threw no exceptions' );
     is( ( scalar grep {/\S/} split( /\n/, $result->stdout ) ), 0, 'no stdout' );
     ok( $tempdir->child("1_pair_cmd.sh")->is_file, '1_pair_cmd.sh exists' );
+    ok( $tempdir->child("2_rawphylo.sh")->is_file, '2_rawphylo.sh exists' );
+    like( $result->stderr, qr{name: pseudocat.+name: pseudopig}s, 'names and directories' );
+
+    chdir $cwd;    # Won't keep tempdir
+}
+
+{
+    my $t_path = Path::Tiny::path("t/")->absolute->stringify;
+    my $cwd    = Path::Tiny->cwd;
+
+    my $tempdir = Path::Tiny->tempdir;
+    chdir $tempdir;
+
+    $result = test_app( 'App::Egaz' =>
+            [ "template", "$t_path/pseudocat", "$t_path/pseudopig", "--self", "--verbose", ] );
+
+    is( $result->error, undef, 'threw no exceptions' );
+    is( ( scalar grep {/\S/} split( /\n/, $result->stdout ) ), 0, 'no stdout' );
+    ok( $tempdir->child("1_self_cmd.sh")->is_file, '1_self_cmd.sh exists' );
     like( $result->stderr, qr{name: pseudocat.+name: pseudopig}s, 'names and directories' );
 
     chdir $cwd;    # Won't keep tempdir
