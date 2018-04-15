@@ -16,8 +16,8 @@ sub abstract {
 sub opt_spec {
     return (
         [ "outfile|o=s",  "Output filename. [stdout] for screen", { default => "stdout" }, ],
-        [ 'perchr',          'one (fake) runlist per chromosome', ],
-        [ 'coverage|c=f', 'coverage of identical matches',        { default => 0.9 }, ],
+        [ "perchr",       "one (fake) runlist per chromosome", ],
+        [ "coverage|c=f", "coverage of identical matches",        { default => 0.9 }, ],
         [ "batch=i",      "batch size of blast records",          { default => 500000 }, ],
         [ "parallel|p=i", "number of threads",                    { default => 2 }, ],
         [ "verbose|v",    "verbose mode", ],
