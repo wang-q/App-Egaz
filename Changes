@@ -2,6 +2,13 @@ Revision history for Perl extension App-Egaz
 
 {{$NEXT}}
 
+0.1.1 2018-04-15T18:21:46Z
+    - Add `egaz blastmatch`
+    - Add `egaz blastlink`
+    - `egaz template`
+        - Add 1_self_cmd.sh
+        - Add 3_proc_cmd.sh
+
 0.1.0 2018-04-14T21:55:22Z
     - Add `egaz template`
         - Add --outdir, --taxon

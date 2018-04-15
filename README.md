@@ -57,6 +57,7 @@ chaining mechanism (`C=2`) instead.
     - `egaz template` steps [https://github.com/wang-q/App-Egaz/blob/master/doc/Scer.md#template-steps](https://github.com/wang-q/App-Egaz/blob/master/doc/Scer.md#template-steps)
 - Self alignments of _S. cerevisiae_ S288c
     - Detailed steps [https://github.com/wang-q/App-Egaz/blob/master/doc/Scer-self.md#detailed-steps](https://github.com/wang-q/App-Egaz/blob/master/doc/Scer-self.md#detailed-steps)
+    - `egaz template` steps [https://github.com/wang-q/App-Egaz/blob/master/doc/Scer-self.md#template-steps](https://github.com/wang-q/App-Egaz/blob/master/doc/Scer-self.md#template-steps)
 
 # AUTHOR
 
