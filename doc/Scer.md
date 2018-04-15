@@ -172,14 +172,16 @@ fasops covers S288cvsRM11_1a_partition.fas -n S288c -o stdout |
 ```bash
 cd ~/data/alignment/egaz
 
-egaz template S288c RM11_1a YJM789 Spar Spas Seub \
+egaz template \
+    S288c RM11_1a YJM789 Spar Spas Seub \
     --multi --rawphylo -o multi6/ --parallel 8 -v
 
 bash multi6/1_pair_cmd.sh
 bash multi6/2_rawphylo.sh
 bash multi6/3_multi_cmd.sh
 
-egaz template S288c RM11_1a YJM789 Spar \
+egaz template \
+    S288c RM11_1a YJM789 Spar \
     --multi --multiname multi4 --tree multi6/Results/multi6.nwk --outgroup Spar \
     -o multi6/ --parallel 8 -v
 bash multi6/3_multi_cmd.sh
