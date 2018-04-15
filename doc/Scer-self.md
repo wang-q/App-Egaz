@@ -1,11 +1,13 @@
-# Self-alignment of *Saccharomyces cerevisiae* S288c
+# Self alignments of *Saccharomyces cerevisiae* S288c
 
 [TOC levels=1-3]: # " "
-- [Self-alignment of *Saccharomyces cerevisiae* S288c](#self-alignment-of-saccharomyces-cerevisiae-s288c)
+- [Self alignments of *Saccharomyces cerevisiae* S288c](#self-alignments-of-saccharomyces-cerevisiae-s288c)
 - [Prepare sequences](#prepare-sequences)
 - [Detailed steps](#detailed-steps)
     - [self alignement](#self-alignement)
     - [blast](#blast)
+    - [merge](#merge)
+    - [clean](#clean)
 
 
 # Prepare sequences
@@ -42,7 +44,6 @@ fasops covers S288cvsSelf_axt.fas -n S288c -o stdout |
 ```
 
 ## blast
-
 
 ```bash
 cd ~/data/alignment/egaz
@@ -96,7 +97,8 @@ fasops separate axt.correct.fas --nodash --rc -o stdout |
 
 # Get more paralogs
 egaz blastn axt.gl.fasta genome.fa -o axt.bg.blast
-perl ~/Scripts/egaz/blastn_genome.pl -f axt.bg.blast -g genome.fa -o axt.bg.fasta -c 0.95
+egaz blastmatch axt.bg.blast -c 0.95 --perchr -o axt.bg.region
+faops region -s genome.fa axt.bg.region axt.bg.fasta
 
 cat axt.gl.fasta axt.bg.fasta |
     faops filter -u stdin stdout |
@@ -105,8 +107,88 @@ cat axt.gl.fasta axt.bg.fasta |
 
 # link paralogs
 echo "* Link paralogs"
-perl ~/Scripts/egaz/fasta_blastn.pl   -f axt.all.fasta -g axt.all.fasta -o axt.all.blast
-perl ~/Scripts/egaz/blastn_paralog.pl -f axt.all.blast -c 0.95 -o links.blast.tsv
+egaz blastn axt.all.fasta axt.all.fasta -o axt.all.blast
+egaz blastlink axt.all.blast -c 0.95 -o links.blast.tsv
+
+```
+
+## merge
+
+```bash
+cd ~/data/alignment/egaz/S288c_proc
+
+# merge
+rangeops sort -o links.sort.tsv \
+    links.lastz.tsv links.blast.tsv
+
+rangeops clean   links.sort.tsv         -o links.sort.clean.tsv
+rangeops merge   links.sort.clean.tsv   -o links.merge.tsv       -c 0.95 -p 8
+rangeops clean   links.sort.clean.tsv   -o links.clean.tsv       -r links.merge.tsv --bundle 500
+rangeops connect links.clean.tsv        -o links.connect.tsv     -r 0.9
+rangeops filter  links.connect.tsv      -o links.filter.tsv      -r 0.8
+
+# recreate links
+rangeops create links.filter.tsv    -o multi.temp.fas       -g genome.fa
+fasops   refine multi.temp.fas      -o multi.refine.fas     --msa mafft -p 8 --chop 10
+fasops   links  multi.refine.fas    -o stdout \
+    | rangeops sort stdin -o links.refine.tsv
+
+fasops   links  multi.refine.fas    -o stdout     --best \
+    | rangeops sort stdin -o links.best.tsv
+rangeops create links.best.tsv      -o pair.temp.fas    -g genome.fa
+fasops   refine pair.temp.fas       -o pair.refine.fas  --msa mafft -p 8
+
+cat links.refine.tsv \
+    | perl -nla -F"\t" -e 'print for @F' \
+    | runlist cover stdin -o cover.yml
+
+echo "* Stats of links"
+echo "key,count" > links.count.csv
+for n in 2 3 4 5-50; do
+    rangeops filter links.refine.tsv -n ${n} -o stdout \
+        > links.copy${n}.tsv
+
+    cat links.copy${n}.tsv \
+        | perl -nla -F"\t" -e 'print for @F' \
+        | runlist cover stdin -o copy${n}.yml
+
+    wc -l links.copy${n}.tsv \
+        | perl -nl -e '
+            @fields = grep {/\S+/} split /\s+/;
+            next unless @fields == 2;
+            next unless $fields[1] =~ /links\.([\w-]+)\.tsv/;
+            printf qq{%s,%s\n}, $1, $fields[0];
+        ' \
+        >> links.count.csv
+
+    rm links.copy${n}.tsv
+done
+
+runlist merge copy2.yml copy3.yml copy4.yml copy5-50.yml -o copy.all.yml
+runlist stat --size chr.sizes copy.all.yml --mk --all -o links.copy.csv
+
+cat links.copy.csv links.count.csv \
+    | perl ~/Scripts/withncbi/util/merge_csv.pl --concat -o links.csv
+
+echo "* Coverage figure"
+runlist stat --size chr.sizes cover.yml
+
+```
+
+## clean
+
+```bash
+cd ~/data/alignment/egaz/S288c_proc
+
+# clean
+find . -type f -name "*genome.fa*" | xargs rm
+find . -type f -name "*all.fasta*" | xargs rm
+find . -type f -name "*.sep.fasta" | xargs rm
+find . -type f -name "axt.*" | xargs rm
+find . -type f -name "replace.*.tsv" | xargs rm
+find . -type f -name "*.temp.yml" | xargs rm
+find . -type f -name "*.temp.fas" | xargs rm
+find . -type f -name "copy*.yml" | xargs rm
 
 ```
 
