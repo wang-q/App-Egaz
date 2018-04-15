@@ -39,28 +39,3 @@ signaled () {
     exit 1
 }
 trap signaled TERM QUIT INT
-
-# save environment variables
-save () {
-    printf ". + {%s: \"%s\"}" $1 $(eval "echo -n \"\$$1\"") > jq.filter.txt
-
-    if [ -e environment.json ]; then
-        cat environment.json \
-            | jq -f jq.filter.txt \
-            > environment.json.new
-        rm environment.json
-    else
-        jq -f jq.filter.txt -n \
-            > environment.json.new
-    fi
-
-    mv environment.json.new environment.json
-    rm jq.filter.txt
-}
-
-stat_format () {
-    echo $(faops n50 -H -N 50 -S -C $@) \
-        | perl -nla -MNumber::Format -e '
-            printf qq{%d\t%s\t%d\n}, $F[0], Number::Format::format_bytes($F[1], base => 1000,), $F[2];
-        '
-}
