@@ -16,8 +16,9 @@ sub abstract {
 sub opt_spec {
     return (
         [ "outfile|o=s",  "Output filename. [stdout] for screen", { default => "stdout" }, ],
-        [ 'coverage|c=i', 'coverage of identical matches',        { default => 0.9 }, ],
-        [ "chunk=i",      "chunk size of blast records",          { default => 500000 }, ],
+        [ 'perchr',          'one (fake) runlist per chromosome', ],
+        [ 'coverage|c=f', 'coverage of identical matches',        { default => 0.9 }, ],
+        [ "batch=i",      "batch size of blast records",          { default => 500000 }, ],
         [ "parallel|p=i", "number of threads",                    { default => 2 }, ],
         [ "verbose|v",    "verbose mode", ],
         { show_defaults => 1, }
@@ -35,6 +36,7 @@ sub description {
 
 * <infile> is reports produced by `egaz blastn`
 * <infile> can't be stdin
+* --perchr produces fake runlists, there might be overlaps, e.g. I:17221-25234,21428-25459
 
 MARKDOWN
 
@@ -110,7 +112,7 @@ sub execute {
     };
 
     MCE::Flow::init {
-        chunk_size  => $opt->{chunk},
+        chunk_size  => $opt->{batch},
         max_workers => $opt->{parallel},
     };
     my %ranges = mce_flow_f $worker, $args->[0];
@@ -165,10 +167,7 @@ sub execute {
                     my $node_j = $nodes[ $idx + $j ];
                     my $set_j  = $set_of{$node_j};
 
-                    if ( $set_i->equal($set_j) ) {
-                        $to_remove{$node_j}++;
-                    }
-                    elsif ( $set_i->larger_than($set_j) ) {
+                    if ( $set_i->larger_than($set_j) ) {
                         $to_remove{$node_j}++;
                     }
                     elsif ( $set_j->larger_than($set_i) ) {
@@ -201,10 +200,27 @@ sub execute {
         open $out_fh, ">", $opt->{outfile};
     }
 
-    for my $node (@sorted) {
-        my ( $chr, $set, undef ) = string_to_set($node);
-        my $range = "$chr:" . $set->runlist;
-        print {$out_fh} $range . "\n";
+    if ( $opt->{perchr} ) {
+        my $runlist_of;
+        for my $node (@sorted) {
+            my ( $chr, $set, undef ) = string_to_set($node);
+            if ( !exists $runlist_of->{$chr} ) {
+                $runlist_of->{$chr} = [];
+            }
+            push @{ $runlist_of->{$chr} }, $set->runlist;
+        }
+
+        for my $chr ( sort keys %{$runlist_of} ) {
+            my $range = "$chr:" . join( ",", @{ $runlist_of->{$chr} } );
+            print {$out_fh} $range . "\n";
+        }
+    }
+    else {
+        for my $node (@sorted) {
+            my ( $chr, $set, undef ) = string_to_set($node);
+            my $range = "$chr:" . $set->runlist;
+            print {$out_fh} $range . "\n";
+        }
     }
 
     close $out_fh;
