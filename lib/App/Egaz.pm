@@ -82,6 +82,8 @@ chaining mechanism (C<C=2>) instead.
 
 =item Detailed steps L<https://github.com/wang-q/App-Egaz/blob/master/doc/Scer-self.md#detailed-steps>
 
+=item C<egaz template> steps L<https://github.com/wang-q/App-Egaz/blob/master/doc/Scer-self.md#template-steps>
+
 =back
 
 =back

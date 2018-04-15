@@ -47,7 +47,7 @@ egaz prepseq S288c.fa -o S288c -v
 
 egaz prepseq \
     RM11_1a.fa -o RM11_1a \
-    --about 2000000 --repeatmasker '--species Fungi --parallel 8' -v
+    --repeatmasker '--species Fungi --parallel 8' -v
 
 egaz prepseq \
     download/AAFW02.1.fsa_nt.gz -o YJM789 \

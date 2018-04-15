@@ -8,6 +8,7 @@
     - [blast](#blast)
     - [merge](#merge)
     - [clean](#clean)
+- [Template steps](#template-steps)
 
 
 # Prepare sequences
@@ -188,6 +189,19 @@ find . -type f -name "replace.*.tsv" | xargs rm
 find . -type f -name "*.temp.yml" | xargs rm
 find . -type f -name "*.temp.fas" | xargs rm
 find . -type f -name "copy*.yml" | xargs rm
+
+```
+
+# Template steps
+
+```bash
+cd ~/data/alignment/egaz
+
+egaz template \
+    S288c RM11_1a \
+    --self -o self2/ --parallel 8 -v
+
+bash self2/1_self_cmd.sh
 
 ```
 
