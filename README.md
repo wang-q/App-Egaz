@@ -13,6 +13,8 @@ App::Egaz - Backend of **E**asy **G**enome **A**ligner
           commands: list the application's commands
               help: display a command's help screen
 
+         blastlink: link sequences by blastn
+        blastmatch: matched positions by blastn in genome sequences
             blastn: blastn wrapper between two fasta files
         exactmatch: exact matched positions in genome sequences
            formats: formats of files use in this project
