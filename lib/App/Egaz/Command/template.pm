@@ -21,21 +21,22 @@ sub opt_spec {
             }
         ],
         [],
-        [ "outdir|o=s",   "Output directory",                       { default => "." }, ],
-        [ "length=i",     "minimal length of alignment fragments",  { default => 1000 }, ],
-        [ "msa=s",        "aligning program for refine alignments", { default => "mafft" }, ],
-        [ "queue=s",      "QUEUE_NAME",                             { default => "mpi" }, ],
-        [ "taxon=s",      "taxons in this project", ],
+        [ "outdir|o=s",   "Output directory",  { default => "." }, ],
+        [ "queue=s",      "QUEUE_NAME",        { default => "mpi" }, ],
         [ "separate",     "separate each Target-Query groups", ],
         [ "tmp=s",        "user defined tempdir", ],
-        [ "parallel|p=i", "number of threads",                      { default => 2 }, ],
+        [ "parallel|p=i", "number of threads", { default => 2 }, ],
         [ "verbose|v",    "verbose mode", ],
+        [],
+        [ "length=i", "minimal length of alignment fragments",  { default => 1000 }, ],
+        [ "msa=s",    "aligning program for refine alignments", { default => "mafft" }, ],
+        [ "taxon=s",  "taxons in this project", ],
+        [ "aligndb",  "create aligndb script", ],
         [],
         [ "multiname=s", "naming multiply alignment", ],
         [ "outgroup=s",  "the name of outgroup", ],
         [ "tree=s",      "a predefined guiding tree for multiz", ],
         [ "rawphylo",    "create guiding tree by joining pairwise alignments", ],
-        [ "aligndb",     "create aligndb script", ],
         [],
         [ "circos", "create circos script", ],
         { show_defaults => 1, }
@@ -162,7 +163,7 @@ sub execute {
     }
 
     # move $opt->{outgroup} to last
-    if ( $opt->{outgroup} ) {
+    if ( $opt->{mode} eq "multi" and $opt->{outgroup} ) {
         my ($exist) = grep { $_->{name} eq $opt->{outgroup} } @data;
         if ( !defined $exist ) {
             Carp::croak "--outgroup [$opt->{outgroup}] does not exist!\n";
@@ -188,11 +189,16 @@ sub execute {
     }
 
     #----------------------------#
-    # *.sh files
+    # multi *.sh files
     #----------------------------#
     $self->gen_pair_cmd( $opt, $args );
     $self->gen_rawphylo( $opt, $args );
     $self->gen_multi_cmd( $opt, $args );
+
+    #----------------------------#
+    # self *.sh files
+    #----------------------------#
+    $self->gen_self_cmd( $opt, $args );
 
 }
 
@@ -589,6 +595,58 @@ echo "(([% opt.data.0.name %],[% opt.data.1.name %]),[% opt.data.2.name %]);" > 
 
 [% ELSE -%]
 echo "([% opt.data.0.name %],[% opt.data.1.name %]);" > Results/[% opt.multiname %].nwk
+
+[% END -%]
+
+exit;
+
+EOF
+    $tt->process(
+        \$template,
+        {   args => $args,
+            opt  => $opt,
+            sh   => $sh_name,
+        },
+        Path::Tiny::path( $opt->{outdir}, $sh_name )->stringify
+    ) or Carp::croak Template->error;
+}
+
+sub gen_self_cmd {
+    my ( $self, $opt, $args ) = @_;
+
+    return unless $opt->{mode} eq "self";
+
+    my $tt = Template->new( INCLUDE_PATH => [ File::ShareDir::dist_dir('App-Egaz') ], );
+    my $template;
+    my $sh_name;
+
+    $sh_name = "1_self_cmd.sh";
+    print STDERR "Create $sh_name\n";
+    $template = <<'EOF';
+[% INCLUDE header.tt2 %]
+
+#----------------------------#
+# [% sh %]
+#----------------------------#
+log_warn [% sh %]
+
+mkdir -p Pairwise
+
+[% FOREACH item IN opt.data -%]
+if [ -e Pairwise/[% item.name %]vsSelf ]; then
+    log_info Skip Pairwise/[% item.name %]vsSelf
+else
+    log_info lastz Pairwise/[% item.name %]vsSelf
+    egaz lastz \
+        --isself --set set01 -C 0 --parallel [% opt.parallel %] --verbose \
+        [% item.dir %] [% item.dir %] \
+        -o Pairwise/[% item.name %]vsSelf
+
+    log_info lpcnam Pairwise/[% item.name %]vsSelf
+    egaz lpcnam \
+        --parallel [% opt.parallel %] --verbose \
+        [% item.dir %] [% item.dir %] Pairwise/[% item.name %]vsSelf
+fi
 
 [% END -%]
 
