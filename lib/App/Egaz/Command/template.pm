@@ -158,7 +158,9 @@ sub execute {
         @data = map {
             {   dir   => $_,
                 name  => Path::Tiny::path($_)->basename(),
-                taxon => exists $taxon_of{$_} ? $taxon_of{$_} : 0,
+                taxon => exists $taxon_of{ Path::Tiny::path($_)->basename() }
+                ? $taxon_of{ Path::Tiny::path($_)->basename() }
+                : 0,
             }
         } @{$args};
     }
@@ -901,7 +903,7 @@ exit;
 EOF
     $tt->process(
         \$template,
-        { args     => $args,
+        {   args   => $args,
             opt    => $opt,
             sh     => $sh_name,
             jrange => IPC::Cmd::can_run('jrange'),
