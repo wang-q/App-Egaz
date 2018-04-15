@@ -56,7 +56,7 @@ perl -I lib/ t/11-raxml.t
 perl -I lib/ script/egaz plottree t/YDL184C.nwk
 perl -I lib/ t/12-plottree.t
 
-perl -I lib/ script/egaz blastn t/pig2.fa t/pseudopig.fa --verbose
+perl -I lib/ script/egaz blastn t/pig2.fa t/pseudopig.fa --verbose -o t/pig2.blast
 perl -I lib/ t/13-blastn.t
 
 egaz partition t/pseudocat/cat.fa --chunk 10000 --overlap 100
@@ -83,6 +83,9 @@ perl -I lib/ t/17-multiz.t
 
 perl -I lib/ script/egaz repeatmasker t/pseudocat.fa -v
 perl -I lib/ t/18-repeatmasker.t
+
+perl -I lib/ script/egaz blastmatch t/pig2.blast
+perl -I lib/ t/19-blastmatch.t
 
 perl -I lib/ script/egaz template t/pseudocat t/pseudopig --multi -o tmp/ -v
 rm -fr tmp/
