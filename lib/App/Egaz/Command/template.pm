@@ -235,7 +235,7 @@ else
 
     log_info lpcnam Pairwise/[% t %]vs[% q %]
     egaz lpcnam \
-        --parallel [% opt.parallel %] --verbose \
+        --syn --parallel [% opt.parallel %] --verbose \
         [% opt.data.0.dir %] [% item.dir %] Pairwise/[% t %]vs[% q %]
 fi
 
