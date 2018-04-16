@@ -206,6 +206,55 @@ sub execute {
     $self->gen_proc_cmd( $opt, $args );
     $self->gen_circos( $opt, $args );
 
+    $self->gen_aligndb( $opt, $args );
+
+}
+
+sub gen_aligndb {
+    my ( $self, $opt, $args ) = @_;
+
+    return unless $opt->{aligndb};
+
+    my $tt = Template->new( INCLUDE_PATH => [ File::ShareDir::dist_dir('App-Egaz') ], );
+    my $template;
+    my $sh_name;
+
+    $sh_name = "7_chr_length.sh";
+    print STDERR "Create $sh_name\n";
+    $template = <<'EOF';
+[% INCLUDE header.tt2 %]
+
+#----------------------------#
+# [% sh %]
+#----------------------------#
+log_warn [% sh %]
+
+echo "common_name,taxon_id,chr,length,assembly" > chr_length.csv
+
+[% FOREACH item IN opt.data -%]
+# [% item.name %]
+perl -nla -F"\t" -e '
+    print qq{[% item.name %],[% item.taxon %],$F[0],$F[1],}
+    ' \
+    [% item.dir %]/chr.sizes \
+    >> chr_length.csv;
+
+[% END -%]
+
+log_info chr_length.csv generated
+
+exit;
+
+EOF
+    $tt->process(
+        \$template,
+        {   args => $args,
+            opt  => $opt,
+            sh   => $sh_name,
+        },
+        Path::Tiny::path( $opt->{outdir}, $sh_name )->stringify
+    ) or Carp::croak Template->error;
+
 }
 
 sub gen_pair_cmd {

@@ -182,8 +182,12 @@ bash multi6/3_multi_cmd.sh
 
 egaz template \
     S288c RM11_1a YJM789 Spar \
-    --multi --multiname multi4 --tree multi6/Results/multi6.nwk --outgroup Spar \
-    -o multi6/ --parallel 8 -v
+    --multi -o multi6/ \
+    --multiname multi4 --tree multi6/Results/multi6.nwk --outgroup Spar \
+    --aligndb \
+    --parallel 8 -v
+
 bash multi6/3_multi_cmd.sh
+bash multi6/7_chr_length.sh
 
 ```
