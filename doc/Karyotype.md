@@ -39,7 +39,7 @@ Regions of Arabidopsis thaliana Chromosomes 1, 2, and 3. DNA Res 9, 117-121 (200
 cd ~/Scripts/cpan/App-Egaz/share/karyotype/
 
 TAB=$'\t'
-cat <<EOF > Atha.kary.tsv
+cat <<EOF > Atha.karyo.tsv
 #chrom${TAB}chromStart${TAB}chromEnd${TAB}name${TAB}gieStain
 1${TAB}1${TAB}14200000${TAB}p1${TAB}gpos50${TAB}#14.2M
 1${TAB}14200000${TAB}15627671${TAB}p1${TAB}acen
@@ -58,8 +58,9 @@ cat <<EOF > Atha.kary.tsv
 5${TAB}12575502${TAB}26975502${TAB}q5${TAB}gpos50${TAB}#14.4M
 EOF
 
+# On linux
 bash $(dirname $(readlink $(which circos)))/../data/karyotype/parse.karyotype \
-    Atha.kary.tsv \
+    Atha.karyo.tsv \
     > karyotype.3702.txt
 
 ```
