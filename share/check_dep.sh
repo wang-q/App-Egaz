@@ -45,6 +45,16 @@ hash multiz 2>/dev/null || {
     exit 1;
 }
 
+hash fasops 2>/dev/null || {
+    echo >&2 "fasops is required but it's not installed.";
+    exit 1;
+}
+
+hash rangeops 2>/dev/null || {
+    echo >&2 "rangeops is required but it's not installed.";
+    exit 1;
+}
+
 #----------------------------#
 # kent-tools
 #----------------------------#
@@ -72,6 +82,10 @@ hash jrange 2>/dev/null || {
 
 hash snp-sites 2>/dev/null || {
     echo >&2 "snp-sites is optional but it's not installed.";
+}
+
+hash vcf-concat 2>/dev/null || {
+    echo >&2 "vcftools is optional but it's not installed.";
 }
 
 echo >&2 OK
