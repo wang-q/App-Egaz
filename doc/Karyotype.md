@@ -11,6 +11,7 @@
 Circos tarball contains some karyotype files, in `circos/data/karyotype/`.
 
 ```bash
+# BSD readlink doesn't support -f
 PATH_CIRCOS=$(dirname $(readlink $(which circos)))
 
 ll ${PATH_CIRCOS}/../data/karyotype
@@ -36,7 +37,7 @@ Hosouchi, T., Kumekawa, N., Tsuruoka, H. & Kotani, H. Physical Map-Based Sizes o
 Regions of Arabidopsis thaliana Chromosomes 1, 2, and 3. DNA Res 9, 117-121 (2002).
 
 ```bash
-cd ~/Scripts/cpan/App-Egaz/share/karyotype/
+pushd ~/Scripts/cpan/App-Egaz/share/karyotype/
 
 TAB=$'\t'
 cat <<EOF > Atha.karyo.tsv
@@ -62,5 +63,7 @@ EOF
 bash $(dirname $(readlink $(which circos)))/../data/karyotype/parse.karyotype \
     Atha.karyo.tsv \
     > karyotype.3702.txt
+
+popd
 
 ```

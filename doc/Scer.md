@@ -180,18 +180,20 @@ egaz template \
     S288c RM11_1a YJM789 Spar Spas Seub \
     --multi --rawphylo -o multi6/ --parallel 8 -v
 
-bash multi6/1_pair_cmd.sh
+bash multi6/1_pair.sh
 bash multi6/2_rawphylo.sh
-bash multi6/3_multi_cmd.sh
+bash multi6/3_multi.sh
 
 egaz template \
     S288c RM11_1a YJM789 Spar \
     --multi -o multi6/ \
     --multiname multi4 --tree multi6/Results/multi6.nwk --outgroup Spar \
-    --aligndb \
+    --vcf --aligndb \
     --parallel 8 -v
 
-bash multi6/3_multi_cmd.sh
+bash multi6/3_multi.sh
+bash multi6/4_vcf.sh
 bash multi6/7_chr_length.sh
+
 
 ```

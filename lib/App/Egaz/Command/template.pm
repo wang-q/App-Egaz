@@ -37,8 +37,9 @@ sub opt_spec {
         [ "outgroup=s",  "the name of outgroup", ],
         [ "tree=s",      "a predefined guiding tree for multiz", ],
         [ "rawphylo",    "create guiding tree by joining pairwise alignments", ],
+        [ "vcf",         "create vcf files", ],
         [],
-        [ "noblast", "don't blast against genomes", ],
+        [ "noblast", "don't blast paralogs against genomes", ],
         [ "circos",  "create circos script", ],
         { show_defaults => 1, }
     );
@@ -195,15 +196,16 @@ sub execute {
     #----------------------------#
     # multi *.sh files
     #----------------------------#
-    $self->gen_pair_cmd( $opt, $args );
+    $self->gen_pair( $opt, $args );
     $self->gen_rawphylo( $opt, $args );
-    $self->gen_multi_cmd( $opt, $args );
+    $self->gen_multi( $opt, $args );
+    $self->gen_vcf( $opt, $args );
 
     #----------------------------#
     # self *.sh files
     #----------------------------#
-    $self->gen_self_cmd( $opt, $args );
-    $self->gen_proc_cmd( $opt, $args );
+    $self->gen_self( $opt, $args );
+    $self->gen_proc( $opt, $args );
     $self->gen_circos( $opt, $args );
 
     $self->gen_aligndb( $opt, $args );
@@ -257,7 +259,7 @@ EOF
 
 }
 
-sub gen_pair_cmd {
+sub gen_pair {
     my ( $self, $opt, $args ) = @_;
 
     return unless $opt->{mode} eq "multi";
@@ -266,7 +268,7 @@ sub gen_pair_cmd {
     my $template;
     my $sh_name;
 
-    $sh_name = "1_pair_cmd.sh";
+    $sh_name = "1_pair.sh";
     print STDERR "Create $sh_name\n";
     $template = <<'EOF';
 [% INCLUDE header.tt2 %]
@@ -507,7 +509,7 @@ EOF
     ) or Carp::croak Template->error;
 }
 
-sub gen_multi_cmd {
+sub gen_multi {
     my ( $self, $opt, $args ) = @_;
 
     return unless $opt->{mode} eq "multi";
@@ -516,7 +518,7 @@ sub gen_multi_cmd {
     my $template;
     my $sh_name;
 
-    $sh_name = "3_multi_cmd.sh";
+    $sh_name = "3_multi.sh";
     print STDERR "Create $sh_name\n";
     $template = <<'EOF';
 [% INCLUDE header.tt2 %]
@@ -666,7 +668,81 @@ EOF
     ) or Carp::croak Template->error;
 }
 
-sub gen_self_cmd {
+sub gen_vcf {
+    my ( $self, $opt, $args ) = @_;
+
+    return unless $opt->{mode} eq "multi" and $opt->{vcf};
+
+    my $tt = Template->new( INCLUDE_PATH => [ File::ShareDir::dist_dir('App-Egaz') ], );
+    my $template;
+    my $sh_name;
+
+    $sh_name = "4_vcf.sh";
+    print STDERR "Create $sh_name\n";
+    $template = <<'EOF';
+[% INCLUDE header.tt2 %]
+
+#----------------------------#
+# [% sh %]
+#----------------------------#
+log_warn [% sh %]
+
+if [ -e [% opt.multiname %]_vcf/[% opt.multiname %].vcf ]; then
+    log_info [% opt.multiname %]_vcf/[% opt.multiname %].vcf exists
+    exit;
+fi
+
+mkdir -p [% opt.multiname %]_vcf
+
+log_info Write name.list
+
+# Make sure all queries present
+# Don't write outgroup
+rm -f [% opt.multiname %]_vcf/name.list
+[% FOREACH item IN opt.data -%]
+[% IF not loop.last -%]
+echo [% item.name %] >> [% opt.multiname %]_vcf/name.list
+[% ELSE -%]
+[% IF not opt.outgroup -%]
+echo [% item.name %] >> [% opt.multiname %]_vcf/name.list
+[% END -%]
+[% END -%]
+[% END -%]
+
+log_info fas2vcf
+find [% opt.multiname %]_refined -type f -name "*.fas" -or -type f -name "*.fas.gz" |
+    sort |
+    parallel --no-run-if-empty -j [% opt.parallel %] '
+        egaz fas2vcf \
+            {} \
+            [% args.0 %]/chr.sizes \
+            --verbose --list [% opt.multiname %]_vcf/name.list \
+            -o [% opt.multiname %]_vcf/{/}.vcf
+        '
+
+log_info concat and sort vcf
+bcftools concat [% opt.multiname %]_vcf/*.vcf |
+    bcftools sort \
+    > [% opt.multiname %]_vcf/[% opt.multiname %].vcf
+
+find [% opt.multiname %]_vcf -type f -name "*.vcf" -not -name "multi4.vcf" |
+    parallel --no-run-if-empty -j 1 rm
+
+exit;
+
+EOF
+    $tt->process(
+        \$template,
+        {   args => $args,
+            opt  => $opt,
+            sh   => $sh_name,
+        },
+        Path::Tiny::path( $opt->{outdir}, $sh_name )->stringify
+    ) or Carp::croak Template->error;
+
+}
+
+sub gen_self {
     my ( $self, $opt, $args ) = @_;
 
     return unless $opt->{mode} eq "self";
@@ -675,7 +751,7 @@ sub gen_self_cmd {
     my $template;
     my $sh_name;
 
-    $sh_name = "1_self_cmd.sh";
+    $sh_name = "1_self.sh";
     print STDERR "Create $sh_name\n";
     $template = <<'EOF';
 [% INCLUDE header.tt2 %]
@@ -718,7 +794,7 @@ EOF
     ) or Carp::croak Template->error;
 }
 
-sub gen_proc_cmd {
+sub gen_proc {
     my ( $self, $opt, $args ) = @_;
 
     return unless $opt->{mode} eq "self";
@@ -727,7 +803,7 @@ sub gen_proc_cmd {
     my $template;
     my $sh_name;
 
-    $sh_name = "3_proc_cmd.sh";
+    $sh_name = "3_proc.sh";
     print STDERR "Create $sh_name\n";
     $template = <<'EOF';
 [% INCLUDE header.tt2 %]
