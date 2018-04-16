@@ -136,6 +136,7 @@ sub execute {
         Path::Tiny::path( $opt->{outdir}, 'Pairwise' )->mkpath();
         Path::Tiny::path( $opt->{outdir}, 'Processing' )->mkpath();
         Path::Tiny::path( $opt->{outdir}, 'Results' )->mkpath();
+        Path::Tiny::path( $opt->{outdir}, 'Circos' )->mkpath();
     }
 
     $args = [ map { Path::Tiny::path($_)->absolute()->stringify() } @{$args} ];
@@ -177,7 +178,7 @@ sub execute {
     }
     $opt->{data} = \@data;    # store in $opt
 
-    print STDERR YAML::Syck::Dump( $opt->{data} );
+    print STDERR YAML::Syck::Dump( $opt->{data} ) if $opt->{verbose};
 
     # If there's no phylo tree, generate a fake one.
     if ( $opt->{mode} eq "multi" and !$opt->{tree} ) {
@@ -203,6 +204,7 @@ sub execute {
     #----------------------------#
     $self->gen_self_cmd( $opt, $args );
     $self->gen_proc_cmd( $opt, $args );
+    $self->gen_circos( $opt, $args );
 
 }
 
@@ -925,6 +927,169 @@ EOF
         },
         Path::Tiny::path( $opt->{outdir}, $sh_name )->stringify
     ) or Carp::croak Template->error;
+}
+
+sub gen_circos {
+    my ( $self, $opt, $args ) = @_;
+
+    return unless $opt->{mode} eq "self" and $opt->{circos};
+
+    my $tt = Template->new( INCLUDE_PATH => [ File::ShareDir::dist_dir('App-Egaz') ], );
+
+    # circos.conf and karyotype.id.txt
+    for my $item ( @{ $opt->{data} } ) {
+        print STDERR "Create circos.conf for $item->{name}\n" if $opt->{verbose};
+        $tt->process(
+            "circos.conf.tt2",
+            {   dir => $opt->{outdir},
+                id  => $item->{name},
+            },
+            Path::Tiny::path( $opt->{outdir}, 'Circos', $item->{name}, "circos.conf" )->stringify
+        ) or Carp::croak Template->error;
+
+        # copy prebuilt karyotype file
+        if ( $item->{taxon} != 0 ) {
+            my $karyo = Path::Tiny::path( File::ShareDir::dist_dir('App-Egaz'),
+                "share", "karyotype", "karyotype.$item->{taxon}.txt" );
+
+            if ( $karyo->is_file ) {
+                print STDERR "    Copy prebuilt karyotype.$item->{name}.txt\n" if $opt->{verbose};
+                $karyo->copy( $opt->{outdir}, 'Circos', $item->{name},
+                    "karyotype.$item->{name}.txt" );
+            }
+        }
+    }
+
+    # 4_circos.sh
+    my $template;
+    my $sh_name;
+
+    $sh_name = "4_circos.sh";
+    print STDERR "Create $sh_name\n";
+    $template = <<'EOF';
+[% INCLUDE header.tt2 %]
+
+#----------------------------#
+# [% sh %]
+#----------------------------#
+log_warn [% sh %]
+
+mkdir -p Pairwise
+
+[% FOREACH item IN opt.data -%]
+[% id = item.name -%]
+#----------------------------#
+# [% id %]
+#----------------------------#
+log_info [% id %]
+cd [% opt.outdir %]/Circos/[% id %]
+
+#----------------------------#
+# karyotype
+#----------------------------#
+log_debug Adjust karyotype
+
+# generate karyotype files
+if [ ! -e karyotype.[% id %].txt ]; then
+    log_debug Create default karyotype
+    perl -anl -e '$i++; print qq{chr - $F[0] $F[0] 0 $F[1] chr$i}' \
+        [% item.dir %]/chr.sizes \
+        > karyotype.[% id %].txt
+fi
+
+# spaces among chromosomes
+if [[ $(perl -n -e '$l++; END{print qq{$l\n}}' [% item.dir %]/chr.sizes ) > 1 ]]; then
+    log_debug Multiple chromosomes
+    perl -nlpi -e 's/    default = 0r/    default = 0.005r/;' circos.conf
+    perl -nlpi -e 's/show_label     = no/show_label     = yes/;' circos.conf
+fi
+
+# chromosome units
+SIZE=$(perl -an -F'\t' -e '$s += $F[1]; END{print qq{$s\n}}' [% item.dir %]/chr.sizes )
+log_debug "Genome size ${SIZE}"
+if [ ${SIZE} -ge 1000000000 ]; then
+    echo "    * Set chromosome unit to 1 Mbp"
+    perl -nlpi -e 's/chromosomes_units = 1000/chromosomes_units = 100000/;' circos.conf
+elif [ ${SIZE} -ge 100000000 ]; then
+    echo "    * Set chromosome unit to 100 kbp"
+    perl -nlpi -e 's/chromosomes_units = 1000/chromosomes_units = 100000/;' circos.conf
+elif [ ${SIZE} -ge 10000000 ]; then
+    echo "    * Set chromosome unit to 10 kbp"
+    perl -nlpi -e 's/chromosomes_units = 1000/chromosomes_units = 10000/;' circos.conf
+else
+    echo "    * Keep chromosome unit as 1 kbp"
+fi
+
+#----------------------------#
+# gff to highlight
+#----------------------------#
+log_debug Create highlight files
+
+# coding and other features
+perl -anl -e '
+    /^#/ and next;
+    $F[0] =~ s/\.\d+//;
+    $color = q{};
+    $F[2] eq q{CDS} and $color = q{chr9};
+    $F[2] eq q{ncRNA} and $color = q{dark2-8-qual-1};
+    $F[2] eq q{rRNA} and $color = q{dark2-8-qual-2};
+    $F[2] eq q{tRNA} and $color = q{dark2-8-qual-3};
+    $F[2] eq q{tmRNA} and $color = q{dark2-8-qual-4};
+    $color and ($F[4] - $F[3] > 49) and print qq{$F[0] $F[3] $F[4] fill_color=$color};
+    ' \
+    [% item.dir %]/*.gff \
+    > highlight.features.[% id %].txt
+
+# repeats
+perl -anl -e '
+    /^#/ and next;
+    $F[0] =~ s/\.\d+//;
+    $color = q{};
+    $F[2] eq q{region} and $F[8] =~ /mobile_element|Transposon/i and $color = q{chr15};
+    $F[2] =~ /repeat/ and $F[8] !~ /RNA/ and $color = q{chr15};
+    $color and ($F[4] - $F[3] > 49) and print qq{$F[0] $F[3] $F[4] fill_color=$color};
+    ' \
+    [% item.dir %]/*.gff \
+    > highlight.repeats.[% id %].txt
+
+#----------------------------#
+# links of paralog ranges
+#----------------------------#
+log_debug Create link files
+
+for n in 2 3 4 5-50; do
+    rangeops filter [% opt.outdir %]/Results/[% id %]/[% id %].links.tsv -n ${n} -o stdout \
+        > links.copy${n}.tsv
+
+    if [ "${n}" == "5-50" ]; then
+        rangeops circos links.copy${n}.tsv -o [% id %].linkN.txt --highlight
+    else
+        rangeops circos links.copy${n}.tsv -o [% id %].link${n}.txt
+    fi
+
+    rm links.copy${n}.tsv
+done
+
+#----------------------------#
+# run circos
+#----------------------------#
+log_info Run circos
+circos -noparanoid -conf circos.conf
+
+[% END -%]
+
+exit;
+
+EOF
+    $tt->process(
+        \$template,
+        {   args => $args,
+            opt  => $opt,
+            sh   => $sh_name,
+        },
+        Path::Tiny::path( $opt->{outdir}, $sh_name )->stringify
+    ) or Carp::croak Template->error;
+
 }
 
 1;

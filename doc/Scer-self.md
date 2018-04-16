@@ -199,10 +199,12 @@ cd ~/data/alignment/egaz
 
 egaz template \
     S288c \
-    --self -o selfS288c/ --parallel 8 -v
+    --self -o selfS288c/ \
+    --circos --parallel 8 -v
 
 bash selfS288c/1_self_cmd.sh
 bash selfS288c/3_proc_cmd.sh
+bash selfS288c/4_circos.sh
 
 ```
 
