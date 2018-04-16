@@ -712,6 +712,8 @@ fi
 #----------------------------#
 # parallel
 #----------------------------#
+log_info Blast paralogs against genomes and each other
+
 parallel --no-run-if-empty --linebuffer -k -j 2 '
 
 if [ -d Results/{} ]; then
@@ -719,7 +721,6 @@ if [ -d Results/{} ]; then
     exit;
 fi
 
-mkdir -p Results/{}
 cd Processing/{}
 
 #----------------------------#
@@ -821,24 +822,40 @@ echo >&2 "    * Connect links"
 rangeops connect links.clean.tsv    -o links.connect.tsv     -r 0.9
 rangeops filter  links.connect.tsv  -o links.filter.tsv      -r 0.8
 
-echo >&2 "    * recreate links"
-rangeops create links.filter.tsv    -o multi.temp.fas       -g genome.fa
-fasops   refine multi.temp.fas      -o multi.refine.fas     --msa mafft -p [% opt.parallel2 %] --chop 10
-fasops   links  multi.refine.fas    -o stdout |
+    ' ::: [% FOREACH item IN opt.data %][% item.name %] [% END %]
+
+[% FOREACH item IN opt.data -%]
+[% id = item.name -%]
+#----------------------------#
+# [% id %]
+#----------------------------#
+if [ -d Results/[% id %] ]; then
+    log_info Skip Results/[% id %]
+else
+
+mkdir -p Results/[% id %]
+pushd Processing/[% id %] > /dev/null
+
+log_info Create multi/pairwise alignments for [% id %]
+
+log_debug multiple links
+rangeops create links.filter.tsv -o multi.temp.fas    -g genome.fa
+fasops   refine multi.temp.fas   -o multi.refine.fas  --msa mafft -p [% opt.parallel %] --chop 10
+fasops   links  multi.refine.fas -o stdout |
     rangeops sort stdin -o stdout |
     rangeops filter stdin -n 2-50 -o links.refine.tsv
 
-echo >&2 "    * pairwise links"
+log_debug pairwise links
 fasops   links  multi.refine.fas    -o stdout     --best |
     rangeops sort stdin -o links.best.tsv
-rangeops create links.best.tsv      -o pair.temp.fas    -g genome.fa --name {}
-fasops   refine pair.temp.fas       -o pair.refine.fas  --msa mafft -p [% opt.parallel2 %]
+rangeops create links.best.tsv   -o pair.temp.fas    -g genome.fa --name [% id %]
+fasops   refine pair.temp.fas    -o pair.refine.fas  --msa mafft -p [% opt.parallel %]
 
 cat links.refine.tsv |
     perl -nla -F"\t" -e "print for @F" |
     runlist cover stdin -o cover.yml
 
-echo >&2 "==> Stats of links"
+log_debug Stats of links
 echo "key,count" > links.count.csv
 for n in 2 3 4 5-50; do
     rangeops filter links.refine.tsv -n ${n} -o stdout \
@@ -865,28 +882,22 @@ runlist stat --size chr.sizes copy.yml --mk --all -o links.copy.csv
 
 fasops mergecsv links.copy.csv links.count.csv --concat -o copy.csv
 
-echo >&2 "==> Coverage figure"
+log_debug Coverage figure
 runlist stat --size chr.sizes cover.yml
 #perl cover_figure.pl --size chr.sizes -f cover.yml
 
-#----------------------------#
-# result
-#----------------------------#
-echo >&2 "==> Results"
+log_info Results for [% id %]
 
-cp cover.yml        ../../Results/{}/{}.cover.yml
-cp copy.yml         ../../Results/{}/{}.copy.yml
-mv cover.yml.csv    ../../Results/{}/{}.cover.csv
-mv copy.csv         ../../Results/{}/{}.copy.csv
-cp links.refine.tsv ../../Results/{}/{}.links.tsv
-#mv cover.png        ../../Results/{}/{}.cover.png
-mv multi.refine.fas ../../Results/{}/{}.multi.fas
-mv pair.refine.fas  ../../Results/{}/{}.pair.fas
+cp cover.yml        ../../Results/[% id %]/[% id %].cover.yml
+cp copy.yml         ../../Results/[% id %]/[% id %].copy.yml
+mv cover.yml.csv    ../../Results/[% id %]/[% id %].cover.csv
+mv copy.csv         ../../Results/[% id %]/[% id %].copy.csv
+cp links.refine.tsv ../../Results/[% id %]/[% id %].links.tsv
+#mv cover.png        ../../Results/[% id %]/[% id %].cover.png
+mv multi.refine.fas ../../Results/[% id %]/[% id %].multi.fas
+mv pair.refine.fas  ../../Results/[% id %]/[% id %].pair.fas
 
-#----------------------------#
-# clean
-#----------------------------#
-echo >&2 "==> Clean up"
+log_info Clean up
 
 find . -type f -name "*genome.fa*"   | parallel --no-run-if-empty rm
 find . -type f -name "*all.fasta*"   | parallel --no-run-if-empty rm
@@ -896,7 +907,11 @@ find . -type f -name "replace.*.tsv" | parallel --no-run-if-empty rm
 find . -type f -name "*.temp.yml"    | parallel --no-run-if-empty rm
 find . -type f -name "*.temp.fas"    | parallel --no-run-if-empty rm
 
-    ' ::: [% FOREACH item IN opt.data %][% item.name %] [% END %]
+popd > /dev/null
+
+fi
+
+[% END -%]
 
 exit;
 
