@@ -129,6 +129,17 @@ sub execute {
         App::Egaz::Common::exec_cmd( $cmd, { verbose => $opt->{verbose}, } );
     }
 
+    #----------------------------#
+    # chr.fasta.fai
+    #----------------------------#
+    {
+        my $cmd = "cat $outdir/*.fa | faops filter -U stdin $outdir/chr.fasta";
+        App::Egaz::Common::exec_cmd( $cmd, { verbose => $opt->{verbose}, } );
+
+        $cmd = "samtools faidx $outdir/chr.fasta";
+        App::Egaz::Common::exec_cmd( $cmd, { verbose => $opt->{verbose}, } );
+    }
+
     return;
 }
 
