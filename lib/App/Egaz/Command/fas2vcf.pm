@@ -13,6 +13,7 @@ sub abstract {
 sub opt_spec {
     return (
         [ "outfile|o=s", "Output filename. [stdout] for screen", { default => "stdout" }, ],
+        [ "list=s",      "a list of names to keep, one per line", ],
         [ "verbose|v",   "verbose mode", ],
         { show_defaults => 1, }
     );
@@ -63,12 +64,21 @@ sub execute {
     my $length_of = App::RL::Common::read_sizes( $args->[1] );
 
     {    # fasops split
-        my $cmd = "fasops split $args->[0] --simple -o $tempdir";
+        my $cmd = "";
+        if ( $opt->{list} ) {
+            $cmd .= " fasops subset $args->[0] $opt->{list} --required -o stdout";
+            $cmd .= " |";
+            $cmd .= " fasops split stdin --simple -o $tempdir";
+        }
+        else {
+            $cmd .= "fasops split $args->[0] --simple -o $tempdir";
+        }
         App::Egaz::Common::exec_cmd( $cmd, { verbose => $opt->{verbose}, } );
     }
 
     {    # snp-sites
         my @files = $tempdir->children(qr/\.fas$/);
+        printf STDERR "    Find %d .fas files\n", scalar @files if $opt->{verbose};
 
         for my Path::Tiny $f (@files) {
             my ( $name, $chr_name, $chr_strand, $chr_pos ) = split /\./, $f->basename(".fas");
@@ -96,7 +106,6 @@ sub execute {
 
             if ( scalar grep { !/^#/ } @lines ) {
                 Path::Tiny::path( $f . ".vcf" )->spew( map { $_ . "\n" } @lines );
-                print STDERR $f . ".vcf" . "\n" if $opt->{verbose};
             }
         }
     }

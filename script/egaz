@@ -90,7 +90,8 @@ perl -I lib/ t/19-blastmatch.t
 perl -I lib/ t/20-blastlink.t
 
 perl -I lib/ script/egaz fas2vcf t/YDL184C.fas t/S288c.chr.sizes -v
-cat t/example.fas | perl -I lib/ script/egaz fas2vcf stdin t/S288c.chr.sizes -v
+cat t/example.fas | perl -I lib/ script/egaz fas2vcf \
+    stdin t/S288c.chr.sizes --list <(echo -e "S288c\nYJM789") -v
 perl -I lib/ t/21-fas2vcf.t
 
 perl -I lib/ script/egaz template t/pseudocat t/pseudopig --multi -o tmp/ -v

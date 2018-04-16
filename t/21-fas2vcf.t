@@ -18,7 +18,7 @@ $result = test_app( 'App::Egaz' => [qw(fas2vcf t/not_exists t/not_exists)] );
 like( $result->error, qr{doesn't exist}, 'infile not exists' );
 
 SKIP: {
-    skip "snp-sites or bcftools not installed", 4
+    skip "snp-sites or bcftools not installed", 7
         unless IPC::Cmd::can_run('snp-sites')
         and IPC::Cmd::can_run('bcftools');
 
@@ -36,17 +36,21 @@ SKIP: {
     is( ( scalar grep {/\S/} split( /\n/, $result->stderr ) ), 3, 'stderr line count' );
     ok( $tempdir->child("YDL184C.vcf")->is_file, 'YDL184C.vcf exists' );
 
-    # can't capture stdout
-    $result
-        = test_app( 'App::Egaz' =>
-            [ "fas2vcf", "$t_path/example.fas", "$t_path/S288c.chr.sizes", "-o", "example.vcf","-v",  ]
-        );
-    is( ( scalar grep {/\S/} split( /\n/, $result->stderr ) ), 5, 'stderr line count' );
+    $tempdir->child("name.list")->spew( map {"$_\n"} qw{S288c YJM789} );
+    $result = test_app(
+        'App::Egaz' => [
+            "fas2vcf", "$t_path/example.fas", "$t_path/S288c.chr.sizes", "--list", "name.list",
+            "-o", "example.vcf", "-v",
+        ]
+    );
+    is( ( scalar grep {/\S/} split( /\n/, $result->stderr ) ), 3, 'stderr line count' );
     is( ( scalar grep {/^CMD/} grep {/\S/} split( /\n/, $result->stderr ) ), 2, 'CMD count' );
 
+    # can't capture stdout
     my $content = $tempdir->child("example.vcf")->slurp;
     like( $content, qr{ID=I,length=230218}, '##contig exists' );
-    is( ( scalar grep {!/^#/} grep {/\S/} split( /\n/, $content ) ), 82, 'SNP count' );
+    unlike( $content, qr{Spar}, 'Spar gone' );
+    ok( ( scalar grep { !/^#/ } grep {/\S/} split( /\n/, $content ) ) > 40, 'SNP count' );
 
     chdir $cwd;    # Won't keep tempdir
 }
