@@ -43,7 +43,8 @@
       "runtime" : {
          "requires" : {
             "App::Cmd" : "0.330",
-            "App::Fasops" : "v0.5.11",
+            "App::Fasops" : "v0.5.16",
+            "App::Rangeops" : "v0.1.0",
             "Bio::Phylo" : "v2.0.1",
             "File::Find::Rule" : "0.34",
             "File::ShareDir" : "1.102",

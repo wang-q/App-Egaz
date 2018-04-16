@@ -202,8 +202,8 @@ egaz template \
     --self -o selfS288c/ \
     --circos --aligndb --parallel 8 -v
 
-bash selfS288c/1_self_cmd.sh
-bash selfS288c/3_proc_cmd.sh
+bash selfS288c/1_self.sh
+bash selfS288c/3_proc.sh
 bash selfS288c/4_circos.sh
 bash selfS288c/7_chr_length.sh
 
