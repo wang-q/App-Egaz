@@ -66,7 +66,7 @@ chaining mechanism (C<C=2>) instead.
 
 =over 4
 
-=item Multiple genome alignments of I<Saccharomyces cerevisiae> strains
+=item Multiple genome alignments of I<Saccharomyces cerevisiae> strains and other I<Saccharomyces> species
 
 =over 8
 
@@ -76,7 +76,7 @@ chaining mechanism (C<C=2>) instead.
 
 =back
 
-=item Self alignments of I<S. cerevisiae> S288c
+=item Self alignments of I<S. cerevisiae> reference strain S288c
 
 =over 8
 
