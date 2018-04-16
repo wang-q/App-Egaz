@@ -18,9 +18,9 @@ $result = test_app( 'App::Egaz' => [qw(fas2vcf t/not_exists t/not_exists)] );
 like( $result->error, qr{doesn't exist}, 'infile not exists' );
 
 SKIP: {
-    skip "snp-sites or vcf-concat not installed", 4
+    skip "snp-sites or bcftools not installed", 4
         unless IPC::Cmd::can_run('snp-sites')
-        and IPC::Cmd::can_run('vcf-concat');
+        and IPC::Cmd::can_run('bcftools');
 
     my $t_path = Path::Tiny::path("t/")->absolute->stringify;
     my $cwd    = Path::Tiny->cwd;

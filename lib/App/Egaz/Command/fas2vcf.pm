@@ -31,7 +31,7 @@ sub description {
 * Steps:
     1. split .fas to a temp dir by `fasops split`
     2. convert each fasta files to .vcf by `snp-sites`
-    3. concat every .vcf files by `vcf-concat`
+    3. concat every .vcf files by `bcftools`
 
 MARKDOWN
 
@@ -94,20 +94,22 @@ sub execute {
                 }
             }
 
-            Path::Tiny::path( $f . ".vcf" )->spew( map { $_ . "\n" } @lines );
-            print STDERR $f . ".vcf" . "\n" if $opt->{verbose};
+            if ( scalar grep { !/^#/ } @lines ) {
+                Path::Tiny::path( $f . ".vcf" )->spew( map { $_ . "\n" } @lines );
+                print STDERR $f . ".vcf" . "\n" if $opt->{verbose};
+            }
         }
     }
 
-    {    # vcf-concat
+    {    # bcftools
         my $temp_list = Path::Tiny->tempfile( TEMPLATE => "fas2vcf_XXXXXXXX", );
         for my Path::Tiny $f ( $tempdir->children(qr/\.vcf$/) ) {
             $temp_list->append( $f . "\n" );
         }
 
-        my $cmd = "vcf-concat -f $temp_list";
+        my $cmd = "bcftools concat -f $temp_list";
         if ( lc $opt->{outfile} ne "stdout" ) {
-            $cmd .= " > $opt->{outfile}";
+            $cmd .= " -o $opt->{outfile}";
         }
         App::Egaz::Common::exec_cmd( $cmd, { verbose => $opt->{verbose}, } );
     }

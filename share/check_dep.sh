@@ -84,8 +84,8 @@ hash snp-sites 2>/dev/null || {
     echo >&2 "snp-sites is optional but it's not installed.";
 }
 
-hash vcf-concat 2>/dev/null || {
-    echo >&2 "vcftools is optional but it's not installed.";
+hash bcftools 2>/dev/null || {
+    echo >&2 "bcftools is optional but it's not installed.";
 }
 
 echo >&2 OK
