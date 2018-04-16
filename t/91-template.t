@@ -43,12 +43,17 @@ like( $result->error, qr{doesn't exist}, 'not exists' );
     my $tempdir = Path::Tiny->tempdir;
     chdir $tempdir;
 
-    $result = test_app( 'App::Egaz' =>
-            [ "template", "$t_path/pseudocat", "$t_path/pseudopig", "--self", "--verbose", ] );
+    $result = test_app(
+        'App::Egaz' => [
+            "template", "$t_path/pseudocat", "$t_path/pseudopig", "--self",
+            "--circos", "--verbose",
+        ]
+    );
 
     is( $result->error, undef, 'threw no exceptions' );
     is( ( scalar grep {/\S/} split( /\n/, $result->stdout ) ), 0, 'no stdout' );
     ok( $tempdir->child("1_self_cmd.sh")->is_file, '1_self_cmd.sh exists' );
+    ok( $tempdir->child("4_circos.sh")->is_file,   '4_circos.sh exists' );
     like( $result->stderr, qr{name: pseudocat.+name: pseudopig}s, 'names and directories' );
 
     chdir $cwd;    # Won't keep tempdir
