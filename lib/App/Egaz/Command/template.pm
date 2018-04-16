@@ -747,15 +747,11 @@ mkdir -p Results
 if [ -d Processing/[% item.name %] ]; then
     log_info Skip Processing/[% item.name %]
 else
-    log_info Recreate genome.fa for [% item.name %]
+    log_info Symlink genome sequences for [% item.name %]
     mkdir -p Processing/[% item.name %]
 
-    find [% item.dir %] -type f -name "*.fa" |
-        sort |
-        xargs cat |
-        perl -nl -e "/^>/ or \$_ = uc; print" \
-        > Processing/[% item.name %]/genome.fa
-    faops size Processing/[% item.name %]/genome.fa > Processing/[% item.name %]/chr.sizes
+    ln -s [% item.dir %]/chr.fasta Processing/[% item.name %]/genome.fa
+    cp -f [% item.dir %]/chr.sizes Processing/[% item.name %]/chr.sizes
 fi
 
 [% END -%]
@@ -887,7 +883,7 @@ else
 mkdir -p Results/[% id %]
 pushd Processing/[% id %] > /dev/null
 
-log_info Create multi/pairwise alignments for [% id %]
+log_info Create multiple/pairwise alignments for [% id %]
 
 log_debug multiple links
 rangeops create links.filter.tsv -o multi.temp.fas    -g genome.fa
