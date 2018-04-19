@@ -192,7 +192,7 @@ sub execute {
     }
     $opt->{data} = \@data;    # store in $opt
 
-    print STDERR YAML::Syck::Dump( $opt->{data} ) if $opt->{verbose};
+    print STDERR YAML::Syck::Dump( $opt->{data} ) if $opt->{verbose} and $opt->{mode} ne "prep";
 
     # If there's no phylo tree, generate a fake one.
     if ( $opt->{mode} eq "multi" and !$opt->{tree} ) {
@@ -284,7 +284,7 @@ else
         --repeatmasker "[% opt.repeatmasker %]" \
 [% END -%]
         --min [% opt.min %] --gi -v \
-        -o [% opt.outdir %]
+        -o [% opt.outdir %]/[% item.basename %]
 fi
 
 [% END -%]
