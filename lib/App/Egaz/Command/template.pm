@@ -571,7 +571,7 @@ fasops refine \
 log_info RAxML
 
 egaz raxml \
-    --parallel [% IF opt.parallel > 8 %] 8 [% ELSIF opt.parallel > 3 %] [% opt.parallel - 1 %] [% ELSE %] 2 [% END %] \
+    --parallel [% IF opt.parallel > 3 %] [% opt.parallel - 1 %] [% ELSE %] 2 [% END %] \
 [% IF opt.outgroup -%]
     --outgroup [% opt.outgroup %] \
 [% END -%]
@@ -730,7 +730,7 @@ find [% opt.multiname %]_refined -type f -name "*.fas" |
 log_info RAxML
 
 egaz raxml \
-    --parallel [% IF opt.parallel > 8 %] 8 [% ELSIF opt.parallel > 3 %] [% opt.parallel - 1 %] [% ELSE %] 2 [% END %] \
+    --parallel [% IF opt.parallel > 3 %] [% opt.parallel - 1 %] [% ELSE %] 2 [% END %] \
 [% IF opt.outgroup -%]
     --outgroup [% opt.outgroup %] \
 [% END -%]
