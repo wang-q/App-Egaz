@@ -240,18 +240,21 @@ sub gen_prep {
 
     my @files;
     for ( @{$args} ) {
-        @files = File::Find::Rule->file->name(@patterns)->in($_);
+        push @files, File::Find::Rule->file->name(@patterns)->in($_);
+    }
+
+    {
         @files = grep { !/$opt->{exclude}/ } @files;
-        @files = map { Path::Tiny::path($_)->absolute()->stringify } @files;
+        @files = map  { Path::Tiny::path($_)->absolute()->stringify } @files;
         @files = map {
             {   basename => Path::Tiny::path($_)->parent()->basename(),
                 perseq   => exists $perseq{ Path::Tiny::path($_)->parent()->basename() } ? 1 : 0,
                 file     => $_,
             }
         } @files;
-    }
 
-    print STDERR YAML::Syck::Dump \@files if $opt->{verbose};
+        print STDERR YAML::Syck::Dump \@files if $opt->{verbose};
+    }
 
     my $tt = Template->new( INCLUDE_PATH => [ File::ShareDir::dist_dir('App-Egaz') ], );
     my $template;
