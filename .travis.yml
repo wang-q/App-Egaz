@@ -27,6 +27,12 @@ before_install:
   - cp faops/faops $HOME/bin
   # kent-tools
   - for f in faToTwoBit axtChain chainAntiRepeat chainMergeSort chainPreNet chainNet netSyntenic netChainSubset chainStitchId netSplit netToAxt axtSort axtToMaf netFilter chainSplit; do
+      if [ -e $HOME/bin/${f} ]; then
+        continue;
+      fi;
+      if [ -e ${f} ]; then
+        rm ${f};
+      fi;
       wget http://hgdownload.soe.ucsc.edu/admin/exe/linux.x86_64/${f};
       mv ./${f} $HOME/bin/;
       chmod +x $HOME/bin/${f};
