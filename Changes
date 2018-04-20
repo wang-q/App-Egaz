@@ -1,6 +1,9 @@
 Revision history for Perl extension App-Egaz
 
 {{$NEXT}}
+    - `egaz template`
+        - Add 0_prep.sh
+        - and companion options
 
 0.1.2 2018-04-16T19:39:57Z
     - Create chr.fasta and chr.fasta.fai in `egaz prepseq`
