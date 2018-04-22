@@ -104,10 +104,35 @@ sub execute {
         Path::Tiny::path("$filename.out")->copy("$opt->{outdir}/$basename.rm.out");
 
         if ( $opt->{gff} ) {
-            my $rm_path = IPC::Cmd::can_run("RepeatMasker");
-            my Path::Tiny $rm2gff
-                = Path::Tiny::path($rm_path)->realpath->parent()->child("util/rmOutToGFF3.pl");
+
+            # RepeatMasker can be
+            # a symlink
+            #   /home/linuxbrew/.linuxbrew/bin/RepeatMasker
+            # or a real executable file
+            #   /home/linuxbrew/.linuxbrew/Cellar/repeatmasker/4.0.7_2/bin/RepeatMasker
+            #   /home/linuxbrew/.linuxbrew/Cellar/repeatmasker/4.0.7_2/libexec/RepeatMasker
+            #
+            # We want find here
+            #   /home/linuxbrew/.linuxbrew/Cellar/repeatmasker/4.0.7_2/libexec/util/rmOutToGFF3.pl
+            my $rm_bin  = IPC::Cmd::can_run("RepeatMasker");
+            my $rm_path = Path::Tiny::path($rm_bin)->realpath;
+
+            #@type Path::Tiny
+            my $rm2gff;
+
+            if ( $rm_path->parent->child("util")->is_dir ) {
+                $rm2gff = $rm_path->parent()->child("util/rmOutToGFF3.pl");
+            }
+            else {
+                $rm2gff = $rm_path->parent(2)->child("libexec/util/rmOutToGFF3.pl");
+            }
             if ( !$rm2gff->is_file ) {
+                print STDERR YAML::Syck::Dump(
+                    {   "rm_bin"  => $rm_bin,
+                        "rm_path" => $rm_path,
+                        "rm2gff"  => $rm2gff
+                    }
+                );
                 Carp::croak "Can't find rmOutToGFF3.pl\n";
             }
 
