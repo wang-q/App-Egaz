@@ -12,11 +12,11 @@ sub abstract {
 
 sub opt_spec {
     return (
-        [ "outdir|o=s",   "Output directory",           { default => "." }, ],
+        [ "outdir|o=s",   "Output directory",  { default => "." }, ],
         [ "species=s",    "the species or clade of the input sequence", ],
         [ "opt=s",        "other options should be passed to RepeatMasker", ],
         [ "tmp=s",        "user defined tempdir", ],
-        [ "parallel|p=i", "number of threads",          { default => 2 }, ],
+        [ "parallel|p=i", "number of threads", { default => 2 }, ],
         [ "verbose|v",    "verbose mode", ],
         { show_defaults => 1, }
     );
@@ -34,6 +34,9 @@ sub description {
 * <infile> should be fasta files (*.fa, *.fasta)
 * setting --outdir to the same one of infiles will replace original files
 * `repeatmasker` should be in $PATH
+* suffix of masked files is .fa, when --outdir is the same as infile:
+    * infile.fa may be replaced
+    * infile.fasta or infile.others will coexist with infile.fa
 
 MARKDOWN
 
@@ -82,7 +85,8 @@ sub execute {
     chdir $tempdir;
 
     for my $infile (@infiles) {
-        my $basename = Path::Tiny::path($infile)->basename();
+        my $filename = Path::Tiny::path($infile)->basename();
+        my $basename = Path::Tiny::path($infile)->basename(qr/\..+?/);
 
         my $cmd = "RepeatMasker";
         $cmd .= " $infile";
@@ -91,12 +95,12 @@ sub execute {
         $cmd .= " $opt->{opt}" if $opt->{opt};
         $cmd .= " -xsmall --parallel $opt->{parallel}";
         App::Egaz::Common::exec_cmd( $cmd, { verbose => $opt->{verbose}, } );
-        if ( !$tempdir->child("$basename.masked")->is_file ) {
+        if ( !$tempdir->child("$filename.masked")->is_file ) {
             Carp::croak "RepeatMasker on [$infile] failed\n";
         }
 
-        Path::Tiny::path("$basename.masked")->copy( "$opt->{outdir}/$basename" );
-        Path::Tiny::path("$basename.out")->copy( "$opt->{outdir}" );
+        Path::Tiny::path("$filename.masked")->copy("$opt->{outdir}/$basename.fa");
+        Path::Tiny::path("$filename.out")->copy("$opt->{outdir}");
     }
 
     chdir $cwd;
