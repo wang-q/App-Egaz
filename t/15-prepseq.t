@@ -50,7 +50,7 @@ SKIP: {
 }
 
 SKIP: {
-    skip "faops or faToTwoBit or RepeatMasker not installed", 5
+    skip "faops or faToTwoBit or RepeatMasker not installed", 6
         unless IPC::Cmd::can_run('faops')
         and IPC::Cmd::can_run('faToTwoBit')
         and IPC::Cmd::can_run('RepeatMasker');
@@ -65,12 +65,13 @@ SKIP: {
         'App::Egaz' => [
             "prepseq", "$t_path/pseudopig.fa", "--about", "1000000",
             "--min",   "1",                    "-v",      "--repeatmasker",
-            "--parallel 2"
+            "--gff --parallel 2"
         ]
     );
     ok( !$tempdir->child("pig1.fa")->is_file,   'pig1.fa not exists' );
     ok( $tempdir->child("000.fa")->is_file,     '000.fa exists' );
-    ok( $tempdir->child("000.fa.out")->is_file, '000.fa.out exists' );
+    ok( $tempdir->child("000.rm.out")->is_file, '000.rm.out exists' );
+    ok( $tempdir->child("000.rm.gff")->is_file, '000.rm.gff exists' );
     ok( $tempdir->child("chr.sizes")->is_file,  'chr.sizes exists' );
     ok( $tempdir->child("chr.2bit")->is_file,   'chr.2bit exists' );
 

@@ -14,7 +14,8 @@ sub opt_spec {
     return (
         [ "outdir|o=s",   "Output directory",  { default => "." }, ],
         [ "species=s",    "the species or clade of the input sequence", ],
-        [ "opt=s",        "other options should be passed to RepeatMasker", ],
+        [ "opt=s",        "other options be passed to RepeatMasker", ],
+        [ "gff",          "create .rm.gff by rmOutToGFF3.pl", ],
         [ "tmp=s",        "user defined tempdir", ],
         [ "parallel|p=i", "number of threads", { default => 2 }, ],
         [ "verbose|v",    "verbose mode", ],
@@ -100,7 +101,26 @@ sub execute {
         }
 
         Path::Tiny::path("$filename.masked")->copy("$opt->{outdir}/$basename.fa");
-        Path::Tiny::path("$filename.out")->copy("$opt->{outdir}");
+        Path::Tiny::path("$filename.out")->copy("$opt->{outdir}/$basename.rm.out");
+
+        if ( $opt->{gff} ) {
+            my $rm_path = IPC::Cmd::can_run("RepeatMasker");
+            my Path::Tiny $rm2gff
+                = Path::Tiny::path($rm_path)->realpath->parent()->child("util/rmOutToGFF3.pl");
+            if ( !$rm2gff->is_file ) {
+                Carp::croak "Can't find rmOutToGFF3.pl\n";
+            }
+
+            $cmd = "perl $rm2gff";
+            $cmd .= " $filename.out";
+            $cmd .= " > $filename.gff";
+            App::Egaz::Common::exec_cmd( $cmd, { verbose => $opt->{verbose}, } );
+            if ( !$tempdir->child("$filename.gff")->is_file ) {
+                Carp::croak "rmOutToGFF3.pl on [$infile] failed\n";
+            }
+
+            Path::Tiny::path("$filename.gff")->copy("$opt->{outdir}/$basename.rm.gff");
+        }
     }
 
     chdir $cwd;
