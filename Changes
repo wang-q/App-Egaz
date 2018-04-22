@@ -1,9 +1,14 @@
 Revision history for Perl extension App-Egaz
 
 {{$NEXT}}
+
+0.1.3 2018-04-22T20:03:24Z
     - `egaz template`
         - Add 0_prep.sh
         - and companion options
+    - `egaz repeatmasker`
+        - Masked files always with suffix of .fa
+        - Find rmOutToGFF3.pl and create .rm.gff
 
 0.1.2 2018-04-16T19:39:57Z
     - Create chr.fasta and chr.fasta.fai in `egaz prepseq`
