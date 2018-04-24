@@ -390,7 +390,7 @@ rm repeat.yml cds.yml
 alignDB.pl \
     -d [% opt.multiname %] \
     --da [% opt.outdir %]/[% opt.multiname %]_refined \
-    -a anno.yml \
+    -a [% opt.outdir %]/Stats/anno.yml \
 [% IF opt.outgroup -%]
     --outgroup \
 [% END -%]

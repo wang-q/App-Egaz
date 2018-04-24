@@ -53,14 +53,15 @@ like( $result->error, qr{doesn't exist}, 'not exists' );
     $result = test_app(
         'App::Egaz' => [
             "template", "$t_path/pseudocat", "$t_path/pseudopig", "--self",
-            "--circos", "--verbose",
+            "--circos", "--aligndb",         "--verbose",
         ]
     );
 
     is( $result->error, undef, 'threw no exceptions' );
     is( ( scalar grep {/\S/} split( /\n/, $result->stdout ) ), 0, 'no stdout' );
-    ok( $tempdir->child("1_self.sh")->is_file,   '1_self.sh exists' );
-    ok( $tempdir->child("4_circos.sh")->is_file, '4_circos.sh exists' );
+    ok( $tempdir->child("1_self.sh")->is_file,       '1_self.sh exists' );
+    ok( $tempdir->child("4_circos.sh")->is_file,     '4_circos.sh exists' );
+    ok( $tempdir->child("6_chr_length.sh")->is_file, '6_chr_length.sh exists' );
     like( $result->stderr, qr{name: pseudocat.+name: pseudopig}s, 'names and directories' );
 
     chdir $cwd;    # Won't keep tempdir
