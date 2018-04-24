@@ -352,6 +352,67 @@ EOF
         Path::Tiny::path( $opt->{outdir}, $sh_name )->stringify
     ) or Carp::confess Template->error;
 
+    if ( $opt->{mode} eq "multi" ) {
+        $sh_name = "7_multi_aligndb.sh";
+        print STDERR "Create $sh_name\n";
+        $template = <<'EOF';
+[% INCLUDE header.tt2 %]
+
+#----------------------------#
+# [% sh %]
+#----------------------------#
+log_warn [% sh %]
+
+mkdir -p Stats;
+
+cd Stats
+
+#----------------------------#
+# Create anno.yml
+#----------------------------#
+runlist gff --tag CDS --remove \
+    [% opt.data.0.dir -%]/*.gff \
+    -o cds.yml
+
+runlist gff --tag CDS --remove \
+    [% opt.data.0.dir -%]/*.rm.gff \
+    -o repeat.yml
+
+runlist merge \
+    cds.yml repeat.yml \
+    -o anno.yml
+
+rm repeat.yml cds.yml
+
+#----------------------------#
+# alignDB.pl
+#----------------------------#
+alignDB.pl \
+    -d [% opt.multiname %] \
+    --da [% opt.outdir %]/[% opt.multiname %]_refined \
+    -a anno.yml \
+[% IF opt.outgroup -%]
+    --outgroup \
+[% END -%]
+    --chr [% opt.outdir %]/chr_length.csv \
+    --lt [% opt.length %] --parallel [% opt.parallel %] --batch 5 \
+    --run 1,2,5,10,21,30-32,40-42,44
+
+exit;
+
+EOF
+        $tt->process(
+            \$template,
+            {   args => $args,
+                opt  => $opt,
+                sh   => $sh_name,
+            },
+            Path::Tiny::path( $opt->{outdir}, $sh_name )->stringify
+        ) or Carp::confess Template->error;
+    }
+    elsif ( $opt->{mode} eq "self" ) {
+
+    }
 }
 
 sub gen_pair {
