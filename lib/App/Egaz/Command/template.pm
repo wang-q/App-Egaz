@@ -316,7 +316,7 @@ sub gen_aligndb {
     my $template;
     my $sh_name;
 
-    $sh_name = "7_chr_length.sh";
+    $sh_name = "6_chr_length.sh";
     print STDERR "Create $sh_name\n";
     $template = <<'EOF';
 [% INCLUDE header.tt2 %]
