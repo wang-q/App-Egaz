@@ -437,8 +437,113 @@ EOF
         ) or Carp::confess Template->error;
     }
     elsif ( $opt->{mode} eq "self" ) {
+        $sh_name = "7_self_aligndb.sh";
+        print STDERR "Create $sh_name\n";
+        $template = <<'EOF';
+[% INCLUDE header.tt2 %]
+
+#----------------------------#
+# [% sh %]
+#----------------------------#
+log_warn [% sh %]
+
+mkdir -p Results;
+
+cd Results
+
+#----------------------------#
+# [% opt.multiname %]
+#----------------------------#
+# steal multiname from --multi
+
+log_info init_alignDB
+
+alignDB.pl \
+    -d [% opt.multiname %]_self \
+    --chr [% opt.outdir %]/Results/chr_length.csv \
+    --run 1
+
+
+#----------------------------#
+# gen_alignDB.pl
+#----------------------------#
+# gen_alignDB to existing database
+
+log_info gen_alignDB
+
+[% FOREACH item IN opt.data -%]
+# [% item.name %]
+alignDB.pl \
+    -d [% opt.multiname %]_self \
+    --da [% opt.outdir %]/Results/[% item.name %]/[% item.name %].pair.fas \
+    --lt 1000 --parallel [% opt.parallel %] \
+    --run 2
+
+[% END -%]
+
+#----------------------------#
+# rest steps
+#----------------------------#
+alignDB.pl \
+    -d [% opt.multiname %]_self \
+    --parallel [% opt.parallel %] --batch 10 \
+    --run 5,10,21,30-32,40,42,44
+
+exit;
+
+EOF
+        $tt->process(
+            \$template,
+            {   args => $args,
+                opt  => $opt,
+                sh   => $sh_name,
+            },
+            Path::Tiny::path( $opt->{outdir}, $sh_name )->stringify
+        ) or Carp::confess Template->error;
 
     }
+}
+
+sub gen_packup {
+    my ( $self, $opt, $args ) = @_;
+
+    return unless ( $opt->{mode} eq "multi" or $opt->{mode} eq "self" );
+
+    my $tt = Template->new( INCLUDE_PATH => [ File::ShareDir::dist_dir('App-Egaz') ], );
+    my $template;
+    my $sh_name;
+
+    $sh_name = "9_pack_up.sh";
+    print STDERR "Create $sh_name\n";
+    $template = <<'EOF';
+[% INCLUDE header.tt2 %]
+
+#----------------------------#
+# [% sh %]
+#----------------------------#
+log_warn [% sh %]
+
+find . -type f \
+    | grep -v -E "\.(sh|2bit)$" \
+    | grep -v -F "fake_tree.nwk" \
+    > file_list.txt
+
+tar -czvf [% opt.multiname %].tar.gz -T file_list.txt
+
+log_info [% opt.multiname %].tar.gz generated
+
+exit;
+
+EOF
+    $tt->process(
+        \$template,
+        {   args => $args,
+            opt  => $opt,
+            sh   => $sh_name,
+        },
+        Path::Tiny::path( $opt->{outdir}, $sh_name )->stringify
+    ) or Carp::confess Template->error;
+
 }
 
 sub gen_pair {
