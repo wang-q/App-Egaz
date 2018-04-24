@@ -370,23 +370,49 @@ cd Stats
 #----------------------------#
 # Create anno.yml
 #----------------------------#
-runlist gff --tag CDS --remove \
-    [% opt.data.0.dir -%]/*.gff \
-    -o cds.yml
+log_info create anno.yml
 
-runlist gff --tag CDS --remove \
-    [% opt.data.0.dir -%]/*.rm.gff \
-    -o repeat.yml
+if [ -e [% opt.data.0.dir -%]/anno.yml ]; then
+    cp [% opt.data.0.dir -%]/anno.yml anno.yml;
+else
+    if [ -e [% opt.data.0.dir -%]/cds.yml ]; then
+        cp [% opt.data.0.dir -%]/cds.yml cds.yml;
+    else
+        runlist gff --tag CDS --remove \
+            [% opt.data.0.dir -%]/*.gff \
+            -o cds.yml
+    fi
 
-runlist merge \
-    cds.yml repeat.yml \
-    -o anno.yml
+    if [ -e [% opt.data.0.dir -%]/repeat.yml ]; then
+        cp [% opt.data.0.dir -%]/repeat.yml repeat.yml;
+    else
+        runlist gff --remove \
+            [% opt.data.0.dir -%]/*.rm.gff \
+            -o repeat.yml
+    fi
 
-rm repeat.yml cds.yml
+    # create empty cds.yml or repeat.yml
+    runlist genome [% opt.data.0.dir -%]/chr.sizes -o chr.yml
+    runlist compare --op diff chr.yml chr.yml -o empty.yml
+
+    for type in cds repeat; do
+        if [ ! -e ${type}.yml ]; then
+            cp empty.yml ${type}.yml
+        fi
+    done
+
+    runlist merge \
+        cds.yml repeat.yml \
+        -o anno.yml
+
+    rm -f repeat.yml cds.yml chr.yml empty.yml
+fi
 
 #----------------------------#
 # alignDB.pl
 #----------------------------#
+log_info run alignDB.pl
+
 alignDB.pl \
     -d [% opt.multiname %] \
     --da [% opt.outdir %]/[% opt.multiname %]_refined \
