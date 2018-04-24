@@ -197,6 +197,6 @@ bash multi6/3_multi.sh
 bash multi6/4_vcf.sh
 bash multi6/6_chr_length.sh
 bash multi6/7_multi_aligndb.sh
-
+bash multi6/9_pack_up.sh
 
 ```
