@@ -227,6 +227,7 @@ sub execute {
     $self->gen_circos( $opt, $args );
 
     $self->gen_aligndb( $opt, $args );
+    $self->gen_packup( $opt, $args );
 
 }
 
@@ -326,7 +327,9 @@ sub gen_aligndb {
 #----------------------------#
 log_warn [% sh %]
 
-echo "common_name,taxon_id,chr,length,assembly" > chr_length.csv
+mkdir -p Results;
+
+echo "common_name,taxon_id,chr,length,assembly" > Results/chr_length.csv
 
 [% FOREACH item IN opt.data -%]
 # [% item.name %]
@@ -334,7 +337,7 @@ perl -nla -F"\t" -e '
     print qq{[% item.name %],[% item.taxon %],$F[0],$F[1],}
     ' \
     [% item.dir %]/chr.sizes \
-    >> chr_length.csv;
+    >> Results/chr_length.csv;
 
 [% END -%]
 
@@ -363,9 +366,9 @@ EOF
 #----------------------------#
 log_warn [% sh %]
 
-mkdir -p Stats;
+mkdir -p Results;
 
-cd Stats
+cd Results
 
 #----------------------------#
 # Create anno.yml
@@ -416,12 +419,12 @@ log_info run alignDB.pl
 alignDB.pl \
     -d [% opt.multiname %] \
     --da [% opt.outdir %]/[% opt.multiname %]_refined \
-    -a [% opt.outdir %]/Stats/anno.yml \
+    -a [% opt.outdir %]/Results/anno.yml \
 [% IF opt.outgroup -%]
     --outgroup \
 [% END -%]
-    --chr [% opt.outdir %]/chr_length.csv \
-    --lt [% opt.length %] --parallel [% opt.parallel %] --batch 5 \
+    --chr [% opt.outdir %]/Results/chr_length.csv \
+    --lt [% opt.length %] --parallel [% opt.parallel %] --batch 10 \
     --run 1,2,5,10,21,30-32,40-42,44
 
 exit;
