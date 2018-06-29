@@ -529,6 +529,7 @@ log_warn [% sh %]
 
 find . -type f |
     grep -v -E "\.(sh|2bit)$" |
+    grep -v -E "(_fasta|_raw)\/" |
     grep -v -F "fake_tree.nwk" \
     > file_list.txt
 
