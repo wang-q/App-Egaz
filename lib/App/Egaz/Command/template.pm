@@ -71,6 +71,7 @@ sub description {
 * Species/strain names in result files are the basenames of <path/seqdir>
 * Default --multiname is the basename of --outdir. This option is for more than one aligning combinations
 * without --tree and --rawphylo, the order of multiz stitch is the same as the one from command line
+* --tree > --order > --rawphylo
 * --outgroup uses basename, not full path. *DON'T* set --outgroup to target
 * --taxon may also contain unused taxons, for constructing chr_length.csv
 * --preq is designed for NCBI ASSEMBLY and WGS, <path/seqdir> are directories containing multiple
