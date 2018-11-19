@@ -1229,7 +1229,7 @@ egaz blastlink axt.all.blast -c 0.95 -o links.blast.tsv --parallel [% opt.parall
 echo >&2 "==> Merge paralogs"
 
 echo >&2 "    * Sort links"
-rangeops sort -o links.sort.tsv \
+jrange sort -o links.sort.tsv \
 [% IF opt.noblast -%]
    links.lastz.tsv
 [% ELSE -%]
@@ -1237,15 +1237,9 @@ rangeops sort -o links.sort.tsv \
 [% END -%]
 
 echo >&2 "    * Clean links"
-[% IF jrange -%]
 jrange clean   links.sort.tsv       -o links.sort.clean.tsv
 jrange merge   links.sort.clean.tsv -o links.merge.tsv       -c 0.95
 jrange clean   links.sort.clean.tsv -o links.clean.tsv       -r links.merge.tsv --bundle 500
-[% ELSE -%]
-rangeops clean links.sort.tsv       -o links.sort.clean.tsv
-rangeops merge links.sort.clean.tsv -o links.merge.tsv       -c 0.95 --parallel [% opt.parallel2 %]
-rangeops clean links.sort.clean.tsv -o links.clean.tsv       -r links.merge.tsv --bundle 500
-[% END -%]
 
 echo >&2 "    * Connect links"
 rangeops connect links.clean.tsv    -o links.connect.tsv     -r 0.9
@@ -1271,18 +1265,18 @@ log_debug multiple links
 rangeops create links.filter.tsv -o multi.temp.fas    -g genome.fa
 fasops   refine multi.temp.fas   -o multi.refine.fas  --msa mafft -p [% opt.parallel %] --chop 10
 fasops   links  multi.refine.fas -o stdout |
-    rangeops sort stdin -o stdout |
+    jrange sort stdin -o stdout |
     rangeops filter stdin -n 2-50 -o links.refine.tsv
 
 log_debug pairwise links
 fasops   links  multi.refine.fas    -o stdout     --best |
-    rangeops sort stdin -o links.best.tsv
+    jrange sort stdin -o links.best.tsv
 rangeops create links.best.tsv   -o pair.temp.fas    -g genome.fa --name [% id %]
 fasops   refine pair.temp.fas    -o pair.refine.fas  --msa mafft -p [% opt.parallel %]
 
 cat links.refine.tsv |
     perl -nla -F"\t" -e "print for @F" |
-    runlist cover stdin -o cover.yml
+    jrunlist cover stdin -o cover.yml
 
 log_debug Stats of links
 echo "key,count" > links.count.csv
@@ -1292,7 +1286,7 @@ for n in 2 3 4-50; do
 
     cat links.copy${n}.tsv |
         perl -nla -F"\t" -e "print for @F" |
-        runlist cover stdin -o copy${n}.temp.yml
+        jrunlist cover stdin -o copy${n}.temp.yml
 
     wc -l links.copy${n}.tsv |
         perl -nl -e "
@@ -1350,7 +1344,6 @@ EOF
         {   args   => $args,
             opt    => $opt,
             sh     => $sh_name,
-            jrange => IPC::Cmd::can_run('jrange'),
         },
         Path::Tiny::path( $opt->{outdir}, $sh_name )->stringify
     ) or Carp::confess Template->error;
