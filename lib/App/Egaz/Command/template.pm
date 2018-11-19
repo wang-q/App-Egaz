@@ -1452,32 +1452,38 @@ fi
 #----------------------------#
 log_debug Create highlight files
 
-# coding and other features
-perl -anl -e '
-    /^#/ and next;
-    $F[0] =~ s/\.\d+//;
-    $color = q{};
-    $F[2] eq q{CDS} and $color = q{chr9};
-    $F[2] eq q{ncRNA} and $color = q{dark2-8-qual-1};
-    $F[2] eq q{rRNA} and $color = q{dark2-8-qual-2};
-    $F[2] eq q{tRNA} and $color = q{dark2-8-qual-3};
-    $F[2] eq q{tmRNA} and $color = q{dark2-8-qual-4};
-    $color and ($F[4] - $F[3] > 49) and print qq{$F[0] $F[3] $F[4] fill_color=$color};
-    ' \
-    [% item.dir %]/*.gff \
-    > highlight.features.[% id %].txt
+if [ ${SIZE} -ge 10000000 ]; then
+    # avoid errors of too many highlights
+    touch highlight.features.[% id %].txt
+    touch highlight.repeats.[% id %].txt
+else
+    # coding and other features
+    perl -anl -e '
+        /^#/ and next;
+        $F[0] =~ s/\.\d+//;
+        $color = q{};
+        $F[2] eq q{CDS} and $color = q{chr9};
+        $F[2] eq q{ncRNA} and $color = q{dark2-8-qual-1};
+        $F[2] eq q{rRNA} and $color = q{dark2-8-qual-2};
+        $F[2] eq q{tRNA} and $color = q{dark2-8-qual-3};
+        $F[2] eq q{tmRNA} and $color = q{dark2-8-qual-4};
+        $color and ($F[4] - $F[3] > 49) and print qq{$F[0] $F[3] $F[4] fill_color=$color};
+        ' \
+        [% item.dir %]/*.gff \
+        > highlight.features.[% id %].txt
 
-# repeats
-perl -anl -e '
-    /^#/ and next;
-    $F[0] =~ s/\.\d+//;
-    $color = q{};
-    $F[2] eq q{region} and $F[8] =~ /mobile_element|Transposon/i and $color = q{chr15};
-    $F[2] =~ /repeat/ and $F[8] !~ /RNA/ and $color = q{chr15};
-    $color and ($F[4] - $F[3] > 49) and print qq{$F[0] $F[3] $F[4] fill_color=$color};
-    ' \
-    [% item.dir %]/*.gff \
-    > highlight.repeats.[% id %].txt
+    # repeats
+    perl -anl -e '
+        /^#/ and next;
+        $F[0] =~ s/\.\d+//;
+        $color = q{};
+        $F[2] eq q{region} and $F[8] =~ /mobile_element|Transposon/i and $color = q{chr15};
+        $F[2] =~ /repeat/ and $F[8] !~ /RNA/ and $color = q{chr15};
+        $color and ($F[4] - $F[3] > 49) and print qq{$F[0] $F[3] $F[4] fill_color=$color};
+        ' \
+        [% item.dir %]/*.gff \
+        > highlight.repeats.[% id %].txt
+fi
 
 #----------------------------#
 # links of paralog ranges

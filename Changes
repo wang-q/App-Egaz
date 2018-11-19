@@ -2,6 +2,8 @@ Revision history for Perl extension App-Egaz
 
 {{$NEXT}}
 
+    - Avoid errors of too many highlights
+
 0.2.1 2018-06-29T11:18:45Z
     - Handle old NCBI fasta headers: `>gi|\d+gb|\d+` or `>gi|\d+ref|\d+`
     - Update flowcharts
