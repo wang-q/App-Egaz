@@ -1286,7 +1286,7 @@ cat links.refine.tsv |
 
 log_debug Stats of links
 echo "key,count" > links.count.csv
-for n in 2 3 4 5-50; do
+for n in 2 3 4-50; do
     rangeops filter links.refine.tsv -n ${n} -o stdout \
         > links.copy${n}.tsv
 
@@ -1306,7 +1306,7 @@ for n in 2 3 4 5-50; do
     rm links.copy${n}.tsv
 done
 
-runlist merge copy2.temp.yml copy3.temp.yml copy4.temp.yml copy5-50.temp.yml -o copy.yml
+runlist merge copy2.temp.yml copy3.temp.yml copy4-50.temp.yml -o copy.yml
 runlist stat --size chr.sizes copy.yml --mk --all -o links.copy.csv
 
 fasops mergecsv links.copy.csv links.count.csv --concat -o copy.csv
@@ -1490,11 +1490,11 @@ fi
 #----------------------------#
 log_debug Create link files
 
-for n in 2 3 4 5-50; do
+for n in 2 3 4-50; do
     rangeops filter [% opt.outdir %]/Results/[% id %]/[% id %].links.tsv -n ${n} -o stdout \
         > links.copy${n}.tsv
 
-    if [ "${n}" == "5-50" ]; then
+    if [ "${n}" == "4-50" ]; then
         rangeops circos links.copy${n}.tsv -o [% id %].linkN.txt --highlight
     else
         rangeops circos links.copy${n}.tsv -o [% id %].link${n}.txt
