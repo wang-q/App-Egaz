@@ -30,6 +30,7 @@ sub opt_spec {
         [ "verbose|v",    "verbose mode", ],
         [],
         [ "length=i", "minimal length of alignment fragments",  { default => 1000 }, ],
+        [ "partition",  "use partitioned sequences if available", ],
         [ "msa=s",    "aligning program for refine alignments", { default => "mafft" }, ],
         [ "taxon=s",  "taxon.csv for this project", ],
         [ "aligndb",  "create aligndb scripts", ],
@@ -585,7 +586,8 @@ if [ -e Pairwise/[% t %]vs[% q %] ]; then
 else
     log_info lastz Pairwise/[% t %]vs[% q %]
     egaz lastz \
-        --set set01 -C 0 --parallel [% opt.parallel %] --verbose \
+        --set set01 -C 0 [% IF opt.partition %]--tp --qp [% END %]\
+        --parallel [% opt.parallel %] --verbose \
         [% opt.data.0.dir %] [% item.dir %] \
         -o Pairwise/[% t %]vs[% q %]
 
@@ -1075,7 +1077,8 @@ if [ -e Pairwise/[% item.name %]vsSelf ]; then
 else
     log_info lastz Pairwise/[% item.name %]vsSelf
     egaz lastz \
-        --isself --set set01 -C 0 --parallel [% opt.parallel %] --verbose \
+        --isself --set set01 -C 0 [% IF opt.partition %]--tp --qp [% END %]\
+        --parallel [% opt.parallel %] --verbose \
         [% item.dir %] [% item.dir %] \
         -o Pairwise/[% item.name %]vsSelf
 
