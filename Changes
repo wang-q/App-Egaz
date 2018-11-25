@@ -7,6 +7,8 @@ Revision history for Perl extension App-Egaz
         - Avoid errors of too many highlights
         - Remove link4
         - Use more jrunlist and jrange
+    - `egaz lpcnam`
+        - Use `pigz` if available
 
 0.2.1 2018-06-29T11:18:45Z
     - Handle old NCBI fasta headers: `>gi|\d+gb|\d+` or `>gi|\d+ref|\d+`
