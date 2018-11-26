@@ -84,7 +84,7 @@
          "web" : "https://github.com/wang-q/App-Egaz"
       }
    },
-   "version" : "0.2.1",
+   "version" : "0.2.2",
    "x_authority" : "cpan:WANGQ",
    "x_serialization_backend" : "JSON::PP version 2.97001",
    "x_static_install" : 1
