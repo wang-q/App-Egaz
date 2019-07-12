@@ -97,6 +97,10 @@ hash bcftools 2>/dev/null || {
     echo >&2 "bcftools is optional but it's not installed.";
 }
 
+hash FastTree 2>/dev/null || {
+    echo >&2 "FastTree is optional but it's not installed.";
+}
+
 echo >&2 OK
 
 exit;
