@@ -20,7 +20,7 @@ hash mummer 2>/dev/null || hash sparsemem 2>/dev/null || {
     exit 1;
 }
 
-hash raxmlHPC 2>/dev/null || hash raxmlHPC-PTHREADS 2>/dev/null || {
+hash raxmlHPC 2>/dev/null || hash raxmlHPC-SSE3 2>/dev/null || hash raxmlHPC-PTHREADS 2>/dev/null || {
     echo >&2 "raxml is required but it's not installed.";
     exit 1;
 }
