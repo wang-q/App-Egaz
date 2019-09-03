@@ -384,7 +384,7 @@ else
     if [ -e [% opt.data.0.dir -%]/cds.yml ]; then
         cp [% opt.data.0.dir -%]/cds.yml cds.yml;
     else
-        runlist gff --tag CDS --remove \
+        spanr gff --tag CDS \
             [% opt.data.0.dir -%]/*.gff \
             -o cds.yml
     fi
@@ -392,14 +392,14 @@ else
     if [ -e [% opt.data.0.dir -%]/repeat.yml ]; then
         cp [% opt.data.0.dir -%]/repeat.yml repeat.yml;
     else
-        runlist gff --remove \
+        spanr gff \
             [% opt.data.0.dir -%]/*.rm.gff \
             -o repeat.yml
     fi
 
     # create empty cds.yml or repeat.yml
-    runlist genome [% opt.data.0.dir -%]/chr.sizes -o chr.yml
-    runlist compare --op diff chr.yml chr.yml -o empty.yml
+    spanr genome [% opt.data.0.dir -%]/chr.sizes -o chr.yml
+    spanr compare --op diff chr.yml chr.yml -o empty.yml
 
     for type in cds repeat; do
         if [ ! -e ${type}.yml ]; then
@@ -407,7 +407,7 @@ else
         fi
     done
 
-    runlist merge \
+    spanr merge \
         cds.yml repeat.yml \
         -o anno.yml
 
@@ -670,7 +670,7 @@ fasops covers \
 #----------------------------#
 log_info Intersect
 
-runlist compare --op intersect \
+spanr compare --op intersect \
 [% FOREACH item IN opt.data -%]
 [% IF not loop.first -%]
 [% t = opt.data.0.name -%]
@@ -679,7 +679,7 @@ runlist compare --op intersect \
 [% END -%]
 [% END -%]
     -o stdout |
-    runlist span stdin \
+    spanr span stdin \
         --op excise -n [% opt.length %] \
         -o [% opt.multiname %]_raw/intersect.yml
 [% END -%]
@@ -689,11 +689,12 @@ runlist compare --op intersect \
 #----------------------------#
 log_info Coverage
 
-runlist merge [% opt.multiname %]_raw/*.yml \
+spanr merge [% opt.multiname %]_raw/*.yml \
     -o stdout |
-    runlist stat stdin \
-        -s [% args.0 %]/chr.sizes \
-        --all --mk \
+    spanr stat \
+        [% args.0 %]/chr.sizes \
+        stdin \
+        --all \
         -o Results/pairwise.coverage.csv
 
 [% IF opt.data.size > 2 -%]
