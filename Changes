@@ -2,6 +2,8 @@ Revision history for Perl extension App-Egaz
 
 {{$NEXT}}
 
+0.2.4 2019-09-03T17:49:53Z
+
     - `egaz template`
         - Use `linkr` from `intspan` to replace `rangeops` and `jrange`
         - Use `spanr` from `intspan` to replace `runlist` and `jrunlist`
