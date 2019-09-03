@@ -55,8 +55,13 @@ hash fasops 2>/dev/null || {
     exit 1;
 }
 
-hash rangeops 2>/dev/null || {
-    echo >&2 "rangeops is required but it's not installed.";
+hash spanr 2>/dev/null || {
+    echo >&2 "spanr is required but it's not installed.";
+    exit 1;
+}
+
+hash linkr 2>/dev/null || {
+    echo >&2 "linkr is required but it's not installed.";
     exit 1;
 }
 
@@ -83,10 +88,6 @@ hash circos 2>/dev/null || {
 
 hash RepeatMasker 2>/dev/null || {
     echo >&2 "RepeatMasker is optional but it's not installed.";
-}
-
-hash jrange 2>/dev/null || {
-    echo >&2 "jrange is optional but it's not installed.";
 }
 
 hash snp-sites 2>/dev/null || {
