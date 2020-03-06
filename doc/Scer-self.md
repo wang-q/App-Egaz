@@ -99,8 +99,10 @@ fasops separate axt.correct.fas --nodash --rc -o stdout |
 
 # Get more paralogs
 egaz blastn axt.gl.fasta genome.fa -o axt.bg.blast
-egaz blastmatch axt.bg.blast -c 0.95 --perchr -o axt.bg.region
-faops region -s genome.fa axt.bg.region axt.bg.fasta
+egaz blastmatch axt.bg.blast -c 0.95 -o axt.bg.region
+samtools faidx genome.fa -r axt.bg.region --continue |
+    perl -p -e '/^>/ and s/:/(+):/' \
+    > axt.bg.fasta
 
 cat axt.gl.fasta axt.bg.fasta |
     faops filter -u stdin stdout |
