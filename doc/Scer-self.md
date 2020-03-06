@@ -1,13 +1,14 @@
 # Self alignments of *Saccharomyces cerevisiae* S288c
 
-[TOC levels=1-3]: # " "
+[TOC levels=1-3]: # ""
+
 - [Self alignments of *Saccharomyces cerevisiae* S288c](#self-alignments-of-saccharomyces-cerevisiae-s288c)
 - [Prepare sequences](#prepare-sequences)
 - [Detailed steps](#detailed-steps)
-    - [self alignement](#self-alignement)
-    - [blast](#blast)
-    - [merge](#merge)
-    - [clean](#clean)
+  - [self alignment](#self-alignment)
+  - [blast](#blast)
+  - [merge](#merge)
+  - [clean](#clean)
 - [Template steps](#template-steps)
 
 
