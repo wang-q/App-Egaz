@@ -3,15 +3,15 @@
 [TOC levels=1-3]: # ""
 
 - [*Saccharomyces cerevisiae* strains](#saccharomyces-cerevisiae-strains)
-- [Prepare sequences](#prepare-sequences)
-- [Detailed/alternative steps](#detailedalternative-steps)
-  - [lastz and lav2axt](#lastz-and-lav2axt)
-  - [lastz and lpcnam](#lastz-and-lpcnam)
-  - [lastz with partitioned sequences](#lastz-with-partitioned-sequences)
-- [Template steps](#template-steps)
+  - [Prepare sequences](#prepare-sequences)
+  - [Detailed/alternative steps](#detailedalternative-steps)
+    - [lastz and lav2axt](#lastz-and-lav2axt)
+    - [lastz and lpcnam](#lastz-and-lpcnam)
+    - [lastz with partitioned sequences](#lastz-with-partitioned-sequences)
+  - [Template steps](#template-steps)
 
 
-# Prepare sequences
+## Prepare sequences
 
 ```bash
 mkdir -p ~/data/alignment/egaz/download
@@ -73,9 +73,9 @@ egaz prepseq \
 
 ```
 
-# Detailed/alternative steps
+## Detailed/alternative steps
 
-## lastz and lav2axt
+### lastz and lav2axt
 
 ```bash
 cd ~/data/alignment/egaz
@@ -103,7 +103,7 @@ fasops covers S288cvsRM11_1a_lav2axt.fas -n S288c -o stdout |
 
 ```
 
-## lastz and lpcnam
+### lastz and lpcnam
 
 ```bash
 cd ~/data/alignment/egaz
@@ -141,7 +141,7 @@ fasops covers S288cvsRM11_1a_lpcnam_syn.fas -n S288c -o stdout |
 
 ```
 
-## lastz with partitioned sequences
+### lastz with partitioned sequences
 
 ```bash
 cd ~/data/alignment/egaz
@@ -173,7 +173,7 @@ fasops covers S288cvsRM11_1a_partition.fas -n S288c -o stdout |
 
 ```
 
-# Template steps
+## Template steps
 
 ```bash
 cd ~/data/alignment/egaz
