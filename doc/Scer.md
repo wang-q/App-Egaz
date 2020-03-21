@@ -18,9 +18,9 @@ mkdir -p ~/data/alignment/egaz/download
 cd ~/data/alignment/egaz/download
 
 # S288c (soft-masked) from Ensembl
-aria2c -x 6 -s 3 -c ftp://ftp.ensembl.org/pub/release-82/fasta/saccharomyces_cerevisiae/dna/Saccharomyces_cerevisiae.R64-1-1.dna_sm.toplevel.fa.gz
+aria2c -x 6 -s 3 -c ftp://ftp.ensembl.org/pub/release-98/fasta/saccharomyces_cerevisiae/dna/Saccharomyces_cerevisiae.R64-1-1.dna_sm.toplevel.fa.gz
 
-aria2c -x 6 -s 3 -c ftp://ftp.ensembl.org/pub/release-82/gff3/saccharomyces_cerevisiae/Saccharomyces_cerevisiae.R64-1-1.82.gff3.gz
+aria2c -x 6 -s 3 -c ftp://ftp.ensembl.org/pub/release-98/gff3/saccharomyces_cerevisiae/Saccharomyces_cerevisiae.R64-1-1.98.gff3.gz
 
 # RM11_1a from NCBI assembly
 aria2c -x 6 -s 3 -c ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCA/000/149/365/GCA_000149365.1_ASM14936v1/GCA_000149365.1_ASM14936v1_genomic.fna.gz
@@ -48,7 +48,7 @@ faops filter -N -s download/GCA_000149365.1_ASM14936v1_genomic.fna.gz RM11_1a.fa
 
 egaz prepseq S288c.fa -o S288c -v
 
-gzip -d -c download/Saccharomyces_cerevisiae.R64-1-1.82.gff3.gz > S288c/chr.gff
+gzip -d -c download/Saccharomyces_cerevisiae.R64-1-1.98.gff3.gz > S288c/chr.gff
 egaz masked S288c/*.fa -o S288c/repeat.yml
 
 egaz prepseq \
