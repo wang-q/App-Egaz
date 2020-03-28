@@ -782,7 +782,7 @@ egaz raxml \
     [% opt.multiname %]_raw/join.refine.fas \
     -o Results/[% opt.multiname %].raw.nwk
 
-egaz plottree Results/[% opt.multiname %].raw.nwk
+plotr tree Results/[% opt.multiname %].raw.nwk
 
 [% ELSIF opt.data.size == 3 -%]
 echo "(([% opt.data.0.name %],[% opt.data.1.name %]),[% opt.data.2.name %]);" > Results/[% opt.multiname %].raw.nwk
@@ -954,7 +954,7 @@ egaz raxml \
     [% opt.multiname %]_refined/*.fas.gz \
     -o Results/[% opt.multiname %].nwk
 
-egaz plottree Results/[% opt.multiname %].nwk
+plotr tree Results/[% opt.multiname %].nwk
 
 [% ELSIF opt.data.size == 3 -%]
 echo "(([% opt.data.0.name %],[% opt.data.1.name %]),[% opt.data.2.name %]);" > Results/[% opt.multiname %].nwk

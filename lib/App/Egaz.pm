@@ -39,7 +39,6 @@ App::Egaz - Backend of B<E>asy B<G>enome B<A>ligner
             multiz: multiz step by step
          normalize: normalize lav files
          partition: partitions fasta files by size
-          plottree: use the ape package to draw newick trees
            prepseq: preparing steps for lastz
              raxml: raxml wrapper to construct phylogenetic trees
       repeatmasker: RepeatMasker wrapper
