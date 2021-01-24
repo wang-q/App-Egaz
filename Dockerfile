@@ -60,4 +60,4 @@ RUN true \
  && ./Build clean \
  && rm -fr /root/.cpanm
 
-RUN curl -fsSL https://raw.githubusercontent.com/wang-q/App-Egaz/master/share/check_dep.sh | bash
+CMD ["/bin/sh", "-c", "curl -fsSL https://raw.githubusercontent.com/wang-q/App-Egaz/master/share/check_dep.sh | bash"]
