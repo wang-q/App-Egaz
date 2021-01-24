@@ -59,5 +59,3 @@ RUN true \
  && ./Build install \
  && ./Build clean \
  && rm -fr /root/.cpanm
-
-RUN curl -L https://raw.githubusercontent.com/wang-q/App-Egaz/master/share/check_dep.sh | bash
