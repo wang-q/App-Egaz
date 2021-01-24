@@ -5,7 +5,8 @@ LABEL maintainer="Qiang Wang <wang-q@outlook.com>"
 # docker build -t wangq/egaz .
 
 # Run
-# docker run --rm wangq/egaz egaz help
+# docker run --rm wangq/egaz:master egaz help
+# docker run --rm wangq/egaz:master bash share/check_dep.sh
 
 # Github actions
 # https://docs.docker.com/ci-cd/github-actions/
@@ -37,9 +38,14 @@ RUN true \
 RUN true \
  && export HOMEBREW_NO_ANALYTICS=1 \
  && export HOMEBREW_NO_AUTO_UPDATE=1 \
+ && brew install mafft \
+ && brew install bcftools \
  && brew install brewsci/bio/lastz \
+ && brew install brewsci/bio/fasttree \
+ && brew install brewsci/bio/snp-sites \
  && brew install wang-q/tap/faops \
  && brew install wang-q/tap/multiz \
+ && brew install wang-q/tap/intspan \
  && rm -fr $(brew --cache)/* \
  && chown -R linuxbrew: /home/linuxbrew/.linuxbrew \
  && chmod -R g+w,o-w /home/linuxbrew/.linuxbrew
