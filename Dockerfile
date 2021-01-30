@@ -28,7 +28,6 @@ RUN true \
 # && rm -fr $(brew --cache)/* \
 # && chown -R linuxbrew: /home/linuxbrew/.linuxbrew \
 # && chmod -R g+w,o-w /home/linuxbrew/.linuxbrew \
-# && mkdir -p $HOME/bin \
 # && rm -fr /root/.cpan \
 # && rm -fr /root/.gem \
 # && rm -fr /root/.cpanm
@@ -56,8 +55,9 @@ RUN true \
 
 # Kent tools
 RUN true \
+ && mkdir -p $HOME/bin \
  && curl -L https://github.com/wang-q/ubuntu/releases/download/20190906/jkbin-egaz-ubuntu-1404-2011.tar.gz | \
-    tar xvfz - \
+    tar -xvzf - \
  && mv x86_64/* $HOME/bin/
 
 ## R
