@@ -64,15 +64,16 @@ RUN true \
 RUN true \
  && export HOMEBREW_NO_ANALYTICS=1 \
  && export HOMEBREW_NO_AUTO_UPDATE=1 \
- && brew install repeatmasker --build-from-source \
+ && brew install brewsci/bio/repeatmasker --build-from-source \
  && rm -fr $(brew --prefix)/opt/repeatmasker/libexec/lib/perl5/x86_64-linux-thread-multi/ \
  && rm $(brew --prefix)/opt/repeatmasker/libexec/Libraries/RepeatMasker.lib* \
  && rm $(brew --prefix)/opt/repeatmasker/libexec/Libraries/DfamConsensus.embl \
- && cd $(brew --prefix)/Cellar/$(brew list --versions repeatmasker | sed 's/ /\//')/libexec \
+ && pushd $(brew --prefix)/Cellar/$(brew list --versions repeatmasker | sed 's/ /\//')/libexec \
  && curl -L https://github.com/egateam/egavm/releases/download/20170907/repeatmaskerlibraries-20140131.tar.gz | \
     tar -xvzf - \
  && sed -i".bak" 's/\/usr\/bin\/perl/env/' configure.input \
  && ./configure < configure.input \
+ && popd \
  && rm $(brew --prefix)/bin/rmOutToGFF3.pl \
  && sed -i".bak" 's/::Bin/::RealBin/' $(brew --prefix)/Cellar/$(brew list --versions repeatmasker | sed 's/ /\//')/libexec/util/rmOutToGFF3.pl \
  && ln -s $(brew --prefix)/Cellar/$(brew list --versions repeatmasker | sed 's/ /\//')/libexec/util/rmOutToGFF3.pl $(brew --prefix)/bin/rmOutToGFF3.pl \
