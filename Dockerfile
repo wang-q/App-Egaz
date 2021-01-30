@@ -56,24 +56,8 @@ RUN true \
 
 # Kent tools
 RUN true \
- && export JKBIN_TAR_GZ=/tmp/jkbin-egaz-ubuntu-1404-2011.tar.gz \
- && wget -N -P /tmp https://github.com/wang-q/ubuntu/releases/download/20190906/jkbin-egaz-ubuntu-1404-2011.tar.gz \
- && tar xvfz ${JKBIN_TAR_GZ} x86_64/axtChain \
- && tar xvfz ${JKBIN_TAR_GZ} x86_64/axtSort \
- && tar xvfz ${JKBIN_TAR_GZ} x86_64/axtToMaf \
- && tar xvfz ${JKBIN_TAR_GZ} x86_64/chainAntiRepeat \
- && tar xvfz ${JKBIN_TAR_GZ} x86_64/chainMergeSort \
- && tar xvfz ${JKBIN_TAR_GZ} x86_64/chainNet \
- && tar xvfz ${JKBIN_TAR_GZ} x86_64/chainPreNet \
- && tar xvfz ${JKBIN_TAR_GZ} x86_64/chainSplit \
- && tar xvfz ${JKBIN_TAR_GZ} x86_64/chainStitchId \
- && tar xvfz ${JKBIN_TAR_GZ} x86_64/faToTwoBit \
- && tar xvfz ${JKBIN_TAR_GZ} x86_64/lavToPsl \
- && tar xvfz ${JKBIN_TAR_GZ} x86_64/netChainSubset \
- && tar xvfz ${JKBIN_TAR_GZ} x86_64/netFilter \
- && tar xvfz ${JKBIN_TAR_GZ} x86_64/netSplit \
- && tar xvfz ${JKBIN_TAR_GZ} x86_64/netSyntenic \
- && tar xvfz ${JKBIN_TAR_GZ} x86_64/netToAxt \
+ && curl -L https://github.com/wang-q/ubuntu/releases/download/20190906/jkbin-egaz-ubuntu-1404-2011.tar.gz | \
+    tar xvfz - \
  && mv x86_64/* $HOME/bin/
 
 # R
