@@ -64,16 +64,7 @@ RUN true \
 RUN true \
  && export HOMEBREW_NO_ANALYTICS=1 \
  && export HOMEBREW_NO_AUTO_UPDATE=1 \
- && echo $'\n\
-    openssl_conf = openssl_init\n\
-    [openssl_init]\n\
-    ssl_conf = ssl_sect\n\
-    [ssl_sect]\n\
-    system_default = system_default_sect\n\
-    [system_default_sect]\n\
-    CipherString = DEFAULT@SECLEVEL=1\n\
-    '\
-    > /etc/ssl/openssl.cnf \
+ && curl --tlsv1.0 https://tandem.bu.edu/trf/downloads/trf409.linux64 > $(brew --cache)/ \
  && brew install brewsci/bio/repeatmasker --build-from-source \
  && rm -fr $(brew --prefix)/opt/repeatmasker/libexec/lib/perl5/x86_64-linux-thread-multi/ \
  && rm $(brew --prefix)/opt/repeatmasker/libexec/Libraries/RepeatMasker.lib* \
