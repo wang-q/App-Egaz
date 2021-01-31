@@ -61,7 +61,7 @@ RUN true \
  && curl -L https://github.com/wang-q/ubuntu/releases/download/20190906/jkbin-egaz-ubuntu-1404-2011.tar.gz | \
     tar -xvzf - \
  && mv x86_64/* $HOME/bin/ \
- &&  && curl --ciphers DEFAULT@SECLEVEL=1 https://tandem.bu.edu/trf/downloads/trf409.linux64 > $HOME/bin/trf
+ && curl --ciphers DEFAULT@SECLEVEL=1 https://tandem.bu.edu/trf/downloads/trf409.linux64 > $HOME/bin/trf
 
 
 # RepeatMasker
