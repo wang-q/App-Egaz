@@ -11,10 +11,12 @@ LABEL maintainer="Qiang Wang <wang-q@outlook.com>"
 # Github actions
 # https://docs.docker.com/ci-cd/github-actions/
 
+# Change this when Perl updated
+ENV PATH=/root/bin:/home/linuxbrew/.linuxbrew/Cellar/perl/5.32.1/bin:$PATH
+
 RUN true \
  && apt-get update \
  && apt-get install -y --no-install-recommends \
-        ncbi-blast+ \
         raxml \
         poa
 
@@ -53,21 +55,22 @@ RUN true \
 # && chown -R linuxbrew: /home/linuxbrew/.linuxbrew \
 # && chmod -R g+w,o-w /home/linuxbrew/.linuxbrew
 
-# Kent tools
+# HOME bin
 RUN true \
  && mkdir -p $HOME/bin \
  && curl -L https://github.com/wang-q/ubuntu/releases/download/20190906/jkbin-egaz-ubuntu-1404-2011.tar.gz | \
     tar -xvzf - \
- && mv x86_64/* $HOME/bin/
+ && mv x86_64/* $HOME/bin/ \
+ && curl --tlsv1.0 https://tandem.bu.edu/trf/downloads/trf409.linux64 > $HOME/bin/trf
 
 # RepeatMasker
 RUN true \
  && export HOMEBREW_NO_ANALYTICS=1 \
  && export HOMEBREW_NO_AUTO_UPDATE=1 \
- && mkdir -p $(brew --cache)/ \
- && chown -R linuxbrew: $(brew --cache) \
- && curl --tlsv1.0 https://tandem.bu.edu/trf/downloads/trf409.linux64 > $(brew --cache)/trf--4.09.linux64 \
- && brew install brewsci/bio/repeatmasker --build-from-source \
+ && brew install blast \
+ && brew install hmmer \
+ && brew install brewsci/bio/rmblast \
+ && brew install brewsci/bio/repeatmasker --build-from-source --ignore-dependencies \
  && rm -fr $(brew --prefix)/opt/repeatmasker/libexec/lib/perl5/x86_64-linux-thread-multi/ \
  && rm $(brew --prefix)/opt/repeatmasker/libexec/Libraries/RepeatMasker.lib* \
  && rm $(brew --prefix)/opt/repeatmasker/libexec/Libraries/DfamConsensus.embl \
@@ -101,8 +104,6 @@ RUN true \
 # && chown -R linuxbrew: /home/linuxbrew/.linuxbrew \
 # && chmod -R g+w,o-w /home/linuxbrew/.linuxbrew
 #
-## Change this when Perl updated
-#ENV PATH=/root/bin:/home/linuxbrew/.linuxbrew/Cellar/perl/5.32.1/bin:$PATH
 #
 #WORKDIR /home/linuxbrew/App-Egaz
 #ADD . .
