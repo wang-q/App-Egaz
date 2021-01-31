@@ -20,13 +20,16 @@ RUN true \
         raxml \
         poa
 
-# Perl
+# Perl & Python
 RUN true \
  && export HOMEBREW_NO_ANALYTICS=1 \
  && export HOMEBREW_NO_AUTO_UPDATE=1 \
  && brew install perl \
  && curl -L https://cpanmin.us | perl - App::cpanminus \
  && cpanm -nq Text::Soundex \
+ && brew install python \
+ && pip3 install --upgrade pip setuptools \
+ && pip3 install h5py \
  && rm -fr $(brew --cache)/* \
  && chown -R linuxbrew: /home/linuxbrew/.linuxbrew \
  && chmod -R g+w,o-w /home/linuxbrew/.linuxbrew \
@@ -79,9 +82,6 @@ RUN true \
  && brew install hmmer \
  && brew install brewsci/bio/rmblast \
  && brew install wang-q/tap/repeatmasker@4.1.1 \
- && rm -f $(brew --prefix)/bin/rmOutToGFF3.pl \
- && sed -i".bak" 's/::Bin/::RealBin/' $(brew --prefix)/opt/repeatmasker@4.1.1/libexec/util/rmOutToGFF3.pl \
- && ln -s $(brew --prefix)/opt/repeatmasker@4.1.1/libexec/util/rmOutToGFF3.pl $(brew --prefix)/bin/rmOutToGFF3.pl \
  && rm -fr $(brew --cache)/* \
  && chown -R linuxbrew: /home/linuxbrew/.linuxbrew \
  && chmod -R g+w,o-w /home/linuxbrew/.linuxbrew
