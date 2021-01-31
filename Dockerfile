@@ -60,8 +60,7 @@ RUN true \
  && mkdir -p $HOME/bin \
  && curl -L https://github.com/wang-q/ubuntu/releases/download/20190906/jkbin-egaz-ubuntu-1404-2011.tar.gz | \
     tar -xvzf - \
- && mv x86_64/* $HOME/bin/ \
- && curl --ciphers DEFAULT@SECLEVEL=1 https://tandem.bu.edu/trf/downloads/trf409.linux64 > $HOME/bin/trf
+ && mv x86_64/* $HOME/bin/
 
 # RepeatMasker
 RUN true \
@@ -70,6 +69,8 @@ RUN true \
  && brew install blast \
  && brew install hmmer \
  && brew install brewsci/bio/rmblast \
+ && curl --ciphers DEFAULT@SECLEVEL=1 https://tandem.bu.edu/trf/downloads/trf409.linux64 > $(brew --cache)/trf--4.09.linux64 \
+ && brew install brewsci/bio/trf \
  && brew install brewsci/bio/repeatmasker --build-from-source --ignore-dependencies \
  && rm -fr $(brew --prefix)/opt/repeatmasker/libexec/lib/perl5/x86_64-linux-thread-multi/ \
  && rm $(brew --prefix)/opt/repeatmasker/libexec/Libraries/RepeatMasker.lib* \
