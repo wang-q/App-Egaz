@@ -66,7 +66,7 @@ RUN true \
  && export HOMEBREW_NO_AUTO_UPDATE=1 \
  && mkdir -p $(brew --cache)/ \
  && chown -R linuxbrew: $(brew --cache) \
- && curl --tlsv1.0 https://tandem.bu.edu/trf/downloads/trf409.linux64 > $(brew --cache)/trf409.linux64 \
+ && curl --tlsv1.0 https://tandem.bu.edu/trf/downloads/trf409.linux64 > $(brew --cache)/trf--4.09.linux64 \
  && brew install brewsci/bio/repeatmasker --build-from-source \
  && rm -fr $(brew --prefix)/opt/repeatmasker/libexec/lib/perl5/x86_64-linux-thread-multi/ \
  && rm $(brew --prefix)/opt/repeatmasker/libexec/Libraries/RepeatMasker.lib* \
