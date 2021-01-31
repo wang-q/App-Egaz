@@ -26,6 +26,7 @@ RUN true \
  && export HOMEBREW_NO_AUTO_UPDATE=1 \
  && brew install perl \
  && curl -L https://cpanmin.us | perl - App::cpanminus \
+ && cpanm -nq Text::Soundex \
  && rm -fr $(brew --cache)/* \
  && chown -R linuxbrew: /home/linuxbrew/.linuxbrew \
  && chmod -R g+w,o-w /home/linuxbrew/.linuxbrew \
