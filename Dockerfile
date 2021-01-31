@@ -64,7 +64,7 @@ RUN true \
 RUN true \
  && export HOMEBREW_NO_ANALYTICS=1 \
  && export HOMEBREW_NO_AUTO_UPDATE=1 \
- && echo  $'\n\
+ && echo $'\n\
     openssl_conf = openssl_init\n\
     [openssl_init]\n\
     ssl_conf = ssl_sect\n\
@@ -73,8 +73,7 @@ RUN true \
     [system_default_sect]\n\
     CipherString = DEFAULT@SECLEVEL=1\n\
     '\
-    > /root/openssl_allow_tls1.0.cnf \
- && export OPENSSL_CONF=/root/openssl_allow_tls1.0.cnf \
+    > /etc/ssl/openssl.cnf \
  && brew install brewsci/bio/repeatmasker --build-from-source \
  && rm -fr $(brew --prefix)/opt/repeatmasker/libexec/lib/perl5/x86_64-linux-thread-multi/ \
  && rm $(brew --prefix)/opt/repeatmasker/libexec/Libraries/RepeatMasker.lib* \
