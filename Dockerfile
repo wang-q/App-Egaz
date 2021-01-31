@@ -61,7 +61,10 @@ RUN true \
  && mkdir -p $HOME/bin \
  && curl -L https://github.com/wang-q/ubuntu/releases/download/20190906/jkbin-egaz-ubuntu-1404-2011.tar.gz | \
     tar -xvzf - \
- && mv x86_64/* $HOME/bin/
+ && mv x86_64/* $HOME/bin/ \
+ && curl -O http://hgdownload.soe.ucsc.edu/admin/exe/linux.x86_64/faToTwoBit \
+ && chmod +x faToTwoBit \
+ && mv faToTwoBit $HOME/bin/
 
 # RepeatMasker
 # https://stackoverflow.com/questions/57629010/linuxbrew-curl-certificate-issue
@@ -75,18 +78,10 @@ RUN true \
  && brew install blast \
  && brew install hmmer \
  && brew install brewsci/bio/rmblast \
- && brew install brewsci/bio/repeatmasker --build-from-source \
- && rm -fr $(brew --prefix)/opt/repeatmasker/libexec/lib/perl5/x86_64-linux-thread-multi/ \
- && rm $(brew --prefix)/opt/repeatmasker/libexec/Libraries/RepeatMasker.lib* \
- && rm $(brew --prefix)/opt/repeatmasker/libexec/Libraries/DfamConsensus.embl \
- && cd $(brew --prefix)/Cellar/$(brew list --versions repeatmasker | sed 's/ /\//')/libexec \
- && curl -L https://github.com/egateam/egavm/releases/download/20170907/repeatmaskerlibraries-20140131.tar.gz | \
-    tar -xvzf - \
- && sed -i".bak" 's/\/usr\/bin\/perl/env/' configure.input \
- && ./configure < configure.input \
+ && brew install wang-q/tap/repeatmasker@4.1.1 \
  && rm -f $(brew --prefix)/bin/rmOutToGFF3.pl \
- && sed -i".bak" 's/::Bin/::RealBin/' $(brew --prefix)/Cellar/$(brew list --versions repeatmasker | sed 's/ /\//')/libexec/util/rmOutToGFF3.pl \
- && ln -s $(brew --prefix)/Cellar/$(brew list --versions repeatmasker | sed 's/ /\//')/libexec/util/rmOutToGFF3.pl $(brew --prefix)/bin/rmOutToGFF3.pl \
+ && sed -i".bak" 's/::Bin/::RealBin/' $(brew --prefix)/opt/repeatmasker@4.1.1/libexec/util/rmOutToGFF3.pl \
+ && ln -s $(brew --prefix)/opt/repeatmasker@4.1.1/libexec/util/rmOutToGFF3.pl $(brew --prefix)/bin/rmOutToGFF3.pl \
  && rm -fr $(brew --cache)/* \
  && chown -R linuxbrew: /home/linuxbrew/.linuxbrew \
  && chmod -R g+w,o-w /home/linuxbrew/.linuxbrew

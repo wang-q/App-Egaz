@@ -33,3 +33,9 @@ MYMETA.*
 # IDE
 .idea
 .komodotools
+
+*.fa
+*.fasta
+*.fai
+*.2bit
+*.sizes
