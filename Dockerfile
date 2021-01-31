@@ -83,7 +83,7 @@ RUN true \
     tar -xvzf - \
  && sed -i".bak" 's/\/usr\/bin\/perl/env/' configure.input \
  && ./configure < configure.input \
- && rm $(brew --prefix)/bin/rmOutToGFF3.pl \
+ && rm -f $(brew --prefix)/bin/rmOutToGFF3.pl \
  && sed -i".bak" 's/::Bin/::RealBin/' $(brew --prefix)/Cellar/$(brew list --versions repeatmasker | sed 's/ /\//')/libexec/util/rmOutToGFF3.pl \
  && ln -s $(brew --prefix)/Cellar/$(brew list --versions repeatmasker | sed 's/ /\//')/libexec/util/rmOutToGFF3.pl $(brew --prefix)/bin/rmOutToGFF3.pl \
  && rm -fr $(brew --cache)/* \
