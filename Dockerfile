@@ -69,7 +69,7 @@ RUN true \
  && export HOMEBREW_NO_AUTO_UPDATE=1 \
  && export HOMEBREW_DEVELOPER=1 \
  && export HOMEBREW_CURLRC=1 \
- && echo insecure >> $HOME/.curlrc \
+ && echo "--ciphers DEFAULT@SECLEVEL=1" >> $HOME/.curlrc \
  && brew install brewsci/bio/trf \
  && brew install blast \
  && brew install hmmer \
