@@ -60,19 +60,21 @@ RUN true \
  && mkdir -p $HOME/bin \
  && curl -L https://github.com/wang-q/ubuntu/releases/download/20190906/jkbin-egaz-ubuntu-1404-2011.tar.gz | \
     tar -xvzf - \
- && mv x86_64/* $HOME/bin/ \
- && curl --ciphers DEFAULT@SECLEVEL=1 https://tandem.bu.edu/trf/downloads/trf409.linux64 > $HOME/bin/trf
-
+ && mv x86_64/* $HOME/bin/
 
 # RepeatMasker
+# https://stackoverflow.com/questions/57629010/linuxbrew-curl-certificate-issue
 RUN true \
  && export HOMEBREW_NO_ANALYTICS=1 \
  && export HOMEBREW_NO_AUTO_UPDATE=1 \
  && export HOMEBREW_DEVELOPER=1 \
+ && export HOMEBREW_CURLRC=1 \
+ && echo insecure >> $HOME/.curlrc \
+ && brew install brewsci/bio/trf \
  && brew install blast \
  && brew install hmmer \
  && brew install brewsci/bio/rmblast \
- && brew install brewsci/bio/repeatmasker --build-from-source --ignore-dependencies \
+ && brew install brewsci/bio/repeatmasker --build-from-source \
  && rm -fr $(brew --prefix)/opt/repeatmasker/libexec/lib/perl5/x86_64-linux-thread-multi/ \
  && rm $(brew --prefix)/opt/repeatmasker/libexec/Libraries/RepeatMasker.lib* \
  && rm $(brew --prefix)/opt/repeatmasker/libexec/Libraries/DfamConsensus.embl \
