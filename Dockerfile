@@ -44,12 +44,12 @@ RUN true \
  && brew install parallel \
  && brew install pigz \
  && brew install samtools \
- && brew install brewsci/bio/circos \
  && brew install brewsci/bio/fasttree \
  && brew install brewsci/bio/lastz \
  && brew install brewsci/bio/muscle \
  && brew install brewsci/bio/raxml \
  && brew install brewsci/bio/snp-sites \
+ && brew install wang-q/tap/circos@0.69.9 \
  && brew install wang-q/tap/faops \
  && brew install wang-q/tap/sparsemem \
  && brew install wang-q/tap/multiz \
@@ -71,7 +71,6 @@ RUN true \
 RUN true \
  && export HOMEBREW_NO_ANALYTICS=1 \
  && export HOMEBREW_NO_AUTO_UPDATE=1 \
- && export HOMEBREW_DEVELOPER=1 \
  && export HOMEBREW_CURLRC=1 \
  && echo "--ciphers DEFAULT@SECLEVEL=1" >> $HOME/.curlrc \
  && brew install brewsci/bio/trf \
