@@ -11,8 +11,11 @@ LABEL maintainer="Qiang Wang <wang-q@outlook.com>"
 # Github actions
 # https://docs.docker.com/ci-cd/github-actions/
 
+# singularity pull docker://wangq/egaz:master
+# singularity run egaz_master.sif egaz help
+
 # Change this when Perl updated
-ENV PATH=/root/bin:/home/linuxbrew/.linuxbrew/Cellar/perl/5.32.1/bin:$PATH
+ENV PATH=/home/linuxbrew/bin:/home/linuxbrew/.linuxbrew/Cellar/perl/5.32.1/bin:$PATH
 
 RUN true \
  && apt-get update \
@@ -58,13 +61,13 @@ RUN true \
 
 # HOME bin
 RUN true \
- && mkdir -p $HOME/bin \
+ && mkdir -p /home/linuxbrew/bin \
  && curl -L https://github.com/wang-q/ubuntu/releases/download/20190906/jkbin-egaz-ubuntu-1404-2011.tar.gz | \
     tar -xvzf - \
- && mv x86_64/* $HOME/bin/ \
+ && mv x86_64/* /home/linuxbrew/bin/ \
  && curl -O http://hgdownload.soe.ucsc.edu/admin/exe/linux.x86_64/faToTwoBit \
  && chmod +x faToTwoBit \
- && mv faToTwoBit $HOME/bin/
+ && mv faToTwoBit /home/linuxbrew/bin/
 
 # RepeatMasker
 # https://stackoverflow.com/questions/57629010/linuxbrew-curl-certificate-issue
