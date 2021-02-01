@@ -32,8 +32,6 @@ RUN true \
  && pip3 install --upgrade pip setuptools \
  && pip3 install h5py \
  && rm -fr $(brew --cache)/* \
- && chown -R linuxbrew: /home/linuxbrew/.linuxbrew \
- && chmod -R g+w,o-w /home/linuxbrew/.linuxbrew \
  && rm -fr /root/.cpan \
  && rm -fr /root/.gem \
  && rm -fr /root/.cpanm
@@ -56,9 +54,7 @@ RUN true \
  && brew install wang-q/tap/sparsemem \
  && brew install wang-q/tap/multiz \
  && brew install wang-q/tap/intspan \
- && rm -fr $(brew --cache)/* \
- && chown -R linuxbrew: /home/linuxbrew/.linuxbrew \
- && chmod -R g+w,o-w /home/linuxbrew/.linuxbrew
+ && rm -fr $(brew --cache)/*
 
 # HOME bin
 RUN true \
@@ -89,9 +85,7 @@ RUN true \
         -libdir=$(brew --prefix)/Cellar/repeatmasker@4.1.1/4.1.1/libexec/Libraries \
         -trf_prgm=$(brew --prefix)/bin/trf \
         -default_search_engine=rmblast \
- && rm -fr $(brew --cache)/* \
- && chown -R linuxbrew: /home/linuxbrew/.linuxbrew \
- && chmod -R g+w,o-w /home/linuxbrew/.linuxbrew
+ && rm -fr $(brew --cache)/*
 
 # R
 RUN true \
@@ -106,10 +100,7 @@ RUN true \
  && Rscript -e 'install.packages("readr", repos="http://cran.rstudio.com")' \
  && Rscript -e 'install.packages("ape", repos="http://cran.rstudio.com")' \
  && Rscript -e 'library(extrafont); font_import(prompt = FALSE); fonts();' \
- && rm -fr $(brew --cache)/* \
- && chown -R linuxbrew: /home/linuxbrew/.linuxbrew \
- && chmod -R g+w,o-w /home/linuxbrew/.linuxbrew
-
+ && rm -fr $(brew --cache)/*
 
 WORKDIR /home/linuxbrew/App-Egaz
 ADD . .
@@ -123,6 +114,4 @@ RUN true \
  && ./Build test \
  && ./Build install \
  && ./Build clean \
- && rm -fr /root/.cpanm \
- && chown -R linuxbrew: /home/linuxbrew/.linuxbrew \
- && chmod -R g+w,o-w /home/linuxbrew/.linuxbrew
+ && rm -fr /root/.cpanm
