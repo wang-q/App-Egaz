@@ -21,6 +21,7 @@ RUN true \
         poa
 
 # Perl & Python
+# Text::Soundex and h5py are needed by RepeatMasker 4.1.1
 RUN true \
  && export HOMEBREW_NO_ANALYTICS=1 \
  && export HOMEBREW_NO_AUTO_UPDATE=1 \
@@ -78,10 +79,16 @@ RUN true \
  && export HOMEBREW_CURLRC=1 \
  && echo "--ciphers DEFAULT@SECLEVEL=1" >> $HOME/.curlrc \
  && brew install brewsci/bio/trf \
- && brew install blast \
  && brew install hmmer \
- && brew install brewsci/bio/rmblast \
+ && brew install wang-q/tap/rmblast@2.10.0 \
  && brew install wang-q/tap/repeatmasker@4.1.1 \
+ && cd $(brew --prefix)/Cellar/repeatmasker@4.1.1/4.1.1/libexec \
+ && perl configure \
+        -hmmer_dir=$(brew --prefix)/bin \
+        -rmblast_dir=$(brew --prefix)/bin \
+        -libdir=$(brew --prefix)/Cellar/repeatmasker@4.1.1/4.1.1/libexec/Libraries \
+        -trf_prgm=$(brew --prefix)/bin/trf \
+        -default_search_engine=rmblast \
  && rm -fr $(brew --cache)/* \
  && chown -R linuxbrew: /home/linuxbrew/.linuxbrew \
  && chmod -R g+w,o-w /home/linuxbrew/.linuxbrew
@@ -91,13 +98,13 @@ RUN true \
  && export HOMEBREW_NO_ANALYTICS=1 \
  && export HOMEBREW_NO_AUTO_UPDATE=1 \
  && brew install r \
- && Rscript -e 'install.packages("extrafont", repos="https://mirrors.tuna.tsinghua.edu.cn/CRAN")' \
- && Rscript -e 'install.packages("VennDiagram", repos="https://mirrors.tuna.tsinghua.edu.cn/CRAN")' \
- && Rscript -e 'install.packages("ggplot2", repos="https://mirrors.tuna.tsinghua.edu.cn/CRAN")' \
- && Rscript -e 'install.packages("scales", repos="https://mirrors.tuna.tsinghua.edu.cn/CRAN")' \
- && Rscript -e 'install.packages("gridExtra", repos="https://mirrors.tuna.tsinghua.edu.cn/CRAN")' \
- && Rscript -e 'install.packages("readr", repos="https://mirrors.tuna.tsinghua.edu.cn/CRAN")' \
- && Rscript -e 'install.packages("ape", repos="https://mirrors.tuna.tsinghua.edu.cn/CRAN")' \
+ && Rscript -e 'install.packages("extrafont", repos="http://cran.rstudio.com")' \
+ && Rscript -e 'install.packages("VennDiagram", repos="http://cran.rstudio.com")' \
+ && Rscript -e 'install.packages("ggplot2", repos="http://cran.rstudio.com")' \
+ && Rscript -e 'install.packages("scales", repos="http://cran.rstudio.com")' \
+ && Rscript -e 'install.packages("gridExtra", repos="http://cran.rstudio.com")' \
+ && Rscript -e 'install.packages("readr", repos="http://cran.rstudio.com")' \
+ && Rscript -e 'install.packages("ape", repos="http://cran.rstudio.com")' \
  && Rscript -e 'library(extrafont); font_import(prompt = FALSE); fonts();' \
  && rm -fr $(brew --cache)/* \
  && chown -R linuxbrew: /home/linuxbrew/.linuxbrew \
