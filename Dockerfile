@@ -17,7 +17,6 @@ ENV PATH=/root/bin:/home/linuxbrew/.linuxbrew/Cellar/perl/5.32.1/bin:$PATH
 RUN true \
  && apt-get update \
  && apt-get install -y --no-install-recommends \
-        raxml \
         poa
 
 # Perl & Python
@@ -46,9 +45,10 @@ RUN true \
  && brew install pigz \
  && brew install samtools \
  && brew install brewsci/bio/circos \
+ && brew install brewsci/bio/fasttree \
  && brew install brewsci/bio/lastz \
  && brew install brewsci/bio/muscle \
- && brew install brewsci/bio/fasttree \
+ && brew install brewsci/bio/raxml \
  && brew install brewsci/bio/snp-sites \
  && brew install wang-q/tap/faops \
  && brew install wang-q/tap/sparsemem \
