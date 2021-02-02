@@ -13,7 +13,7 @@ LABEL maintainer="Qiang Wang <wang-q@outlook.com>"
 
 # singularity pull docker://wangq/egaz:master
 # singularity run egaz_master.sif egaz help
-# singularity shell egaz_master.sif
+# singularity shell --vm-cpu 2 --vm-ram 4096 egaz_master.sif
 
 # Change this when Perl updated
 ENV PATH=/home/linuxbrew/bin:/home/linuxbrew/.linuxbrew/Cellar/perl/5.32.1/bin:$PATH
@@ -43,7 +43,7 @@ RUN true \
 RUN true \
  && export HOMEBREW_NO_ANALYTICS=1 \
  && export HOMEBREW_NO_AUTO_UPDATE=1 \
- && brew install aria2 jq pup datamash miller tsv-utils \
+ && brew install aria2 jq pup datamash miller \
  && brew install bcftools \
  && brew install mafft \
  && brew install parallel \
@@ -59,6 +59,7 @@ RUN true \
  && brew install wang-q/tap/sparsemem \
  && brew install wang-q/tap/multiz \
  && brew install wang-q/tap/intspan \
+ && brew install wang-q/tap/tsv-utils \
  && rm -fr $(brew --cache)/*
 
 # HOME bin
