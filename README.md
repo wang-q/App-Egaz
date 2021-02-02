@@ -45,10 +45,28 @@ chaining mechanism (`C=2`) instead.
 
 # INSTALLATION
 
-    cpanm --installdeps https://github.com/wang-q/App-Egaz/archive/0.0.11.tar.gz
+    cpanm --installdeps https://github.com/wang-q/App-Egaz/archive/0.2.5.tar.gz
     curl -fsSL https://raw.githubusercontent.com/wang-q/App-Egaz/master/share/check_dep.sh | bash
-    cpanm -nq https://github.com/wang-q/App-Egaz/archive/0.0.11.tar.gz
+    cpanm -nq https://github.com/wang-q/App-Egaz/archive/0.2.5.tar.gz
     # cpanm -nq https://github.com/wang-q/App-Egaz.git
+
+# CONTAINER
+
+`egaz` has tons of dependencies, so the simplest way to use it is using a container system.
+`Singularity` is the preferred one.
+
+    # Pull and build the image
+    singularity pull docker://wangq/egaz:master
+
+    # Run a single command
+    singularity run egaz_master.sif egaz help
+
+    # Interactive shell
+    # Note:
+    #   * .sif is immutable
+    #   * $HOME, /tmp, and $PWD are automatically loaded
+    #   * All actions affect the host paths
+    singularity shell --vm-cpu 4 --vm-ram 4096 egaz_master.sif
 
 # EXAMPLE
 

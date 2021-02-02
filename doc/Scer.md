@@ -10,12 +10,11 @@
     - [lastz with partitioned sequences](#lastz-with-partitioned-sequences)
   - [Template steps](#template-steps)
 
-
 ## Prepare sequences
 
-```bash
-mkdir -p ~/data/alignment/egaz/download
-cd ~/data/alignment/egaz/download
+```shell script
+mkdir -p ~/egaz/download
+cd ~/egaz/download
 
 # S288c (soft-masked) from Ensembl
 aria2c -x 6 -s 3 -c ftp://ftp.ensembl.org/pub/release-98/fasta/saccharomyces_cerevisiae/dna/Saccharomyces_cerevisiae.R64-1-1.dna_sm.toplevel.fa.gz
@@ -40,7 +39,7 @@ aria2c -x 6 -s 3 -c ftp://ftp.ncbi.nlm.nih.gov/sra/wgs_aux/JM/CK/JMCK01/JMCK01.1
 
 find . -name "*.gz" | xargs gzip -t
 
-cd ~/data/alignment/egaz
+cd ~/egaz
 
 # for `fasops check`
 faops filter -N -s download/Saccharomyces_cerevisiae.R64-1-1.dna_sm.toplevel.fa.gz S288c.fa
@@ -53,23 +52,23 @@ egaz masked S288c/*.fa -o S288c/repeat.yml
 
 egaz prepseq \
     RM11_1a.fa -o RM11_1a \
-    --repeatmasker '--species Fungi --parallel 8' -v
+    --repeatmasker '--parallel 4' -v
 
 egaz prepseq \
     download/AAFW02.1.fsa_nt.gz -o YJM789 \
-    --about 2000000 --repeatmasker '--species Fungi --parallel 8' --min 1000 -v
+    --about 2000000 --repeatmasker '--parallel 4' --min 1000 -v
 
 egaz prepseq \
     download/AABY01.1.fsa_nt.gz -o Spar \
-    --about 2000000 --repeatmasker '--species Fungi --parallel 8' --min 1000 -v
+    --about 2000000 --repeatmasker '--parallel 4' --min 1000 -v
 
 egaz prepseq \
     download/AZCJ01.1.fsa_nt.gz -o Spas \
-    --about 2000000 --repeatmasker '--species Fungi --parallel 8' --min 1000 -v
+    --about 2000000 --repeatmasker '--parallel 4' --min 1000 -v
 
 egaz prepseq \
     download/JMCK01.1.fsa_nt.gz -o Seub \
-    --about 2000000 --repeatmasker '--species Fungi --parallel 8' --min 1000 --gi -v
+    --about 2000000 --repeatmasker '--parallel 4' --min 1000 --gi -v
 
 ```
 
@@ -77,8 +76,8 @@ egaz prepseq \
 
 ### lastz and lav2axt
 
-```bash
-cd ~/data/alignment/egaz
+```shell script
+cd ~/egaz
 
 egaz lastz \
     --set set01 --parallel 8 --verbose \
@@ -105,16 +104,16 @@ fasops covers S288cvsRM11_1a_lav2axt.fas -n S288c -o stdout |
 
 ### lastz and lpcnam
 
-```bash
-cd ~/data/alignment/egaz
+```shell script
+cd ~/egaz
 
 egaz lastz \
-    --set set01 -C 0 --parallel 8 --verbose \
+    --set set01 -C 0 --parallel 4 --verbose \
     S288c RM11_1a \
     -o S288cvsRM11_1a_lpcnam
 
 egaz lpcnam \
-    --parallel 8 --verbose \
+    --parallel 4 --verbose \
     S288c RM11_1a S288cvsRM11_1a_lpcnam
 
 fasops axt2fas \
@@ -143,17 +142,17 @@ fasops covers S288cvsRM11_1a_lpcnam_syn.fas -n S288c -o stdout |
 
 ### lastz with partitioned sequences
 
-```bash
-cd ~/data/alignment/egaz
+```shell script
+cd ~/egaz
 
 find S288c -type f -name "*.fa" |
-    parallel --no-run-if-empty --linebuffer -k -j 8 '
+    parallel --no-run-if-empty --linebuffer -k -j 4 '
         echo >&2 {}
         egaz partition {} --chunk 500000 --overlap 10000
     '
 
 egaz lastz \
-    --set set01 -C 0 --parallel 8 --verbose \
+    --set set01 -C 0 --parallel 4 --verbose \
     S288c RM11_1a --tp \
     -o S288cvsRM11_1a_partition
 
@@ -175,13 +174,13 @@ fasops covers S288cvsRM11_1a_partition.fas -n S288c -o stdout |
 
 ## Template steps
 
-```bash
-cd ~/data/alignment/egaz
+```shell script
+cd ~/egaz
 
 egaz template \
     S288c RM11_1a YJM789 Spar Spas Seub \
     --multi -o multi6/ \
-    --rawphylo --order --parallel 8 -v
+    --rawphylo --order --parallel 4 -v
 
 bash multi6/1_pair.sh
 bash multi6/2_rawphylo.sh
@@ -191,8 +190,8 @@ egaz template \
     S288c RM11_1a YJM789 Spar \
     --multi -o multi6/ \
     --multiname multi4 --tree multi6/Results/multi6.nwk --outgroup Spar \
-    --vcf --aligndb \
-    --parallel 8 -v
+    --vcf \
+    --parallel 4 -v
 
 bash multi6/3_multi.sh
 bash multi6/4_vcf.sh

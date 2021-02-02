@@ -11,10 +11,6 @@ LABEL maintainer="Qiang Wang <wang-q@outlook.com>"
 # Github actions
 # https://docs.docker.com/ci-cd/github-actions/
 
-# singularity pull docker://wangq/egaz:master
-# singularity run egaz_master.sif egaz help
-# singularity shell --vm-cpu 2 --vm-ram 4096 egaz_master.sif
-
 # Change this when Perl updated
 ENV PATH=/home/linuxbrew/bin:/home/linuxbrew/.linuxbrew/Cellar/perl/5.32.1/bin:$PATH
 
