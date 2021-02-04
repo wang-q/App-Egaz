@@ -65,7 +65,7 @@ chaining mechanism (C<C=2>) instead.
 =head1 CONTAINER
 
 C<egaz> has tons of dependencies, so the simplest way to use it is using a container system.
-C<Singularity> is the preferred one.
+C<Singularity> 3.x is the preferred one.
 
     # Pull and build the image
     singularity pull docker://wangq/egaz:master
@@ -78,7 +78,12 @@ C<Singularity> is the preferred one.
     #   * .sif is immutable
     #   * $HOME, /tmp, and $PWD are automatically loaded
     #   * All actions affect the host paths
-    singularity shell --vm-cpu 4 --vm-ram 4096 egaz_master.sif
+    #   * Singularity Desktop for macOS isn't Fully functional.
+    #       * https://github.com/hpcng/singularity/issues/5215
+    singularity shell egaz_master.sif
+
+    # With Docker
+    docker run -it --rm -v "$(pwd)"/egaz:/egaz wangq/egaz:master
 
 =head1 EXAMPLE
 

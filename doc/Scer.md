@@ -17,25 +17,25 @@ mkdir -p ~/egaz/download
 cd ~/egaz/download
 
 # S288c (soft-masked) from Ensembl
-aria2c -x 6 -s 3 -c ftp://ftp.ensembl.org/pub/release-98/fasta/saccharomyces_cerevisiae/dna/Saccharomyces_cerevisiae.R64-1-1.dna_sm.toplevel.fa.gz
+curl -O ftp://ftp.ensembl.org/pub/release-98/fasta/saccharomyces_cerevisiae/dna/Saccharomyces_cerevisiae.R64-1-1.dna_sm.toplevel.fa.gz
 
-aria2c -x 6 -s 3 -c ftp://ftp.ensembl.org/pub/release-98/gff3/saccharomyces_cerevisiae/Saccharomyces_cerevisiae.R64-1-1.98.gff3.gz
+curl -O ftp://ftp.ensembl.org/pub/release-98/gff3/saccharomyces_cerevisiae/Saccharomyces_cerevisiae.R64-1-1.98.gff3.gz
 
 # RM11_1a from NCBI assembly
-aria2c -x 6 -s 3 -c ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCA/000/149/365/GCA_000149365.1_ASM14936v1/GCA_000149365.1_ASM14936v1_genomic.fna.gz
+curl -O ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCA/000/149/365/GCA_000149365.1_ASM14936v1/GCA_000149365.1_ASM14936v1_genomic.fna.gz
 
 # YJM789 from NCBI WGS
-aria2c -x 6 -s 3 -c ftp://ftp.ncbi.nlm.nih.gov/sra/wgs_aux/AA/FW/AAFW02/AAFW02.1.fsa_nt.gz
+curl -O ftp://ftp.ncbi.nlm.nih.gov/sra/wgs_aux/AA/FW/AAFW02/AAFW02.1.fsa_nt.gz
 
 # Saccharomyces paradoxus NRRL Y-17217
-aria2c -x 6 -s 3 -c ftp://ftp.ncbi.nlm.nih.gov/sra/wgs_aux/AA/BY/AABY01/AABY01.1.fsa_nt.gz
+curl -O ftp://ftp.ncbi.nlm.nih.gov/sra/wgs_aux/AA/BY/AABY01/AABY01.1.fsa_nt.gz
 
 # Saccharomyces pastorianus CBS 1513
-aria2c -x 6 -s 3 -c ftp://ftp.ncbi.nlm.nih.gov/sra/wgs_aux/AZ/CJ/AZCJ01/AZCJ01.1.fsa_nt.gz
+curl -O ftp://ftp.ncbi.nlm.nih.gov/sra/wgs_aux/AZ/CJ/AZCJ01/AZCJ01.1.fsa_nt.gz
 
 # Saccharomyces eubayanus FM1318
 # WGS >gi|918735454|gb|JMCK01000001
-aria2c -x 6 -s 3 -c ftp://ftp.ncbi.nlm.nih.gov/sra/wgs_aux/JM/CK/JMCK01/JMCK01.1.fsa_nt.gz
+curl -O ftp://ftp.ncbi.nlm.nih.gov/sra/wgs_aux/JM/CK/JMCK01/JMCK01.1.fsa_nt.gz
 
 find . -name "*.gz" | xargs gzip -t
 
@@ -47,7 +47,7 @@ faops filter -N -s download/GCA_000149365.1_ASM14936v1_genomic.fna.gz RM11_1a.fa
 
 egaz prepseq S288c.fa -o S288c -v
 
-gzip -d -c download/Saccharomyces_cerevisiae.R64-1-1.98.gff3.gz > S288c/chr.gff
+gzip -dc download/Saccharomyces_cerevisiae.R64-1-1.98.gff3.gz > S288c/chr.gff
 egaz masked S288c/*.fa -o S288c/repeat.yml
 
 egaz prepseq \
@@ -80,12 +80,12 @@ egaz prepseq \
 cd ~/egaz
 
 egaz lastz \
-    --set set01 --parallel 8 --verbose \
+    --set set01 --parallel 4 --verbose \
     S288c RM11_1a \
     -o S288cvsRM11_1a_lav2axt
 
 find S288cvsRM11_1a_lav2axt -type f -name "*.lav" |
-    parallel --no-run-if-empty --linebuffer -k -j 8 '
+    parallel --no-run-if-empty --linebuffer -k -j 4 '
         echo >&2 {}
         egaz lav2axt {} -o {}.axt
     '
@@ -157,7 +157,7 @@ egaz lastz \
     -o S288cvsRM11_1a_partition
 
 egaz lpcnam \
-    --parallel 8 --verbose \
+    --parallel 4 --verbose \
     S288c RM11_1a S288cvsRM11_1a_partition
 
 fasops axt2fas \
@@ -195,8 +195,6 @@ egaz template \
 
 bash multi6/3_multi.sh
 bash multi6/4_vcf.sh
-bash multi6/6_chr_length.sh
-bash multi6/7_multi_aligndb.sh
 bash multi6/9_pack_up.sh
 
 ```
