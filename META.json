@@ -4,7 +4,7 @@
       "Qiang Wang <wang-q@outlook.com>"
    ],
    "dynamic_config" : 0,
-   "generated_by" : "Minilla/v3.1.11, CPAN::Meta::Converter version 2.150010",
+   "generated_by" : "Minilla/v3.1.15, CPAN::Meta::Converter version 2.150010",
    "license" : [
       "perl_5"
    ],
@@ -79,7 +79,7 @@
       "homepage" : "https://github.com/wang-q/App-Egaz",
       "repository" : {
          "type" : "git",
-         "url" : "git://github.com/wang-q/App-Egaz.git",
+         "url" : "https://github.com/wang-q/App-Egaz.git",
          "web" : "https://github.com/wang-q/App-Egaz"
       }
    },
@@ -88,6 +88,6 @@
    "x_contributors" : [
       "Qiang Wang <wang-q@users.noreply.github.com>"
    ],
-   "x_serialization_backend" : "JSON::PP version 4.04",
+   "x_serialization_backend" : "JSON::PP version 4.06",
    "x_static_install" : 1
 }

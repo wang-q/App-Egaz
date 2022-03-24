@@ -70,6 +70,9 @@ chaining mechanism (`C=2`) instead.
     #       * https://github.com/hpcng/singularity/issues/5215
     singularity shell egaz_master.sif
 
+    # With Docker
+    docker run -it --rm -v "$(pwd)"/egaz:/egaz wangq/egaz:master
+
 # EXAMPLE
 
 - Multiple genome alignments of _Saccharomyces cerevisiae_ strains and other _Saccharomyces_ species
