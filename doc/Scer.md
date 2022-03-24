@@ -1,92 +1,96 @@
 # *Saccharomyces cerevisiae* strains
 
-[TOC levels=1-3]: # ""
-
 - [*Saccharomyces cerevisiae* strains](#saccharomyces-cerevisiae-strains)
-  - [Prepare sequences](#prepare-sequences)
-  - [Detailed/alternative steps](#detailedalternative-steps)
-    - [lastz and lav2axt](#lastz-and-lav2axt)
-    - [lastz and lpcnam](#lastz-and-lpcnam)
-    - [lastz with partitioned sequences](#lastz-with-partitioned-sequences)
-  - [Template steps](#template-steps)
+    * [Prepare sequences](#prepare-sequences)
+    * [Detailed steps](#detailed-steps)
+        + [lastz and lav2axt](#lastz-and-lav2axt)
+        + [lastz and lpcnam](#lastz-and-lpcnam)
+        + [lastz with partitioned sequences](#lastz-with-partitioned-sequences)
+    * [Template steps](#template-steps)
 
 ## Prepare sequences
 
-```shell script
-mkdir -p ~/egaz/download
-cd ~/egaz/download
+* Download
+
+```shell
+mkdir -p ~/data/egaz/download
+cd ~/data/egaz/download
 
 # S288c (soft-masked) from Ensembl
-curl -O ftp://ftp.ensembl.org/pub/release-98/fasta/saccharomyces_cerevisiae/dna/Saccharomyces_cerevisiae.R64-1-1.dna_sm.toplevel.fa.gz
+curl -O http://ftp.ensembl.org/pub/release-105/fasta/saccharomyces_cerevisiae/dna/Saccharomyces_cerevisiae.R64-1-1.dna_sm.toplevel.fa.gz
+curl -O http://ftp.ensembl.org/pub/release-105/gff3/saccharomyces_cerevisiae/Saccharomyces_cerevisiae.R64-1-1.105.gff3.gz
 
-curl -O ftp://ftp.ensembl.org/pub/release-98/gff3/saccharomyces_cerevisiae/Saccharomyces_cerevisiae.R64-1-1.98.gff3.gz
+# RM11_1a
+curl -O https://ftp.ncbi.nlm.nih.gov/genomes/all/GCA/000/149/365/GCA_000149365.1_ASM14936v1/GCA_000149365.1_ASM14936v1_genomic.fna.gz
 
-# RM11_1a from NCBI assembly
-curl -O ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCA/000/149/365/GCA_000149365.1_ASM14936v1/GCA_000149365.1_ASM14936v1_genomic.fna.gz
+# YJM789
+curl -O https://ftp.ncbi.nlm.nih.gov/genomes/all/GCA/000/181/435/GCA_000181435.1_ASM18143v1/GCA_000181435.1_ASM18143v1_genomic.fna.gz
 
-# YJM789 from NCBI WGS
-curl -O ftp://ftp.ncbi.nlm.nih.gov/sra/wgs_aux/AA/FW/AAFW02/AAFW02.1.fsa_nt.gz
+# Saccharomyces paradoxus CBS432
+curl -O https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/002/079/055/GCF_002079055.1_ASM207905v1/GCF_002079055.1_ASM207905v1_genomic.fna.gz
 
-# Saccharomyces paradoxus NRRL Y-17217
-curl -O ftp://ftp.ncbi.nlm.nih.gov/sra/wgs_aux/AA/BY/AABY01/AABY01.1.fsa_nt.gz
-
-# Saccharomyces pastorianus CBS 1513
-curl -O ftp://ftp.ncbi.nlm.nih.gov/sra/wgs_aux/AZ/CJ/AZCJ01/AZCJ01.1.fsa_nt.gz
+# Saccharomyces pastorianus CBS 1483
+curl -O https://ftp.ncbi.nlm.nih.gov/genomes/all/GCA/011/022/315/GCA_011022315.1_ASM1102231v1/GCA_011022315.1_ASM1102231v1_genomic.fna.gz
 
 # Saccharomyces eubayanus FM1318
-# WGS >gi|918735454|gb|JMCK01000001
-curl -O ftp://ftp.ncbi.nlm.nih.gov/sra/wgs_aux/JM/CK/JMCK01/JMCK01.1.fsa_nt.gz
+curl -O https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/001/298/625/GCF_001298625.1_SEUB3.0/GCF_001298625.1_SEUB3.0_genomic.fna.gz
 
 find . -name "*.gz" | xargs gzip -t
 
-cd ~/egaz
+```
+
+* prepare
+
+```shell
+cd ~/data/egaz
 
 # for `fasops check`
 faops filter -N -s download/Saccharomyces_cerevisiae.R64-1-1.dna_sm.toplevel.fa.gz S288c.fa
-faops filter -N -s download/GCA_000149365.1_ASM14936v1_genomic.fna.gz RM11_1a.fa
-
 egaz prepseq S288c.fa -o S288c -v
 
-gzip -dc download/Saccharomyces_cerevisiae.R64-1-1.98.gff3.gz > S288c/chr.gff
-egaz masked S288c/*.fa -o S288c/repeat.yml
+gzip -dcf download/Saccharomyces_cerevisiae.R64-1-1.105.gff3.gz > S288c/chr.gff
+spanr gff --tag CDS S288c/chr.gff -o S288c/cds.yml
+faops masked S288c/*.fa | spanr cover stdin -o S288c/repeat.yml
+spanr merge S288c/repeat.yml S288c/cds.yml -o S288c/anno.yml
 
+faops filter -N -s download/GCA_000149365*.fna.gz RM11_1a.fa
 egaz prepseq \
     RM11_1a.fa -o RM11_1a \
-    --repeatmasker '--parallel 4' -v
+    --repeatmasker '--species Fungi --parallel 6' -v
 
 egaz prepseq \
-    download/AAFW02.1.fsa_nt.gz -o YJM789 \
-    --about 2000000 --repeatmasker '--parallel 4' --min 1000 -v
+    download/GCA_000181435*.fna.gz -o YJM789 \
+    --about 2000000 --min 1000 --repeatmasker '--species Fungi --parallel 6' -v
 
 egaz prepseq \
-    download/AABY01.1.fsa_nt.gz -o Spar \
-    --about 2000000 --repeatmasker '--parallel 4' --min 1000 -v
+    download/GCF_002079055*.fna.gz -o Spar \
+    --repeatmasker '--species Fungi --parallel 6' -v
 
 egaz prepseq \
-    download/AZCJ01.1.fsa_nt.gz -o Spas \
-    --about 2000000 --repeatmasker '--parallel 4' --min 1000 -v
+    download/GCA_011022315*.fna.gz -o Spas \
+    --about 2000000 --min 1000 --repeatmasker '--species Fungi --parallel 6' -v
 
 egaz prepseq \
-    download/JMCK01.1.fsa_nt.gz -o Seub \
-    --about 2000000 --repeatmasker '--parallel 4' --min 1000 --gi -v
+    download/GCF_001298625*.fna.gz -o Seub \
+    --about 2000000 --min 1000 --repeatmasker '--species Fungi --parallel 6' -v
 
 ```
 
-## Detailed/alternative steps
+## Detailed steps
 
 ### lastz and lav2axt
 
 ```shell script
-cd ~/egaz
+cd ~/data/egaz
 
 egaz lastz \
-    --set set01 --parallel 4 --verbose \
+    --set set01 --parallel 6 --verbose \
     S288c RM11_1a \
     -o S288cvsRM11_1a_lav2axt
 
 find S288cvsRM11_1a_lav2axt -type f -name "*.lav" |
-    parallel --no-run-if-empty --linebuffer -k -j 4 '
-        echo >&2 {}
+    parallel --no-run-if-empty --linebuffer -k -j 6 '
+        >&2 echo {}
         egaz lav2axt {} -o {}.axt
     '
 
@@ -105,15 +109,16 @@ fasops covers S288cvsRM11_1a_lav2axt.fas -n S288c -o stdout |
 ### lastz and lpcnam
 
 ```shell script
-cd ~/egaz
+cd ~/data/egaz
 
 egaz lastz \
-    --set set01 -C 0 --parallel 4 --verbose \
+    --set set01 -C 0 --parallel 6 --verbose \
     S288c RM11_1a \
     -o S288cvsRM11_1a_lpcnam
 
+# UCSC's pipeline
 egaz lpcnam \
-    --parallel 4 --verbose \
+    --parallel 6 --verbose \
     S288c RM11_1a S288cvsRM11_1a_lpcnam
 
 fasops axt2fas \
@@ -126,6 +131,7 @@ fasops check S288cvsRM11_1a_lpcnam_axt.fas RM11_1a.fa --name RM11_1a -o stdout |
 fasops covers S288cvsRM11_1a_lpcnam_axt.fas -n S288c -o stdout |
     spanr stat S288c/chr.sizes stdin -o S288cvsRM11_1a_lpcnam_axt.csv
 
+# UCSC's syntenic pipeline
 egaz lpcnam \
     --parallel 8 --verbose --syn \
     S288c RM11_1a S288cvsRM11_1a_lpcnam/lav.tar.gz -o S288cvsRM11_1a_lpcnam_syn
@@ -143,21 +149,21 @@ fasops covers S288cvsRM11_1a_lpcnam_syn.fas -n S288c -o stdout |
 ### lastz with partitioned sequences
 
 ```shell script
-cd ~/egaz
+cd ~/data/egaz
 
 find S288c -type f -name "*.fa" |
-    parallel --no-run-if-empty --linebuffer -k -j 4 '
-        echo >&2 {}
+    parallel --no-run-if-empty --linebuffer -k -j 6 '
+        >&2 echo {}
         egaz partition {} --chunk 500000 --overlap 10000
     '
 
 egaz lastz \
-    --set set01 -C 0 --parallel 4 --verbose \
+    --set set01 -C 0 --parallel 6 --verbose \
     S288c RM11_1a --tp \
     -o S288cvsRM11_1a_partition
 
 egaz lpcnam \
-    --parallel 4 --verbose \
+    --parallel 6 --verbose \
     S288c RM11_1a S288cvsRM11_1a_partition
 
 fasops axt2fas \
@@ -175,12 +181,12 @@ fasops covers S288cvsRM11_1a_partition.fas -n S288c -o stdout |
 ## Template steps
 
 ```shell script
-cd ~/egaz
+cd ~/data/egaz
 
 egaz template \
     S288c RM11_1a YJM789 Spar Spas Seub \
     --multi -o multi6/ \
-    --rawphylo --order --parallel 4 -v
+    --rawphylo --order --parallel 6 -v
 
 bash multi6/1_pair.sh
 bash multi6/2_rawphylo.sh
@@ -191,7 +197,7 @@ egaz template \
     --multi -o multi6/ \
     --multiname multi4 --tree multi6/Results/multi6.nwk --outgroup Spar \
     --vcf \
-    --parallel 4 -v
+    --parallel 6 -v
 
 bash multi6/3_multi.sh
 bash multi6/4_vcf.sh
