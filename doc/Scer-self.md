@@ -23,7 +23,7 @@ Each .fa files in <path/target> should contain only one sequences.
 ## self alignment
 
 ```bash
-cd ~/data/alignment/egaz
+cd ~/data/egaz
 
 egaz lastz \
     --set set01 -C 0 --parallel 8 --isself --verbose \
@@ -48,12 +48,12 @@ fasops covers S288cvsSelf_axt.fas -n S288c -o stdout |
 ## blast
 
 ```bash
-cd ~/data/alignment/egaz
+cd ~/data/egaz
 
 mkdir -p S288c_proc
 mkdir -p S288c_result
 
-cd ~/data/alignment/egaz/S288c_proc
+cd ~/data/egaz/S288c_proc
 
 # genome
 find ../S288c -type f -name "*.fa" |
@@ -119,7 +119,7 @@ egaz blastlink axt.all.blast -c 0.95 -o links.blast.tsv
 ## merge
 
 ```bash
-cd ~/data/alignment/egaz/S288c_proc
+cd ~/data/egaz/S288c_proc
 
 # merge
 linkr sort -o links.sort.tsv \
@@ -181,7 +181,7 @@ spanr stat chr.sizes cover.yml -o cover.yml.csv
 ## clean
 
 ```bash
-cd ~/data/alignment/egaz/S288c_proc
+cd ~/data/egaz/S288c_proc
 
 # clean
 find . -type f -name "*genome.fa*" | xargs rm
@@ -198,18 +198,16 @@ find . -type f -name "copy*.yml" | xargs rm
 # Template steps
 
 ```bash
-cd ~/data/alignment/egaz
+cd ~/data/egaz
 
 egaz template \
     S288c \
     --self -o selfS288c/ \
-    --circos --aligndb --parallel 8 -v
+    --circos --parallel 8 -v
 
 bash selfS288c/1_self.sh
 bash selfS288c/3_proc.sh
 bash selfS288c/4_circos.sh
-bash selfS288c/6_chr_length.sh
-bash selfS288c/7_self_aligndb.sh
 bash selfS288c/9_pack_up.sh
 
 ```
