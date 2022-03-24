@@ -76,7 +76,7 @@ chaining mechanism (`C=2`) instead.
 # EXAMPLE
 
 - Multiple genome alignments of _Saccharomyces cerevisiae_ strains and other _Saccharomyces_ species
-    - Detailed/alternative steps [https://github.com/wang-q/App-Egaz/blob/master/doc/Scer.md#detailedalternative-steps](https://github.com/wang-q/App-Egaz/blob/master/doc/Scer.md#detailedalternative-steps)
+    - Detailed steps [https://github.com/wang-q/App-Egaz/blob/master/doc/Scer.md#detailed-steps](https://github.com/wang-q/App-Egaz/blob/master/doc/Scer.md#detailed-steps)
     - `egaz template` steps [https://github.com/wang-q/App-Egaz/blob/master/doc/Scer.md#template-steps](https://github.com/wang-q/App-Egaz/blob/master/doc/Scer.md#template-steps)
 - Self alignments of _S. cerevisiae_ reference strain S288c
     - Detailed steps [https://github.com/wang-q/App-Egaz/blob/master/doc/Scer-self.md#detailed-steps](https://github.com/wang-q/App-Egaz/blob/master/doc/Scer-self.md#detailed-steps)

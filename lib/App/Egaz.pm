@@ -93,7 +93,7 @@ C<Singularity> 3.x is the preferred one.
 
 =over 8
 
-=item Detailed/alternative steps L<https://github.com/wang-q/App-Egaz/blob/master/doc/Scer.md#detailedalternative-steps>
+=item Detailed steps L<https://github.com/wang-q/App-Egaz/blob/master/doc/Scer.md#detailed-steps>
 
 =item C<egaz template> steps L<https://github.com/wang-q/App-Egaz/blob/master/doc/Scer.md#template-steps>
 
