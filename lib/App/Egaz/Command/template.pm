@@ -605,8 +605,8 @@ sub gen_mash {
     my ( $self, $opt, $args ) = @_;
 
     my $tt       = Template->new( INCLUDE_PATH => [ File::ShareDir::dist_dir('App-Egaz') ], );
-    my $sh_name  = "0_mash.sh";
-    my $template = "$sh_name.tt2";
+    my $sh_name  = "1_mash.sh";
+    my $template = "1_mash.tt2.sh";
 
     print STDERR "Create $sh_name\n";
 
@@ -690,7 +690,7 @@ sub gen_proc {
 
     my $tt       = Template->new( INCLUDE_PATH => [ File::ShareDir::dist_dir('App-Egaz') ], );
     my $sh_name  = "3_proc.sh";
-    my $template = "$sh_name.tt2";
+    my $template = "3_proc.tt2.sh";
 
     print STDERR "Create $sh_name\n";
 
