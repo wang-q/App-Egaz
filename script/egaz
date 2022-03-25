@@ -15,6 +15,8 @@ __END__
 
 minil install --notest && minil clean -y
 
+FAKE_RELEASE=1 minil release
+
 perl -I lib/ script/egaz help
 
 lastz t/pseudocat.fa t/pseudopig.fa > t/default.lav

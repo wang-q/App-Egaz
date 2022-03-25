@@ -2,6 +2,8 @@ Revision history for Perl extension App-Egaz
 
 {{$NEXT}}
 
+0.2.6 2022-03-25T19:33:02Z
+
     - Move `egaz plottree` to `plotr tree`
     - Remove `egaz masked`, use `faops masked` instead
     - Move tt2 to share/
