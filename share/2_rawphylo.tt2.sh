@@ -5,10 +5,17 @@
 #----------------------------#
 log_warn [% sh %]
 
-if [ -e Results/[% opt.multiname %].raw.nwk ]; then
-    log_info Results/[% opt.multiname %].raw.nwk exists
+[% IF opt.raxml -%]
+if [ -s Results/[% opt.multiname %].raxml.raw.nwk ]; then
+    log_info Results/[% opt.multiname %].raxml.raw.nwk exists
     exit;
 fi
+[% ELSE -%]
+if [ -s Results/[% opt.multiname %].ft.raw.nwk ]; then
+    log_info Results/[% opt.multiname %].ft.raw.nwk exists
+    exit;
+fi
+[% END -%]
 
 mkdir -p [% opt.multiname %]_raw
 mkdir -p Results
@@ -139,9 +146,10 @@ fasops refine \
     -o [% opt.multiname %]_raw/join.refine.fas
 
 #----------------------------#
-# RAxML
+# FastTree/RAxML
 #----------------------------#
 [% IF opt.data.size > 3 -%]
+[% IF opt.raxml -%]
 log_info RAxML
 
 egaz raxml \
@@ -153,9 +161,26 @@ egaz raxml \
     -v \
 [% END -%]
     [% opt.multiname %]_raw/join.refine.fas \
-    -o Results/[% opt.multiname %].raw.nwk
+    -o stdout |
+    nw_order - -c n \
+    > Results/[% opt.multiname %].raxml.raw.nwk
 
-plotr tree Results/[% opt.multiname %].raw.nwk
+nw_display -s -b 'visibility:hidden' -w 600 -v 30 Results/[% opt.multiname %].raxml.raw.nwk \
+    > Results/[% opt.multiname %].raxml.raw.svg
+[% ELSE -%]
+log_info FastTree
+
+fasops concat [% opt.multiname %]_raw/join.refine.fas genome.lst -o stdout |
+    FastTree -nt -fastest -noml -boot 100 |
+[% IF opt.outgroup -%]
+    nw_reroot - [% opt.outgroup %] |
+[% END -%]
+    nw_order - -c n \
+    > Results/[% opt.multiname %].ft.raw.nwk
+
+nw_display -s -b 'visibility:hidden' -w 600 -v 30 Results/[% opt.multiname %].ft.raw.nwk \
+    > Results/[% opt.multiname %].ft.raw.svg
+[% END -%]
 
 [% ELSIF opt.data.size == 3 -%]
 echo "(([% opt.data.0.name %],[% opt.data.1.name %]),[% opt.data.2.name %]);" > Results/[% opt.multiname %].raw.nwk
