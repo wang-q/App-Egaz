@@ -13,13 +13,13 @@ mkdir -p Results
 #----------------------------#
 [% FOREACH item IN opt.data -%]
 if [ -d Processing/[% item.name %] ]; then
-log_info Skip Processing/[% item.name %]
+    log_info Skip Processing/[% item.name %]
 else
-log_info Symlink genome sequences for [% item.name %]
-mkdir -p Processing/[% item.name %]
+    log_info Symlink genome sequences for [% item.name %]
+    mkdir -p Processing/[% item.name %]
 
-ln -s [% item.dir %]/chr.fasta Processing/[% item.name %]/genome.fa
-cp -f [% item.dir %]/chr.sizes Processing/[% item.name %]/chr.sizes
+    ln -s [% item.dir %]/chr.fasta Processing/[% item.name %]/genome.fa
+    cp -f [% item.dir %]/chr.sizes Processing/[% item.name %]/chr.sizes
 fi
 
 [% END -%]
@@ -32,8 +32,8 @@ log_info Blast paralogs against genomes and each other
 parallel --no-run-if-empty --linebuffer -k -j 2 '
 
 if [ -d Results/{} ]; then
-echo >&2 "==> Skip Results/{}";
-exit;
+    echo >&2 "==> Skip Results/{}";
+    exit;
 fi
 
 cd Processing/{}
@@ -45,18 +45,18 @@ echo >&2 "==> Get exact copies in the genome"
 
 echo >&2 "    * axt2fas"
 fasops axt2fas \
-../../Pairwise/{}vsSelf/axtNet/*.axt.gz \
--l [% opt.length %] -s chr.sizes -o stdout > axt.fas
+    ../../Pairwise/{}vsSelf/axtNet/*.axt.gz \
+    -l [% opt.length %] -s chr.sizes -o stdout > axt.fas
 fasops separate axt.fas -o . --nodash -s .sep.fasta
 
 echo >&2 "    * Target positions"
 egaz exactmatch target.sep.fasta genome.fa \
---length 500 --discard 50 -o replace.target.tsv
+    --length 500 --discard 50 -o replace.target.tsv
 fasops replace axt.fas replace.target.tsv -o axt.target.fas
 
 echo >&2 "    * Query positions"
 egaz exactmatch query.sep.fasta genome.fa \
---length 500 --discard 50 -o replace.query.tsv
+    --length 500 --discard 50 -o replace.query.tsv
 fasops replace axt.target.fas replace.query.tsv -o axt.correct.fas
 
 #----------------------------#
@@ -70,17 +70,17 @@ spanr stat chr.sizes axt.union.yml -o union.csv
 
 # links by lastz-chain
 fasops links axt.correct.fas -o stdout |
-perl -nl -e "s/(target|query)\.//g; print;" \
-> links.lastz.tsv
+    perl -nl -e "s/(target|query)\.//g; print;" \
+    > links.lastz.tsv
 
 # remove species names
 # remove duplicated sequences
 # remove sequences with more than 250 Ns
 fasops separate axt.correct.fas --nodash --rc -o stdout |
-perl -nl -e "/^>/ and s/^>(target|query)\./\>/; print;" |
-faops filter -u stdin stdout |
-faops filter -n 250 stdin stdout \
-> axt.gl.fasta
+    perl -nl -e "/^>/ and s/^>(target|query)\./\>/; print;" |
+    faops filter -u stdin stdout |
+    faops filter -n 250 stdin stdout \
+    > axt.gl.fasta
 
 [% IF opt.noblast -%]
 #----------------------------#
@@ -95,13 +95,13 @@ echo >&2 "==> Get more paralogs"
 egaz blastn axt.gl.fasta genome.fa -o axt.bg.blast --parallel [% opt.parallel2 %]
 egaz blastmatch axt.bg.blast -c 0.95 -o axt.bg.region --parallel [% opt.parallel2 %]
 samtools faidx genome.fa -r axt.bg.region --continue |
-perl -p -e "/^>/ and s/:/(+):/" \
-> axt.bg.fasta
+    perl -p -e "/^>/ and s/:/(+):/" \
+    > axt.bg.fasta
 
 cat axt.gl.fasta axt.bg.fasta |
-faops filter -u stdin stdout |
-faops filter -n 250 stdin stdout \
-> axt.all.fasta
+    faops filter -u stdin stdout |
+    faops filter -n 250 stdin stdout \
+    > axt.all.fasta
 [% END -%]
 
 #----------------------------#
@@ -119,9 +119,9 @@ echo >&2 "==> Merge paralogs"
 echo >&2 "    * Sort links"
 linkr sort -o links.sort.tsv \
 [% IF opt.noblast -%]
-links.lastz.tsv
+   links.lastz.tsv
 [% ELSE -%]
-links.lastz.tsv links.blast.tsv
+    links.lastz.tsv links.blast.tsv
 [% END -%]
 
 echo >&2 "    * Clean links"
@@ -133,15 +133,15 @@ echo >&2 "    * Connect links"
 linkr connect links.clean.tsv    -o links.connect.tsv     -r 0.9
 linkr filter  links.connect.tsv  -o links.filter.tsv      -r 0.8
 
-' ::: [% FOREACH item IN opt.data %][% item.name %] [% END %]
+    ' ::: [% FOREACH item IN opt.data %][% item.name %] [% END %]
 
 [% FOREACH item IN opt.data -%]
-    [% id = item.name -%]
+[% id = item.name -%]
 #----------------------------#
 # [% id %]
 #----------------------------#
 if [ -d Results/[% id %] ]; then
-log_info Skip Results/[% id %]
+    log_info Skip Results/[% id %]
 else
 
 mkdir -p Results/[% id %]
@@ -153,39 +153,39 @@ log_debug multiple links
 fasops create links.filter.tsv -o multi.temp.fas    -g genome.fa
 fasops refine multi.temp.fas   -o multi.refine.fas  --msa mafft -p [% opt.parallel %] --chop 10
 fasops links  multi.refine.fas -o stdout |
-linkr sort stdin -o stdout |
-linkr filter stdin -n 2-50 -o links.refine.tsv
+    linkr sort stdin -o stdout |
+    linkr filter stdin -n 2-50 -o links.refine.tsv
 
 log_debug pairwise links
 fasops   links  multi.refine.fas    -o stdout     --best |
-linkr sort stdin -o links.best.tsv
+    linkr sort stdin -o links.best.tsv
 fasops create links.best.tsv   -o pair.temp.fas    -g genome.fa --name [% id %]
 fasops refine pair.temp.fas    -o pair.refine.fas  --msa mafft -p [% opt.parallel %]
 
 cat links.refine.tsv |
-perl -nla -F"\t" -e "print for @F" |
-spanr cover stdin -o cover.yml
+    perl -nla -F"\t" -e "print for @F" |
+    spanr cover stdin -o cover.yml
 
 log_debug Stats of links
 echo "key,count" > links.count.csv
 for n in 2 3 4-50; do
-linkr filter links.refine.tsv -n ${n} -o stdout \
-> links.copy${n}.tsv
+    linkr filter links.refine.tsv -n ${n} -o stdout \
+        > links.copy${n}.tsv
 
-cat links.copy${n}.tsv |
-perl -nla -F"\t" -e "print for @F" |
-spanr cover stdin -o copy${n}.temp.yml
+    cat links.copy${n}.tsv |
+        perl -nla -F"\t" -e "print for @F" |
+        spanr cover stdin -o copy${n}.temp.yml
 
-wc -l links.copy${n}.tsv |
-perl -nl -e "
-@fields = grep {/\S+/} split /\s+/;
-next unless @fields == 2;
-next unless \$fields[1] =~ /links\.([\w-]+)\.tsv/;
-printf qq{%s,%s\n}, \$1, \$fields[0];
-" \
->> links.count.csv
+    wc -l links.copy${n}.tsv |
+        perl -nl -e "
+            @fields = grep {/\S+/} split /\s+/;
+            next unless @fields == 2;
+            next unless \$fields[1] =~ /links\.([\w-]+)\.tsv/;
+            printf qq{%s,%s\n}, \$1, \$fields[0];
+        " \
+        >> links.count.csv
 
-rm links.copy${n}.tsv
+    rm links.copy${n}.tsv
 done
 
 spanr merge copy2.temp.yml copy3.temp.yml copy4-50.temp.yml -o copy.yml

@@ -566,7 +566,7 @@ sub gen_pair {
 
     my $tt       = Template->new( INCLUDE_PATH => [ File::ShareDir::dist_dir('App-Egaz') ], );
     my $sh_name  = "1_pair.sh";
-    my $template = "$sh_name.tt2";
+    my $template = "1_pair.tt2.sh";
 
     print STDERR "Create $sh_name\n";
 
@@ -587,7 +587,7 @@ sub gen_rawphylo {
 
     my $tt       = Template->new( INCLUDE_PATH => [ File::ShareDir::dist_dir('App-Egaz') ], );
     my $sh_name  = "2_rawphylo.sh";
-    my $template = "$sh_name.tt2";
+    my $template = "2_rawphylo.tt2.sh";
 
     print STDERR "Create $sh_name\n";
 
@@ -605,7 +605,7 @@ sub gen_mash {
     my ( $self, $opt, $args ) = @_;
 
     my $tt       = Template->new( INCLUDE_PATH => [ File::ShareDir::dist_dir('App-Egaz') ], );
-    my $sh_name  = "2_mash.sh";
+    my $sh_name  = "0_mash.sh";
     my $template = "$sh_name.tt2";
 
     print STDERR "Create $sh_name\n";
@@ -627,7 +627,7 @@ sub gen_multi {
 
     my $tt       = Template->new( INCLUDE_PATH => [ File::ShareDir::dist_dir('App-Egaz') ], );
     my $sh_name  = "3_multi.sh";
-    my $template = "$sh_name.tt2";
+    my $template = "3_multi.tt2.sh";
 
     print STDERR "Create $sh_name\n";
 
@@ -648,7 +648,7 @@ sub gen_vcf {
 
     my $tt       = Template->new( INCLUDE_PATH => [ File::ShareDir::dist_dir('App-Egaz') ], );
     my $sh_name  = "4_vcf.sh";
-    my $template = "$sh_name.tt2";
+    my $template = "4_vcf.tt2.sh";
 
     print STDERR "Create $sh_name\n";
 
@@ -669,7 +669,7 @@ sub gen_self {
 
     my $tt       = Template->new( INCLUDE_PATH => [ File::ShareDir::dist_dir('App-Egaz') ], );
     my $sh_name  = "1_self.sh";
-    my $template = "$sh_name.tt2";
+    my $template = "1_self.tt2.sh";
 
     print STDERR "Create $sh_name\n";
 
