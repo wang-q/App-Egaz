@@ -40,3 +40,5 @@ MYMETA.*
 *.2bit
 *.sizes
 *.out
+*.tsv
+*.csv
