@@ -59,3 +59,14 @@ cat dist_full.tsv |
         groups <- groups[order(groups$group), ]
         write_tsv(groups, "groups.tsv")
     '
+
+log_info newick-utils
+cat tree.nwk |
+[% IF opt.outgroup -%]
+    nw_reroot - [% opt.outgroup %] |
+[% END -%]
+    nw_order - -c n \
+    > ../Results/[% opt.multiname %].mash.raw.nwk
+
+nw_display -s -b 'visibility:hidden' -w 600 -v 30 ../Results/[% opt.multiname %].mash.raw.nwk \
+    > ../Results/[% opt.multiname %].mash.raw.svg
