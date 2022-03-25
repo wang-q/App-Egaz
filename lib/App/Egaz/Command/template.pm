@@ -82,7 +82,7 @@ sub description {
 * without --tree, --rawphylo, or --mash, the order of multiz stitch is the same as the one from
   command line
 
-* --tree > --order > --rawphylo > --mash
+* --tree > --order > --mash > --rawphylo
 
 * --outgroup uses basename, not full path. *DON'T* set --outgroup to target
 
@@ -547,42 +547,20 @@ sub gen_packup {
 
     return unless ( $opt->{mode} eq "multi" or $opt->{mode} eq "self" );
 
-    my $tt = Template->new( INCLUDE_PATH => [ File::ShareDir::dist_dir('App-Egaz') ], );
-    my $template;
-    my $sh_name;
+    my $tt       = Template->new( INCLUDE_PATH => [ File::ShareDir::dist_dir('App-Egaz') ], );
+    my $sh_name  = "9_pack_up.sh";
+    my $template = "9_pack_up.tt2.sh";
 
-    $sh_name = "9_pack_up.sh";
     print STDERR "Create $sh_name\n";
-    $template = <<'EOF';
-[% INCLUDE header.tt2 %]
 
-#----------------------------#
-# [% sh %]
-#----------------------------#
-log_warn [% sh %]
-
-find . -type f |
-    grep -v -E "\.(sh|2bit)$" |
-    grep -v -E "(_fasta|_raw)\/" |
-    grep -v -F "fake_tree.nwk" \
-    > file_list.txt
-
-tar -czvf [% opt.multiname %].tar.gz -T file_list.txt
-
-log_info [% opt.multiname %].tar.gz generated
-
-exit;
-
-EOF
     $tt->process(
-        \$template,
+        $template,
         {   args => $args,
             opt  => $opt,
             sh   => $sh_name,
         },
         Path::Tiny::path( $opt->{outdir}, $sh_name )->stringify
     ) or Carp::confess Template->error;
-
 }
 
 sub gen_pair {
@@ -629,6 +607,8 @@ sub gen_rawphylo {
 
 sub gen_mash {
     my ( $self, $opt, $args ) = @_;
+
+    return unless ( $opt->{mode} eq "multi" or $opt->{mode} eq "self" );
 
     my $tt       = Template->new( INCLUDE_PATH => [ File::ShareDir::dist_dir('App-Egaz') ], );
     my $sh_name  = "1_mash.sh";
