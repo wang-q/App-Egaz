@@ -20,9 +20,12 @@ hash mummer 2>/dev/null || hash sparsemem 2>/dev/null || {
     exit 1;
 }
 
-hash raxmlHPC 2>/dev/null || hash raxmlHPC-SSE3 2>/dev/null || hash raxmlHPC-PTHREADS 2>/dev/null || {
-    echo >&2 "raxml is required but it's not installed.";
-    exit 1;
+hash FastTree 2>/dev/null || {
+    echo >&2 "FastTree is required but it's not installed.";
+}
+
+hash nw_order 2>/dev/null || {
+    echo >&2 "newick-utils is required but it's not installed.";
 }
 
 hash makeblastdb 2>/dev/null || hash blastn 2>/dev/null || {
@@ -115,8 +118,9 @@ hash bcftools 2>/dev/null || {
     echo >&2 "bcftools is optional but it's not installed.";
 }
 
-hash FastTree 2>/dev/null || {
-    echo >&2 "FastTree is optional but it's not installed.";
+hash raxmlHPC 2>/dev/null || hash raxmlHPC-SSE3 2>/dev/null || hash raxmlHPC-PTHREADS 2>/dev/null || {
+    echo >&2 "raxml is optional but it's not installed.";
+    exit 1;
 }
 
 echo >&2 OK

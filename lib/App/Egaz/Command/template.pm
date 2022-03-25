@@ -40,6 +40,7 @@ sub opt_spec {
         [ "tree=s",      "a predefined guiding tree for multiz", ],
         [ "order",       "multiple alignments with original order (using fake_tree.nwk)", ],
         [ "rawphylo",    "create guiding tree by joining pairwise alignments", ],
+        [ "raxml",       "create a ML tree by RAxML", ],
         [ "mash",        "create guiding tree by mash", ],
         [ "vcf",         "create vcf files", ],
         [],
@@ -68,16 +69,30 @@ sub description {
     $desc .= ucfirst(abstract) . ".\n";
     $desc .= <<'MARKDOWN';
 
-* <path/seqdir> are directories containing multiple .fa files that represent genomes
-* Each .fa files in <path/target> should contain only one sequences, otherwise second or latter sequences will be omitted
-* Species/strain names in result files are the basenames of <path/seqdir>
-* Default --multiname is the basename of --outdir. This option is for more than one aligning combinations
-* without --tree, --rawphylo, or --mash, the order of multiz stitch is the same as the one from command line
+* `path/seqdir` are directories containing multiple .fa files that represent genomes
+
+* Each .fa files in `path/target` should contain only one sequences, otherwise second or latter
+  sequences will be omitted
+
+* Species/strain names in result files are the basenames of `path/seqdir`
+
+* Default --multiname is the basename of --outdir. This option is for more than one aligning
+  combinations
+
+* without --tree, --rawphylo, or --mash, the order of multiz stitch is the same as the one from
+  command line
+
 * --tree > --order > --rawphylo > --mash
+
 * --outgroup uses basename, not full path. *DON'T* set --outgroup to target
+
 * --taxon may also contain unused taxonomy terms, for the construction of chr_length.csv
-* --preq is designed for NCBI ASSEMBLY and WGS, <path/seqdir> are directories containing multiple
-    directories
+
+* --preq is designed for NCBI ASSEMBLY and WGS, `path/seqdir` are directories containing multiple
+  directories
+
+* By default, `FastTree` is used to produce a phylotree. Turn on `--raxml` to use RAxML, which is
+  more accurate and supports outgroups
 
 MARKDOWN
 
