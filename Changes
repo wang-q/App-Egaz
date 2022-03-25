@@ -5,6 +5,8 @@ Revision history for Perl extension App-Egaz
     - Move `egaz plottree` to `plotr tree`
     - Remove `egaz masked`, use `faops masked` instead
     - Move tt2 to share/
+    - `egaz template`
+        - Add `--mash`
 
 0.2.5 2020-03-06T19:07:31Z
 

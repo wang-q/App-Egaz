@@ -82,6 +82,23 @@ hash Rscript 2>/dev/null || {
     echo >&2 "R is required but it's not installed.";
 }
 
+Rscript -e 'if(!require(ape)){ q(status = 1) }' 2>/dev/null || {
+    echo >&2 "R package ape is optional but it's not installed.";
+}
+
+Rscript -e 'if(!require(tidyr)){ q(status = 1) }' 2>/dev/null || {
+    echo >&2 "R package tidyr is optional but it's not installed.";
+}
+
+Rscript -e 'if(!require(readr)){ q(status = 1) }' 2>/dev/null || {
+    echo >&2 "R package readr is optional but it's not installed.";
+}
+
+hash tsv-select 2>/dev/null || {
+    echo >&2 "tsv-utils is optional but it's not installed.";
+    exit 1;
+}
+
 hash circos 2>/dev/null || {
     echo >&2 "circos is optional but it's not installed.";
 }
