@@ -17,3 +17,8 @@ fi
 
 [% END -%]
 
+log_info mash triangle
+mash triangle -E -p [% opt.parallel %] -l <(
+    cat ../genome.lst | parallel echo "{}.msh"
+    ) \
+    > dist.tsv

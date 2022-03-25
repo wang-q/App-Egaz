@@ -199,6 +199,16 @@ sub execute {
     print STDERR YAML::Syck::Dump( $opt->{data} )
         if $opt->{verbose} and $opt->{mode} ne "prep";
 
+    # genome.lst
+    if ( $opt->{mode} ne "prep" ) {
+        print STDERR "Create genome.lst\n";
+        my $fh = Path::Tiny::path( $opt->{outdir}, "genome.lst" )->openw;
+        for my $i ( 0 .. $#data ) {
+            print {$fh} "$data[$i]->{name}\n";
+        }
+        close $fh;
+    }
+
     # If there's no phylo tree, generate a fake one.
     if ( $opt->{mode} eq "multi" and !$opt->{tree} ) {
         print STDERR "Create fake_tree.nwk\n";
@@ -220,6 +230,7 @@ sub execute {
     # multi *.sh files
     #----------------------------#
     $self->gen_pair( $opt, $args );
+    $self->gen_mash( $opt, $args );
     $self->gen_rawphylo( $opt, $args );
     $self->gen_multi( $opt, $args );
     $self->gen_vcf( $opt, $args );

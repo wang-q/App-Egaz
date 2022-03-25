@@ -186,10 +186,10 @@ cd ~/data/egaz
 egaz template \
     S288c RM11_1a YJM789 Spar Spas Seub \
     --multi -o multi6/ \
-    --rawphylo --order --parallel 6 -v
+    --mash --order --parallel 6 -v
 
 bash multi6/1_pair.sh
-bash multi6/2_rawphylo.sh
+bash multi6/1_mash.sh
 bash multi6/3_multi.sh
 
 egaz template \
