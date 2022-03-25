@@ -6,7 +6,8 @@ App::Egaz - Backend of **E**asy **G**enome **A**ligner
 # SYNOPSIS
 
     egaz <command> [-?h] [long options...]
-            -? -h --help  show help
+            --help (or -h)  show help
+                            aka -?
 
     Available commands:
 
@@ -23,7 +24,6 @@ App::Egaz - Backend of **E**asy **G**enome **A**ligner
            lav2axt: convert .lav files to .axt
            lav2psl: convert .lav files to .psl
             lpcnam: the pipeline of pairwise lav-psl-chain-net-axt-maf
-            masked: masked (or gaps) regions in fasta files
          maskfasta: soft/hard-masking sequences in a fasta file
             multiz: multiz step by step
          normalize: normalize lav files

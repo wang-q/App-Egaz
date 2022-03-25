@@ -10,6 +10,18 @@ if [ -e Results/[% opt.multiname %].nwk ]; then
     exit;
 fi
 
+[% IF opt.fasttree -%]
+if [ -s Results/[% opt.multiname %].ft.nwk ]; then
+    log_info Results/[% opt.multiname %].ft.nwk exists
+    exit;
+fi
+[% ELSE -%]
+if [ -s Results/[% opt.multiname %].raxml.nwk ]; then
+    log_info Results/[% opt.multiname %].raxml.nwk exists
+    exit;
+fi
+[% END -%]
+
 if [ -d [% opt.multiname %]_mz ]; then
     rm -fr [% opt.multiname %]_mz;
 fi;
@@ -59,33 +71,28 @@ egaz multiz \
     --parallel [% opt.parallel %]
 
 [% ELSE %]
-if [ -f Results/[% opt.multiname %].raw.nwk ]; then
-    egaz multiz \
+egaz multiz \
 [% FOREACH item IN opt.data -%]
 [% IF not loop.first -%]
 [% t = opt.data.0.name -%]
 [% q = item.name -%]
-        Pairwise/[% t %]vs[% q %] \
+    Pairwise/[% t %]vs[% q %] \
 [% END -%]
 [% END -%]
-        --tree Results/[% opt.multiname %].raw.nwk \
-        -o [% opt.multiname %]_mz \
-        --parallel [% opt.parallel %]
+    --tree $(
+        if [ -s Results/[% opt.multiname %].mash.raw.nwk ]; then
+            echo Results/[% opt.multiname %].mash.raw.nwk;
+        elif [ -s Results/[% opt.multiname %].raxml.raw.nwk ]; then
+            echo Results/[% opt.multiname %].raxml.raw.nwk;
+        elif [ -s Results/[% opt.multiname %].ft.raw.nwk ]; then
+            echo Results/[% opt.multiname %].ft.raw.nwk;
+        else
+            echo fake_tree.nwk;
+        fi
+    ) \
+    -o [% opt.multiname %]_mz \
+    --parallel [% opt.parallel %]
 
-else
-    egaz multiz \
-[% FOREACH item IN opt.data -%]
-[% IF not loop.first -%]
-[% t = opt.data.0.name -%]
-[% q = item.name -%]
-        Pairwise/[% t %]vs[% q %] \
-[% END -%]
-[% END -%]
-        --tree fake_tree.nwk \
-        -o [% opt.multiname %]_mz \
-        --parallel [% opt.parallel %]
-
-fi
 [% END -%]
 
 find [% opt.multiname %]_mz -type f -name "*.maf" |
@@ -122,6 +129,20 @@ find [% opt.multiname %]_refined -type f -name "*.fas" |
 # RAxML
 #----------------------------#
 [% IF opt.data.size > 3 -%]
+[% IF opt.fasttree -%]
+log_info FastTree
+
+gzip -dcf [% opt.multiname %]_refined/*.fas.gz |
+    fasops concat stdin genome.lst -o stdout |
+    FastTree -nt -fastest -noml -boot 100 |
+[% IF opt.outgroup -%]
+    nw_reroot - [% opt.outgroup %] |
+[% END -%]
+    nw_order - -c n \
+    > Results/[% opt.multiname %].ft.nwk
+
+plotr tree Results/[% opt.multiname %].ft.nwk
+[% ELSE -%]
 log_info RAxML
 
 egaz raxml \
@@ -133,9 +154,15 @@ egaz raxml \
     -v \
 [% END -%]
     [% opt.multiname %]_refined/*.fas.gz \
-    -o Results/[% opt.multiname %].nwk
+    -o Results/[% opt.multiname %].nwk.tmp
 
-plotr tree Results/[% opt.multiname %].nwk
+cat Results/[% opt.multiname %].nwk.tmp |
+    nw_order - -c n \
+    > Results/[% opt.multiname %].raxml.nwk
+rm Results/[% opt.multiname %].nwk.tmp
+
+plotr tree Results/[% opt.multiname %].raxml.nwk
+[% END -%]
 
 [% ELSIF opt.data.size == 3 -%]
 echo "(([% opt.data.0.name %],[% opt.data.1.name %]),[% opt.data.2.name %]);" > Results/[% opt.multiname %].nwk

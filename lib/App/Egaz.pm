@@ -17,7 +17,8 @@ App::Egaz - Backend of B<E>asy B<G>enome B<A>ligner
 =head1 SYNOPSIS
 
     egaz <command> [-?h] [long options...]
-            -? -h --help  show help
+            --help (or -h)  show help
+                            aka -?
 
     Available commands:
 
@@ -34,7 +35,6 @@ App::Egaz - Backend of B<E>asy B<G>enome B<A>ligner
            lav2axt: convert .lav files to .axt
            lav2psl: convert .lav files to .psl
             lpcnam: the pipeline of pairwise lav-psl-chain-net-axt-maf
-            masked: masked (or gaps) regions in fasta files
          maskfasta: soft/hard-masking sequences in a fasta file
             multiz: multiz step by step
          normalize: normalize lav files
@@ -43,7 +43,6 @@ App::Egaz - Backend of B<E>asy B<G>enome B<A>ligner
              raxml: raxml wrapper to construct phylogenetic trees
       repeatmasker: RepeatMasker wrapper
           template: create executing bash files
-
 
 Run C<egaz help command-name> for usage information.
 

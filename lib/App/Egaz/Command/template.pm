@@ -40,7 +40,7 @@ sub opt_spec {
         [ "tree=s",      "a predefined guiding tree for multiz", ],
         [ "order",       "multiple alignments with original order (using fake_tree.nwk)", ],
         [ "rawphylo",    "create guiding tree by joining pairwise alignments", ],
-        [ "raxml",       "create a ML tree by RAxML", ],
+        [ "fasttree",    "use FastTree instead of RaxML to create a phylotree", ],
         [ "mash",        "create guiding tree by mash", ],
         [ "vcf",         "create vcf files", ],
         [],
@@ -91,8 +91,8 @@ sub description {
 * --preq is designed for NCBI ASSEMBLY and WGS, `path/seqdir` are directories containing multiple
   directories
 
-* By default, `FastTree` is used to produce a phylotree. Turn on `--raxml` to use RAxML, which is
-  more accurate and supports outgroups
+* By default, `RAxML` is used to produce a phylotree. Turn on `--fasttree` to use FastTree, which is
+  less accurate and doesn't support outgroups by itself
 
 MARKDOWN
 

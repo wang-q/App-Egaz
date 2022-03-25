@@ -5,14 +5,14 @@
 #----------------------------#
 log_warn [% sh %]
 
-[% IF opt.raxml -%]
-if [ -s Results/[% opt.multiname %].raxml.raw.nwk ]; then
-    log_info Results/[% opt.multiname %].raxml.raw.nwk exists
+[% IF opt.fasttree -%]
+if [ -s Results/[% opt.multiname %].ft.raw.nwk ]; then
+    log_info Results/[% opt.multiname %].ft.raw.nwk exists
     exit;
 fi
 [% ELSE -%]
-if [ -s Results/[% opt.multiname %].ft.raw.nwk ]; then
-    log_info Results/[% opt.multiname %].ft.raw.nwk exists
+if [ -s Results/[% opt.multiname %].raxml.raw.nwk ]; then
+    log_info Results/[% opt.multiname %].raxml.raw.nwk exists
     exit;
 fi
 [% END -%]
@@ -149,7 +149,19 @@ fasops refine \
 # FastTree/RAxML
 #----------------------------#
 [% IF opt.data.size > 3 -%]
-[% IF opt.raxml -%]
+[% IF opt.fasttree -%]
+log_info FastTree
+
+fasops concat [% opt.multiname %]_raw/join.refine.fas genome.lst -o stdout |
+    FastTree -nt -fastest -noml -boot 100 |
+[% IF opt.outgroup -%]
+    nw_reroot - [% opt.outgroup %] |
+[% END -%]
+    nw_order - -c n \
+    > Results/[% opt.multiname %].ft.raw.nwk
+
+plotr tree Results/[% opt.multiname %].ft.raw.nwk
+[% ELSE -%]
 log_info RAxML
 
 egaz raxml \
@@ -161,25 +173,13 @@ egaz raxml \
     -v \
 [% END -%]
     [% opt.multiname %]_raw/join.refine.fas \
-    -o stdout |
+    -o Results/[% opt.multiname %].raw.nwk.tmp
+
+cat Results/[% opt.multiname %].raw.nwk.tmp |
     nw_order - -c n \
     > Results/[% opt.multiname %].raxml.raw.nwk
 
-nw_display -s -b 'visibility:hidden' -w 600 -v 30 Results/[% opt.multiname %].raxml.raw.nwk \
-    > Results/[% opt.multiname %].raxml.raw.svg
-[% ELSE -%]
-log_info FastTree
-
-fasops concat [% opt.multiname %]_raw/join.refine.fas genome.lst -o stdout |
-    FastTree -nt -fastest -noml -boot 100 |
-[% IF opt.outgroup -%]
-    nw_reroot - [% opt.outgroup %] |
-[% END -%]
-    nw_order - -c n \
-    > Results/[% opt.multiname %].ft.raw.nwk
-
-nw_display -s -b 'visibility:hidden' -w 600 -v 30 Results/[% opt.multiname %].ft.raw.nwk \
-    > Results/[% opt.multiname %].ft.raw.svg
+plotr tree Results/[% opt.multiname %].raxml.raw.nwk
 [% END -%]
 
 [% ELSIF opt.data.size == 3 -%]

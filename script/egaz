@@ -13,6 +13,8 @@ For help with App::Egaz, run "egaz help"
 
 __END__
 
+minil install --notest && minil clean -y
+
 perl -I lib/ script/egaz help
 
 lastz t/pseudocat.fa t/pseudopig.fa > t/default.lav

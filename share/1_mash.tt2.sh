@@ -68,5 +68,4 @@ cat tree.nwk |
     nw_order - -c n \
     > ../Results/[% opt.multiname %].mash.raw.nwk
 
-nw_display -s -b 'visibility:hidden' -w 600 -v 30 ../Results/[% opt.multiname %].mash.raw.nwk \
-    > ../Results/[% opt.multiname %].mash.raw.svg
+plotr tree ../Results/[% opt.multiname %].mash.raw.nwk
