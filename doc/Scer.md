@@ -178,6 +178,22 @@ fasops covers S288cvsRM11_1a_partition.fas -n S288c -o stdout |
 
 ```
 
+### A quick dotplot
+
+```shell
+cd ~/data/egaz
+
+brew install wang-q/tap/wfmash
+cargo install --git https://github.com/ekg/pafplot --branch main
+
+wfmash S288c/chr.fasta RM11_1a/chr.fasta > aln.paf
+paf2dotplot png medium aln.paf
+
+pafplot aln.paf
+
+
+```
+
 ## Template steps
 
 ```shell script
