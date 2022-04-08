@@ -1,4 +1,4 @@
-FROM linuxbrew/brew
+FROM homebrew/brew
 LABEL maintainer="Qiang Wang <wang-q@outlook.com>"
 
 # Build
@@ -12,7 +12,7 @@ LABEL maintainer="Qiang Wang <wang-q@outlook.com>"
 # https://docs.docker.com/ci-cd/github-actions/
 
 # Change this when Perl updated
-ENV PATH=/home/linuxbrew/bin:/home/linuxbrew/.linuxbrew/Cellar/perl/5.32.1/bin:$PATH
+ENV PATH=/home/linuxbrew/bin:/home/linuxbrew/.linuxbrew/Cellar/perl/5.34.0/bin:$PATH
 
 RUN true \
  && apt-get update \
@@ -28,7 +28,6 @@ RUN true \
  && curl -L https://cpanmin.us | perl - App::cpanminus \
  && cpanm -nq Text::Soundex \
  && brew install python \
- && pip3 install --upgrade pip setuptools \
  && pip3 install h5py \
  && rm -fr $(brew --cache)/* \
  && rm -fr /root/.cpan \
