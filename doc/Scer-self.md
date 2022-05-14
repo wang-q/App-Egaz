@@ -126,7 +126,7 @@ linkr sort -o links.sort.tsv \
     links.lastz.tsv links.blast.tsv
 
 linkr clean   links.sort.tsv       -o links.sort.clean.tsv
-linkr merge   links.sort.clean.tsv -o links.merge.tsv       -c 0.95
+rgr   merge   links.sort.clean.tsv -o links.merge.tsv       -c 0.95
 linkr clean   links.sort.clean.tsv -o links.clean.tsv       -r links.merge.tsv --bundle 500
 linkr connect links.clean.tsv      -o links.connect.tsv     -r 0.9
 linkr filter  links.connect.tsv    -o links.filter.tsv      -r 0.8

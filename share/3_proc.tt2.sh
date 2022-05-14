@@ -126,7 +126,7 @@ linkr sort -o links.sort.tsv \
 
 echo >&2 "    * Clean links"
 linkr clean   links.sort.tsv       -o links.sort.clean.tsv
-linkr merge   links.sort.clean.tsv -o links.merge.tsv       -c 0.95
+rgr   merge   links.sort.clean.tsv -o links.merge.tsv       -c 0.95
 linkr clean   links.sort.clean.tsv -o links.clean.tsv       -r links.merge.tsv --bundle 500
 
 echo >&2 "    * Connect links"
