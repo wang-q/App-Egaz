@@ -121,6 +121,16 @@ This software is copyright (c) 2018 by Qiang Wang.
 This library is free software; you can redistribute it and/or modify
 it under the same terms as Perl itself.
 
+=head1 CITATION
+
+Yan Wang, Xiaohui Liang, Yuqian Jiang, Danjiang Dong, Cong Zhang, Tianqiang Song, Ming Chen, Yong You, Han Liu, Min Ge, Haibin Dai, Fengchan Xi, Wanqing Zhou, Jian-Qun Chen, Qiang Wang, Qihan Chen, Wenkui Yu.
+
+Novel fast pathogen diagnosis method for severe pneumonia patients in the intensive care unit: randomized clinical trial.
+
+eLife. 2022; 11: e79014.
+
+DOI: L<https://doi.org/10.7554/eLife.79014>
+
 =cut
 
 1;
