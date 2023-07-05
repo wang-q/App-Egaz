@@ -40,7 +40,9 @@ fasops axt2fas \
 
 fasops check S288cvsSelf_axt.fas S288c.fa --name S288c -o stdout | grep -v "OK"
 
-fasops covers S288cvsSelf_axt.fas -n S288c -o stdout |
+cat S288cvsSelf_axt.fas |
+    grep "^>S288c." |
+    spanr cover stdin |
     spanr stat S288c/chr.sizes stdin -o S288cvsSelf_axt.csv
 
 ```
@@ -78,10 +80,15 @@ egaz exactmatch query.sep.fasta genome.fa \
 fasops replace axt.target.fas replace.query.tsv -o axt.correct.fas
 
 # coverage stats
-fasops covers axt.correct.fas -o axt.correct.yml
-spanr split axt.correct.yml -s .temp.yml -o .
-spanr compare --op union target.temp.yml query.temp.yml -o axt.union.yml
-spanr stat chr.sizes axt.union.yml -o union.csv
+cat axt.correct.fas |
+    grep "^>target." |
+    spanr cover stdin -o target.temp.json
+cat axt.correct.fas |
+    grep "^>query." |
+    spanr cover stdin -o query.temp.json
+
+spanr compare --op union target.temp.json query.temp.json -o axt.union.json
+spanr stat chr.sizes axt.union.json -o union.csv
 
 # links by lastz-chain
 fasops links axt.correct.fas -o stdout |

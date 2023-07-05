@@ -63,10 +63,16 @@ fasops replace axt.target.fas replace.query.tsv -o axt.correct.fas
 # Coverage stats
 #----------------------------#
 echo >&2 "==> Coverage stats"
-fasops covers axt.correct.fas -o axt.correct.yml
-spanr split axt.correct.yml -s .temp.yml -o .
-spanr compare --op union target.temp.yml query.temp.yml -o axt.union.yml
-spanr stat chr.sizes axt.union.yml -o union.csv
+
+cat axt.correct.fas |
+    grep "^>target." |
+    spanr cover stdin -o target.temp.json
+cat axt.correct.fas |
+    grep "^>query." |
+    spanr cover stdin -o query.temp.json
+
+spanr compare --op union target.temp.json query.temp.json -o axt.union.json
+spanr stat chr.sizes axt.union.json -o union.csv
 
 # links by lastz-chain
 fasops links axt.correct.fas -o stdout |

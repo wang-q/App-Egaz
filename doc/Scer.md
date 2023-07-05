@@ -49,9 +49,9 @@ faops filter -N -s download/Saccharomyces_cerevisiae.R64-1-1.dna_sm.toplevel.fa.
 egaz prepseq S288c.fa -o S288c -v
 
 gzip -dcf download/Saccharomyces_cerevisiae.R64-1-1.105.gff3.gz > S288c/chr.gff
-spanr gff --tag CDS S288c/chr.gff -o S288c/cds.yml
-faops masked S288c/*.fa | spanr cover stdin -o S288c/repeat.yml
-spanr merge S288c/repeat.yml S288c/cds.yml -o S288c/anno.yml
+spanr gff --tag CDS S288c/chr.gff -o S288c/cds.json
+faops masked S288c/*.fa | spanr cover stdin -o S288c/repeat.json
+spanr merge S288c/repeat.json S288c/cds.json -o S288c/anno.json
 
 faops filter -N -s download/GCA_000149365*.fna.gz RM11_1a.fa
 egaz prepseq \
@@ -101,7 +101,9 @@ fasops axt2fas \
 fasops check S288cvsRM11_1a_lav2axt.fas S288c.fa --name S288c -o stdout | grep -v "OK"
 fasops check S288cvsRM11_1a_lav2axt.fas RM11_1a.fa --name RM11_1a -o stdout | grep -v "OK"
 
-fasops covers S288cvsRM11_1a_lav2axt.fas -n S288c -o stdout |
+cat S288cvsRM11_1a_lav2axt.fas |
+    grep "^>S288c." |
+    spanr cover stdin |
     spanr stat S288c/chr.sizes stdin -o S288cvsRM11_1a_lav2axt.csv
 
 ```
@@ -128,7 +130,9 @@ fasops axt2fas \
 fasops check S288cvsRM11_1a_lpcnam_axt.fas S288c.fa --name S288c -o stdout | grep -v "OK"
 fasops check S288cvsRM11_1a_lpcnam_axt.fas RM11_1a.fa --name RM11_1a -o stdout | grep -v "OK"
 
-fasops covers S288cvsRM11_1a_lpcnam_axt.fas -n S288c -o stdout |
+cat S288cvsRM11_1a_lpcnam_axt.fas |
+    grep "^>S288c." |
+    spanr cover stdin |
     spanr stat S288c/chr.sizes stdin -o S288cvsRM11_1a_lpcnam_axt.csv
 
 # UCSC's syntenic pipeline
@@ -141,7 +145,9 @@ fasops maf2fas S288cvsRM11_1a_lpcnam_syn/mafSynNet/*.synNet.maf.gz -o S288cvsRM1
 fasops check S288cvsRM11_1a_lpcnam_syn.fas S288c.fa --name S288c -o stdout | grep -v "OK"
 fasops check S288cvsRM11_1a_lpcnam_syn.fas RM11_1a.fa --name RM11_1a -o stdout | grep -v "OK"
 
-fasops covers S288cvsRM11_1a_lpcnam_syn.fas -n S288c -o stdout |
+cat S288cvsRM11_1a_lpcnam_syn.fas |
+    grep "^>S288c." |
+    spanr cover stdin |
     spanr stat S288c/chr.sizes stdin -o S288cvsRM11_1a_lpcnam_syn.csv
 
 ```
@@ -173,7 +179,9 @@ fasops axt2fas \
 fasops check S288cvsRM11_1a_partition.fas S288c.fa --name S288c -o stdout | grep -v "OK"
 fasops check S288cvsRM11_1a_partition.fas RM11_1a.fa --name RM11_1a -o stdout | grep -v "OK"
 
-fasops covers S288cvsRM11_1a_partition.fas -n S288c -o stdout |
+cat S288cvsRM11_1a_partition.fas |
+    grep "^>S288c." |
+    spanr cover stdin |
     spanr stat S288c/chr.sizes stdin -o S288cvsRM11_1a_partition.csv
 
 ```
@@ -190,7 +198,6 @@ wfmash S288c/chr.fasta RM11_1a/chr.fasta > aln.paf
 paf2dotplot png medium aln.paf
 
 pafplot aln.paf
-
 
 ```
 
