@@ -2,6 +2,9 @@ Revision history for Perl extension App-Egaz
 
 {{$NEXT}}
 
+    - Remove --rawphylow from `egaz template`
+    - `spanr` is now generating .json instead of .yml
+
 0.2.6 2022-03-25T19:33:02Z
 
     - Move `egaz plottree` to `plotr tree`

@@ -39,7 +39,7 @@ sub opt_spec {
         [ "outgroup=s",  "the name of outgroup", ],
         [ "tree=s",      "a predefined guiding tree for multiz", ],
         [ "order",       "multiple alignments with original order (using fake_tree.nwk)", ],
-        [ "rawphylo",    "create guiding tree by joining pairwise alignments", ],
+        # [ "rawphylo",    "create guiding tree by joining pairwise alignments", ],
         [ "fasttree",    "use FastTree instead of RaxML to create a phylotree", ],
         [ "mash",        "create guiding tree by mash", ],
         [ "vcf",         "create vcf files", ],
@@ -79,10 +79,10 @@ sub description {
 * Default --multiname is the basename of --outdir. This option is for more than one aligning
   combinations
 
-* without --tree, --rawphylo, or --mash, the order of multiz stitch is the same as the one from
+* without --tree, or --mash, the order of multiz stitch is the same as the one from
   command line
 
-* --tree > --order > --mash > --rawphylo
+* --tree > --order > --mash
 
 * --outgroup uses basename, not full path. *DON'T* set --outgroup to target
 
@@ -246,7 +246,7 @@ sub execute {
     #----------------------------#
     $self->gen_pair( $opt, $args );
     $self->gen_mash( $opt, $args );
-    $self->gen_rawphylo( $opt, $args );
+    # $self->gen_rawphylo( $opt, $args );
     $self->gen_multi( $opt, $args );
     $self->gen_vcf( $opt, $args );
 
@@ -408,42 +408,42 @@ cd Results
 #----------------------------#
 # Create anno.yml
 #----------------------------#
-log_info create anno.yml
+log_info create anno.json
 
-if [ -e [% opt.data.0.dir -%]/anno.yml ]; then
-    cp [% opt.data.0.dir -%]/anno.yml anno.yml;
+if [ -e [% opt.data.0.dir -%]/anno.json ]; then
+    cp [% opt.data.0.dir -%]/anno.json anno.json;
 else
-    if [ -e [% opt.data.0.dir -%]/cds.yml ]; then
-        cp [% opt.data.0.dir -%]/cds.yml cds.yml;
+    if [ -e [% opt.data.0.dir -%]/cds.json ]; then
+        cp [% opt.data.0.dir -%]/cds.json cds.json;
     else
         spanr gff --tag CDS \
             [% opt.data.0.dir -%]/*.gff \
-            -o cds.yml
+            -o cds.json
     fi
 
-    if [ -e [% opt.data.0.dir -%]/repeat.yml ]; then
-        cp [% opt.data.0.dir -%]/repeat.yml repeat.yml;
+    if [ -e [% opt.data.0.dir -%]/repeat.json ]; then
+        cp [% opt.data.0.dir -%]/repeat.json repeat.json;
     else
         spanr gff \
             [% opt.data.0.dir -%]/*.rm.gff \
-            -o repeat.yml
+            -o repeat.json
     fi
 
-    # create empty cds.yml or repeat.yml
-    spanr genome [% opt.data.0.dir -%]/chr.sizes -o chr.yml
-    spanr compare --op diff chr.yml chr.yml -o empty.yml
+    # create empty cds.json or repeat.json
+    spanr genome [% opt.data.0.dir -%]/chr.sizes -o chr.json
+    spanr compare --op diff chr.json chr.json -o empty.json
 
     for type in cds repeat; do
-        if [ ! -e ${type}.yml ]; then
-            cp empty.yml ${type}.yml
+        if [ ! -e ${type}.json ]; then
+            cp empty.json ${type}.json
         fi
     done
 
     spanr merge \
-        cds.yml repeat.yml \
-        -o anno.yml
+        cds.json repeat.json \
+        -o anno.json
 
-    rm -f repeat.yml cds.yml chr.yml empty.yml
+    rm -f repeat.json cds.json chr.json empty.json
 fi
 
 #----------------------------#
@@ -454,7 +454,7 @@ log_info run alignDB.pl
 alignDB.pl \
     -d [% opt.multiname %] \
     --da [% opt.outdir %]/[% opt.multiname %]_refined \
-    -a [% opt.outdir %]/Results/anno.yml \
+    -a [% opt.outdir %]/Results/anno.json \
 [% IF opt.outgroup -%]
     --outgroup \
 [% END -%]
@@ -584,26 +584,26 @@ sub gen_pair {
     ) or Carp::confess Template->error;
 }
 
-sub gen_rawphylo {
-    my ( $self, $opt, $args ) = @_;
-
-    return unless $opt->{mode} eq "multi" and $opt->{rawphylo};
-
-    my $tt       = Template->new( INCLUDE_PATH => [ File::ShareDir::dist_dir('App-Egaz') ], );
-    my $sh_name  = "2_rawphylo.sh";
-    my $template = "2_rawphylo.tt2.sh";
-
-    print STDERR "Create $sh_name\n";
-
-    $tt->process(
-        $template,
-        {   args => $args,
-            opt  => $opt,
-            sh   => $sh_name,
-        },
-        Path::Tiny::path( $opt->{outdir}, $sh_name )->stringify
-    ) or Carp::confess Template->error;
-}
+# sub gen_rawphylo {
+#     my ( $self, $opt, $args ) = @_;
+#
+#     return unless $opt->{mode} eq "multi" and $opt->{rawphylo};
+#
+#     my $tt       = Template->new( INCLUDE_PATH => [ File::ShareDir::dist_dir('App-Egaz') ], );
+#     my $sh_name  = "2_rawphylo.sh";
+#     my $template = "2_rawphylo.tt2.sh";
+#
+#     print STDERR "Create $sh_name\n";
+#
+#     $tt->process(
+#         $template,
+#         {   args => $args,
+#             opt  => $opt,
+#             sh   => $sh_name,
+#         },
+#         Path::Tiny::path( $opt->{outdir}, $sh_name )->stringify
+#     ) or Carp::confess Template->error;
+# }
 
 sub gen_mash {
     my ( $self, $opt, $args ) = @_;
