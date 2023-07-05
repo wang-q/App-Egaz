@@ -170,7 +170,7 @@ fasops refine pair.temp.fas    -o pair.refine.fas  --msa mafft -p [% opt.paralle
 
 cat links.refine.tsv |
     perl -nla -F"\t" -e "print for @F" |
-    spanr cover stdin -o cover.yml
+    spanr cover stdin -o cover.json
 
 log_debug Stats of links
 echo "key,count" > links.count.csv
@@ -180,7 +180,7 @@ for n in 2 3 4-50; do
 
     cat links.copy${n}.tsv |
         perl -nla -F"\t" -e "print for @F" |
-        spanr cover stdin -o copy${n}.temp.yml
+        spanr cover stdin -o copy${n}.temp.json
 
     wc -l links.copy${n}.tsv |
         perl -nl -e "
@@ -194,20 +194,20 @@ for n in 2 3 4-50; do
     rm links.copy${n}.tsv
 done
 
-spanr merge copy2.temp.yml copy3.temp.yml copy4-50.temp.yml -o copy.yml
-spanr stat chr.sizes copy.yml --all -o links.copy.csv
+spanr merge copy2.temp.json copy3.temp.json copy4-50.temp.json -o copy.json
+spanr stat chr.sizes copy.json --all -o links.copy.csv
 
 fasops mergecsv links.copy.csv links.count.csv --concat -o copy.csv
 
 log_debug Coverage figure
-spanr stat chr.sizes cover.yml -o cover.yml.csv
+spanr stat chr.sizes cover.json -o cover.json.csv
 #perl cover_figure.pl --size chr.sizes -f cover.yml
 
 log_info Results for [% id %]
 
-cp cover.yml        ../../Results/[% id %]/[% id %].cover.yml
-cp copy.yml         ../../Results/[% id %]/[% id %].copy.yml
-mv cover.yml.csv    ../../Results/[% id %]/[% id %].cover.csv
+cp cover.json       ../../Results/[% id %]/[% id %].cover.json
+cp copy.json        ../../Results/[% id %]/[% id %].copy.json
+mv cover.json.csv   ../../Results/[% id %]/[% id %].cover.csv
 mv copy.csv         ../../Results/[% id %]/[% id %].copy.csv
 cp links.refine.tsv ../../Results/[% id %]/[% id %].links.tsv
 #mv cover.png        ../../Results/[% id %]/[% id %].cover.png
@@ -221,7 +221,7 @@ find . -type f -name "*all.fasta*"   | parallel --no-run-if-empty rm
 find . -type f -name "*.sep.fasta"   | parallel --no-run-if-empty rm
 find . -type f -name "axt.*"         | parallel --no-run-if-empty rm
 find . -type f -name "replace.*.tsv" | parallel --no-run-if-empty rm
-find . -type f -name "*.temp.yml"    | parallel --no-run-if-empty rm
+find . -type f -name "*.temp.json"   | parallel --no-run-if-empty rm
 find . -type f -name "*.temp.fas"    | parallel --no-run-if-empty rm
 
 popd > /dev/null

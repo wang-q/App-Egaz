@@ -151,7 +151,7 @@ fasops refine pair.temp.fas  -o pair.refine.fas  --msa mafft -p 8
 
 cat links.refine.tsv |
     perl -nla -F"\t" -e 'print for @F' |
-    spanr cover stdin -o cover.yml
+    spanr cover stdin -o cover.json
 
 echo "* Stats of links"
 echo "key,count" > links.count.csv
@@ -161,7 +161,7 @@ for n in 2 3 4-50; do
 
     cat links.copy${n}.tsv |
         perl -nla -F"\t" -e 'print for @F' |
-        spanr cover stdin -o copy${n}.yml
+        spanr cover stdin -o copy${n}.json
 
     wc -l links.copy${n}.tsv |
         perl -nl -e '
@@ -175,13 +175,13 @@ for n in 2 3 4-50; do
     rm links.copy${n}.tsv
 done
 
-spanr merge copy2.yml copy3.yml copy4-50.yml -o copy.all.yml
-spanr stat chr.sizes copy.all.yml --all -o links.copy.csv
+spanr merge copy2.json copy3.json copy4-50.json -o copy.all.json
+spanr stat chr.sizes copy.all.json --all -o links.copy.csv
 
 fasops mergecsv links.copy.csv links.count.csv --concat -o copy.csv
 
 echo "* Coverage figure"
-spanr stat chr.sizes cover.yml -o cover.yml.csv
+spanr stat chr.sizes cover.json -o cover.json.csv
 
 ```
 
