@@ -45,6 +45,87 @@ cat S288cvsSelf_axt.fas |
     spanr cover stdin |
     spanr stat S288c/chr.sizes stdin -o S288cvsSelf_axt.csv
 
+cat S288cvsSelf_axt.fas |
+    grep "^>S288c." |
+    rgr prop S288c/repeat.json stdin |
+    tsv-summarize --quantile "2:0.1,0.5,0.9"
+#0       0.0053  0.2281
+
+```
+
+## minimap2
+
+```shell
+cd ~/data/egaz
+
+# https://github.com/lh3/minimap2/blob/master/cookbook.md#constructing-self-homology-map
+minimap2 -DP -k19 -w19 -m200 S288c/chr.fasta S288c/chr.fasta > mm.paf
+
+# https://github.com/lh3/miniasm/blob/master/PAF.md
+# 10	int	Number of residue matches
+cat mm.paf |
+    tsv-filter --ge "10:1000" |
+    tsv-sort -k1,1 -k6,6 -k3,3n -k8,8n \
+    > mm.length.paf
+
+# convert to rg
+cat mm.length.paf |
+     perl -nla -e '
+        my $f_id = $F[0];
+        my $f_begin = $F[2] + 1;
+        my $f_end = $F[3];
+
+        my $g_id = $F[5];
+        my $g_begin = $F[7] + 1;
+        my $g_end = $F[8];
+
+        print "$f_id:$f_begin-$f_end";
+        print "$g_id:$g_begin-$g_end";
+    ' |
+    tsv-uniq |
+    rgr sort stdin \
+    > mm.rg
+
+# remove repeats
+rgr prop S288c/repeat.json mm.rg |
+    tsv-filter --le "2:0.3" |
+    tsv-select -f 1 \
+    > mm.filter.rg
+
+faops region S288c/chr.fasta mm.filter.rg mm.gl.fasta
+
+# stats
+spanr cover mm.rg |
+    spanr stat S288c/chr.sizes stdin --all
+
+spanr cover mm.filter.rg |
+    spanr stat S288c/chr.sizes stdin --all
+
+spanr stat S288c/chr.sizes S288c/repeat.json --all
+
+# draw the dotplot
+cat mm.length.paf |
+    tsv-select -f 1-12 |
+    rgr field stdin --chr 1 --start 3 --end 4 -a |
+    rgr runlist --op overlap -f 13 \
+        <(spanr cover mm.filter.rg) \
+        stdin |
+    tsv-select -f 1-12 \
+    > mm.filter.paf
+
+paf2dotplot png medium mm.filter.paf
+
+```
+
+## `wfmash -X`
+
+```shell
+cd ~/data/egaz
+
+wfmash -X -p 70 S288c/chr.fasta S288c/chr.fasta > self.paf
+
+paf2dotplot png medium self.paf
+
 ```
 
 ## blast
@@ -57,37 +138,15 @@ mkdir -p S288c_result
 
 cd ~/data/egaz/S288c_proc
 
-# genome
-find ../S288c -type f -name "*.fa" |
-    sort |
-    xargs cat |
-    perl -nl -e "/^>/ or \$_ = uc; print" \
-    > genome.fa
-faops size genome.fa > chr.sizes
-
 # Get exact copies in the genome
-fasops axt2fas ../S288cvsSelf/axtNet/*.axt.gz -l 1000 -s chr.sizes -o stdout > axt.fas
-fasops separate axt.fas --nodash -s .sep.fasta
+fasops axt2fas ../S288cvsSelf/axtNet/*.axt.gz -l 1000 -s ../S288c/chr.sizes -o stdout > axt.fas
 
-echo "* Target positions"
-egaz exactmatch target.sep.fasta genome.fa \
-    --length 500 -o replace.target.tsv
-fasops replace axt.fas replace.target.tsv -o axt.target.fas
-
-echo "* Query positions"
-egaz exactmatch query.sep.fasta genome.fa \
-    --length 500 -o replace.query.tsv
-fasops replace axt.target.fas replace.query.tsv -o axt.correct.fas
+#fasops check axt.fas ../S288c/chr.fasta --name target -o stdout | grep -v "OK"
 
 # coverage stats
-cat axt.correct.fas |
-    grep "^>target." |
-    spanr cover stdin -o target.temp.json
-cat axt.correct.fas |
-    grep "^>query." |
-    spanr cover stdin -o query.temp.json
-
-spanr compare --op union target.temp.json query.temp.json -o axt.union.json
+cat axt.fas |
+    grep "^>" |
+    spanr cover stdin -o axt.union.json
 spanr stat chr.sizes axt.union.json -o union.csv
 
 # links by lastz-chain
