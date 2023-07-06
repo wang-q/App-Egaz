@@ -39,10 +39,11 @@ sub opt_spec {
         [ "outgroup=s",  "the name of outgroup", ],
         [ "tree=s",      "a predefined guiding tree for multiz", ],
         [ "order",       "multiple alignments with original order (using fake_tree.nwk)", ],
+
         # [ "rawphylo",    "create guiding tree by joining pairwise alignments", ],
-        [ "fasttree",    "use FastTree instead of RaxML to create a phylotree", ],
-        [ "mash",        "create guiding tree by mash", ],
-        [ "vcf",         "create vcf files", ],
+        [ "fasttree", "use FastTree instead of RaxML to create a phylotree", ],
+        [ "mash",     "create guiding tree by mash", ],
+        [ "vcf",      "create vcf files", ],
         [],
         [ "noblast", "don't blast paralogs against genomes", ],
         [ "circos",  "create circos script", ],
@@ -239,33 +240,40 @@ sub execute {
     #----------------------------#
     # prep *.sh files
     #----------------------------#
-    $self->gen_prep( $opt, $args );
+    if ( $opt->{mode} eq "prep" ) {
+        $self->gen_prep( $opt, $args );
+    }
 
     #----------------------------#
     # multi *.sh files
     #----------------------------#
-    $self->gen_pair( $opt, $args );
-    $self->gen_mash( $opt, $args );
-    # $self->gen_rawphylo( $opt, $args );
-    $self->gen_multi( $opt, $args );
-    $self->gen_vcf( $opt, $args );
+    if ( $opt->{mode} eq "multi" ) {
+        $self->gen_pair( $opt, $args );
+
+        # $self->gen_rawphylo( $opt, $args ) if $opt->{rawphylo};
+        $self->gen_multi( $opt, $args );
+        $self->gen_vcf( $opt, $args ) if $opt->{vcf};
+    }
 
     #----------------------------#
     # self *.sh files
     #----------------------------#
-    $self->gen_self( $opt, $args );
-    $self->gen_proc( $opt, $args );
-    $self->gen_circos( $opt, $args );
+    if ( $opt->{mode} eq "multi" ) {
+        $self->gen_self( $opt, $args );
+        $self->gen_proc( $opt, $args );
+        $self->gen_circos( $opt, $args ) if $opt->{circos};
+    }
 
-    $self->gen_aligndb( $opt, $args );
-    $self->gen_packup( $opt, $args );
+    if ( $opt->{mode} eq "multi" or $opt->{mode} eq "self" ) {
+        $self->gen_mash( $opt, $args );
 
+        $self->gen_aligndb( $opt, $args ) if $opt->{aligndb};
+        $self->gen_packup( $opt, $args );
+    }
 }
 
 sub gen_prep {
     my ( $self, $opt, $args ) = @_;
-
-    return unless $opt->{mode} eq "prep";
 
     my @patterns = map {"*$_"} @{ $opt->{suffix} };
     my %perseq   = map { $_ => 1, } @{ $opt->{perseq} };
@@ -343,10 +351,6 @@ EOF
 
 sub gen_aligndb {
     my ( $self, $opt, $args ) = @_;
-
-    return
-        unless ( $opt->{mode} eq "multi" or $opt->{mode} eq "self" )
-        and $opt->{aligndb};
 
     my $tt = Template->new( INCLUDE_PATH => [ File::ShareDir::dist_dir('App-Egaz') ], );
     my $template;
@@ -545,8 +549,6 @@ EOF
 sub gen_packup {
     my ( $self, $opt, $args ) = @_;
 
-    return unless ( $opt->{mode} eq "multi" or $opt->{mode} eq "self" );
-
     my $tt       = Template->new( INCLUDE_PATH => [ File::ShareDir::dist_dir('App-Egaz') ], );
     my $sh_name  = "9_pack_up.sh";
     my $template = "9_pack_up.tt2.sh";
@@ -565,8 +567,6 @@ sub gen_packup {
 
 sub gen_pair {
     my ( $self, $opt, $args ) = @_;
-
-    return unless $opt->{mode} eq "multi";
 
     my $tt       = Template->new( INCLUDE_PATH => [ File::ShareDir::dist_dir('App-Egaz') ], );
     my $sh_name  = "1_pair.sh";
@@ -587,8 +587,6 @@ sub gen_pair {
 # sub gen_rawphylo {
 #     my ( $self, $opt, $args ) = @_;
 #
-#     return unless $opt->{mode} eq "multi" and $opt->{rawphylo};
-#
 #     my $tt       = Template->new( INCLUDE_PATH => [ File::ShareDir::dist_dir('App-Egaz') ], );
 #     my $sh_name  = "2_rawphylo.sh";
 #     my $template = "2_rawphylo.tt2.sh";
@@ -607,8 +605,6 @@ sub gen_pair {
 
 sub gen_mash {
     my ( $self, $opt, $args ) = @_;
-
-    return unless ( $opt->{mode} eq "multi" or $opt->{mode} eq "self" );
 
     my $tt       = Template->new( INCLUDE_PATH => [ File::ShareDir::dist_dir('App-Egaz') ], );
     my $sh_name  = "1_mash.sh";
@@ -629,8 +625,6 @@ sub gen_mash {
 sub gen_multi {
     my ( $self, $opt, $args ) = @_;
 
-    return unless $opt->{mode} eq "multi";
-
     my $tt       = Template->new( INCLUDE_PATH => [ File::ShareDir::dist_dir('App-Egaz') ], );
     my $sh_name  = "3_multi.sh";
     my $template = "3_multi.tt2.sh";
@@ -649,8 +643,6 @@ sub gen_multi {
 
 sub gen_vcf {
     my ( $self, $opt, $args ) = @_;
-
-    return unless $opt->{mode} eq "multi" and $opt->{vcf};
 
     my $tt       = Template->new( INCLUDE_PATH => [ File::ShareDir::dist_dir('App-Egaz') ], );
     my $sh_name  = "4_vcf.sh";
@@ -671,8 +663,6 @@ sub gen_vcf {
 sub gen_self {
     my ( $self, $opt, $args ) = @_;
 
-    return unless $opt->{mode} eq "self";
-
     my $tt       = Template->new( INCLUDE_PATH => [ File::ShareDir::dist_dir('App-Egaz') ], );
     my $sh_name  = "1_self.sh";
     my $template = "1_self.tt2.sh";
@@ -692,8 +682,6 @@ sub gen_self {
 sub gen_proc {
     my ( $self, $opt, $args ) = @_;
 
-    return unless $opt->{mode} eq "self";
-
     my $tt       = Template->new( INCLUDE_PATH => [ File::ShareDir::dist_dir('App-Egaz') ], );
     my $sh_name  = "3_proc.sh";
     my $template = "3_proc.tt2.sh";
@@ -712,8 +700,6 @@ sub gen_proc {
 
 sub gen_circos {
     my ( $self, $opt, $args ) = @_;
-
-    return unless $opt->{mode} eq "self" and $opt->{circos};
 
     my $tt = Template->new( INCLUDE_PATH => [ File::ShareDir::dist_dir('App-Egaz') ], );
 
