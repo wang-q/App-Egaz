@@ -607,8 +607,8 @@ sub gen_mash {
     my ( $self, $opt, $args ) = @_;
 
     my $tt       = Template->new( INCLUDE_PATH => [ File::ShareDir::dist_dir('App-Egaz') ], );
-    my $sh_name  = "1_mash.sh";
-    my $template = "1_mash.tt2.sh";
+    my $sh_name  = "2_mash.sh";
+    my $template = "2_mash.tt2.sh";
 
     print STDERR "Create $sh_name\n";
 
