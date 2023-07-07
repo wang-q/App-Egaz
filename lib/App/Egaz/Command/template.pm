@@ -258,7 +258,7 @@ sub execute {
     #----------------------------#
     # self *.sh files
     #----------------------------#
-    if ( $opt->{mode} eq "multi" ) {
+    if ( $opt->{mode} eq "self" ) {
         $self->gen_self( $opt, $args );
         $self->gen_proc( $opt, $args );
         $self->gen_circos( $opt, $args ) if $opt->{circos};
