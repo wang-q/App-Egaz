@@ -212,7 +212,7 @@ egaz template \
     --mash --parallel 6 -v
 
 bash multi6/1_pair.sh
-bash multi6/1_mash.sh
+bash multi6/2_mash.sh
 bash multi6/3_multi.sh
 
 egaz template \
