@@ -44,7 +44,7 @@ find . -name "*.gz" | xargs gzip -t
 ```shell
 cd ~/data/egaz
 
-# for `fasops check`
+# for `fasr check`
 faops filter -N -s download/Saccharomyces_cerevisiae.R64-1-1.dna_sm.toplevel.fa.gz S288c.fa
 egaz prepseq S288c.fa -o S288c -v
 
@@ -94,12 +94,12 @@ find S288cvsRM11_1a_lav2axt -type f -name "*.lav" |
         egaz lav2axt {} -o {}.axt
     '
 
-fasops axt2fas \
-    -l 1000 -t S288c -q RM11_1a -s RM11_1a/chr.sizes \
-    S288cvsRM11_1a_lav2axt/*.axt -o S288cvsRM11_1a_lav2axt.fas
+fasr axt2fas --tname S288c --qname RM11_1a \
+    RM11_1a/chr.sizes S288cvsRM11_1a_lav2axt/*.axt |
+    fasr filter --ge 1000 stdin -o S288cvsRM11_1a_lav2axt.fas
 
-fasops check S288cvsRM11_1a_lav2axt.fas S288c.fa --name S288c -o stdout | grep -v "OK"
-fasops check S288cvsRM11_1a_lav2axt.fas RM11_1a.fa --name RM11_1a -o stdout | grep -v "OK"
+fasr check --name S288c S288c.fa S288cvsRM11_1a_lav2axt.fas | grep -v "OK"
+fasr check --name RM11_1a RM11_1a.fa S288cvsRM11_1a_lav2axt.fas | grep -v "OK"
 
 cat S288cvsRM11_1a_lav2axt.fas |
     grep "^>S288c." |
@@ -123,12 +123,12 @@ egaz lpcnam \
     --parallel 6 --verbose \
     S288c RM11_1a S288cvsRM11_1a_lpcnam
 
-fasops axt2fas \
-    -l 1000 -t S288c -q RM11_1a -s RM11_1a/chr.sizes \
-    S288cvsRM11_1a_lpcnam/axtNet/*.net.axt.gz -o S288cvsRM11_1a_lpcnam_axt.fas
+fasr axt2fas --tname S288c --qname RM11_1a \
+    RM11_1a/chr.sizes S288cvsRM11_1a_lpcnam/axtNet/*.net.axt.gz |
+    fasr filter --ge 1000 stdin -o S288cvsRM11_1a_lpcnam_axt.fas
 
-fasops check S288cvsRM11_1a_lpcnam_axt.fas S288c.fa --name S288c -o stdout | grep -v "OK"
-fasops check S288cvsRM11_1a_lpcnam_axt.fas RM11_1a.fa --name RM11_1a -o stdout | grep -v "OK"
+fasr check --name S288c S288c.fa S288cvsRM11_1a_lpcnam_axt.fas | grep -v "OK"
+fasr check --name RM11_1a RM11_1a.fa S288cvsRM11_1a_lpcnam_axt.fas | grep -v "OK"
 
 cat S288cvsRM11_1a_lpcnam_axt.fas |
     grep "^>S288c." |
@@ -140,10 +140,11 @@ egaz lpcnam \
     --parallel 8 --verbose --syn \
     S288c RM11_1a S288cvsRM11_1a_lpcnam/lav.tar.gz -o S288cvsRM11_1a_lpcnam_syn
 
-fasops maf2fas S288cvsRM11_1a_lpcnam_syn/mafSynNet/*.synNet.maf.gz -o S288cvsRM11_1a_lpcnam_syn.fas
+fasr maf2fas S288cvsRM11_1a_lpcnam_syn/mafSynNet/*.synNet.maf.gz |
+    fasr filter --ge 1000 stdin -o S288cvsRM11_1a_lpcnam_syn.fas
 
-fasops check S288cvsRM11_1a_lpcnam_syn.fas S288c.fa --name S288c -o stdout | grep -v "OK"
-fasops check S288cvsRM11_1a_lpcnam_syn.fas RM11_1a.fa --name RM11_1a -o stdout | grep -v "OK"
+fasr check --name S288c S288c.fa S288cvsRM11_1a_lpcnam_syn.fas | grep -v "OK"
+fasr check --name RM11_1a RM11_1a.fa S288cvsRM11_1a_lpcnam_syn.fas | grep -v "OK"
 
 cat S288cvsRM11_1a_lpcnam_syn.fas |
     grep "^>S288c." |
@@ -172,12 +173,12 @@ egaz lpcnam \
     --parallel 6 --verbose \
     S288c RM11_1a S288cvsRM11_1a_partition
 
-fasops axt2fas \
-    -l 1000 -t S288c -q RM11_1a -s RM11_1a/chr.sizes \
-    S288cvsRM11_1a_partition/axtNet/*.net.axt.gz -o S288cvsRM11_1a_partition.fas
+fasr axt2fas --tname S288c --qname RM11_1a \
+    RM11_1a/chr.sizes S288cvsRM11_1a_partition/axtNet/*.net.axt.gz |
+    fasr filter --ge 1000 stdin -o S288cvsRM11_1a_partition.fas
 
-fasops check S288cvsRM11_1a_partition.fas S288c.fa --name S288c -o stdout | grep -v "OK"
-fasops check S288cvsRM11_1a_partition.fas RM11_1a.fa --name RM11_1a -o stdout | grep -v "OK"
+fasr check --name S288c S288c.fa S288cvsRM11_1a_partition.fas | grep -v "OK"
+fasr check --name RM11_1a RM11_1a.fa S288cvsRM11_1a_partition.fas | grep -v "OK"
 
 cat S288cvsRM11_1a_partition.fas |
     grep "^>S288c." |
