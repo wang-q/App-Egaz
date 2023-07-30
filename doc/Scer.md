@@ -101,11 +101,6 @@ fasr axt2fas --tname S288c --qname RM11_1a \
 fasr check --name S288c S288c.fa S288cvsRM11_1a_lav2axt.fas | grep -v "OK"
 fasr check --name RM11_1a RM11_1a.fa S288cvsRM11_1a_lav2axt.fas | grep -v "OK"
 
-cat S288cvsRM11_1a_lav2axt.fas |
-    grep "^>S288c." |
-    spanr cover stdin |
-    spanr stat S288c/chr.sizes stdin -o S288cvsRM11_1a_lav2axt.csv
-
 ```
 
 ### lastz and lpcnam
@@ -130,11 +125,6 @@ fasr axt2fas --tname S288c --qname RM11_1a \
 fasr check --name S288c S288c.fa S288cvsRM11_1a_lpcnam_axt.fas | grep -v "OK"
 fasr check --name RM11_1a RM11_1a.fa S288cvsRM11_1a_lpcnam_axt.fas | grep -v "OK"
 
-cat S288cvsRM11_1a_lpcnam_axt.fas |
-    grep "^>S288c." |
-    spanr cover stdin |
-    spanr stat S288c/chr.sizes stdin -o S288cvsRM11_1a_lpcnam_axt.csv
-
 # UCSC's syntenic pipeline
 egaz lpcnam \
     --parallel 8 --verbose --syn \
@@ -145,11 +135,6 @@ fasr maf2fas S288cvsRM11_1a_lpcnam_syn/mafSynNet/*.synNet.maf.gz |
 
 fasr check --name S288c S288c.fa S288cvsRM11_1a_lpcnam_syn.fas | grep -v "OK"
 fasr check --name RM11_1a RM11_1a.fa S288cvsRM11_1a_lpcnam_syn.fas | grep -v "OK"
-
-cat S288cvsRM11_1a_lpcnam_syn.fas |
-    grep "^>S288c." |
-    spanr cover stdin |
-    spanr stat S288c/chr.sizes stdin -o S288cvsRM11_1a_lpcnam_syn.csv
 
 ```
 
@@ -180,12 +165,79 @@ fasr axt2fas --tname S288c --qname RM11_1a \
 fasr check --name S288c S288c.fa S288cvsRM11_1a_partition.fas | grep -v "OK"
 fasr check --name RM11_1a RM11_1a.fa S288cvsRM11_1a_partition.fas | grep -v "OK"
 
-cat S288cvsRM11_1a_partition.fas |
-    grep "^>S288c." |
-    spanr cover stdin |
-    spanr stat S288c/chr.sizes stdin -o S288cvsRM11_1a_partition.csv
+```
+
+### Comparison
+
+```shell
+cd ~/data/egaz
+
+ARRAY=(
+    S288cvsRM11_1a_lav2axt.fas
+    S288cvsRM11_1a_lpcnam_axt.fas
+    S288cvsRM11_1a_lpcnam_syn.fas
+    S288cvsRM11_1a_partition.fas
+)
+
+# N50
+for F in ${ARRAY[@]}; do
+    fasr subset <(echo S288c) ${F} --required `# Only keeps S288c` |
+        faops filter -d stdin stdout `# removes dashes` |
+        faops n50 -S -C -g 12071326 stdin |
+        datamash transpose |
+        sed '1d' |
+        sed "s/^/${F}\t/"
+done |
+    (echo -e "#item\tN50\tSum\tCount" && cat) |
+    mlr --itsv --omd cat
+
+# depths
+for F in ${ARRAY[@]}; do
+    fasr subset <(echo S288c) ${F} --required |
+        grep '^>S288c.' |
+        spanr cover stdin |
+        spanr stat --all S288c/chr.sizes stdin |
+        sed '1d' |
+        tr ',' '\t' |
+        sed "s/^/${F}\t/"
+
+    # single copy
+    fasr subset <(echo S288c) ${F} --required |
+        grep '^>S288c.' |
+        spanr coverage -d stdin `# detailed depths` |
+        jq '."1"' `# depth 1` |
+        spanr stat --all S288c/chr.sizes stdin |
+        sed '1d' |
+        tr ',' '\t' |
+        sed "s/^/${F}\t/"
+done |
+    (echo -e "#item\tchrLength\tsize\tcoverage" && cat) |
+    mlr --itsv --omd cat
+
+fasr subset <(echo S288c) S288cvsRM11_1a_lpcnam_axt.fas --required |
+    grep '^>S288c.' |
+    spanr coverage -d stdin
+
 
 ```
+
+| #item                         | N50   | Sum      | Count |
+|-------------------------------|-------|----------|-------|
+| S288cvsRM11_1a_lav2axt.fas    | 84580 | 12603461 | 821   |
+| S288cvsRM11_1a_lpcnam_axt.fas | 81344 | 11578920 | 307   |
+| S288cvsRM11_1a_lpcnam_syn.fas | 83326 | 11455734 | 257   |
+| S288cvsRM11_1a_partition.fas  | 77565 | 11579491 | 327   |
+
+| #item                         | chrLength | size     | coverage |
+|-------------------------------|-----------|----------|----------|
+| S288cvsRM11_1a_lav2axt.fas    | 12071326  | 11627698 | 0.9632   |
+| S288cvsRM11_1a_lav2axt.fas    | 12071326  | 11038024 | 0.9144   |
+| S288cvsRM11_1a_lpcnam_axt.fas | 12071326  | 11578920 | 0.9592   |
+| S288cvsRM11_1a_lpcnam_axt.fas | 12071326  | 11578920 | 0.9592   |
+| S288cvsRM11_1a_lpcnam_syn.fas | 12071326  | 11455734 | 0.9490   |
+| S288cvsRM11_1a_lpcnam_syn.fas | 12071326  | 11455734 | 0.9490   |
+| S288cvsRM11_1a_partition.fas  | 12071326  | 11579491 | 0.9593   |
+| S288cvsRM11_1a_partition.fas  | 12071326  | 11579491 | 0.9593   |
 
 ### A quick dotplot
 
