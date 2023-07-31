@@ -53,11 +53,6 @@ hash mafft 2>/dev/null || {
     exit 1;
 }
 
-hash fasops 2>/dev/null || {
-    echo >&2 "fasops is required but it's not installed.";
-    exit 1;
-}
-
 hash spanr 2>/dev/null || {
     echo >&2 "spanr is required but it's not installed.";
     exit 1;

@@ -34,15 +34,13 @@ egaz lpcnam \
     --parallel 8 --verbose \
     S288c S288c S288cvsSelf
 
-fasops axt2fas \
-    -l 1000 -t S288c -q S288c -s S288c/chr.sizes \
-    S288cvsSelf/axtNet/*.net.axt.gz -o S288cvsSelf_axt.fas
+fasr axt2fas --tname S288c --qname S288c \
+    S288c/chr.sizes S288cvsSelf/axtNet/*.net.axt.gz |
+    fasr filter --ge 1000 stdin -o S288cvsSelf_axt.fas
 
-fasops check S288cvsSelf_axt.fas S288c.fa --name S288c -o stdout | grep -v "OK"
+fasr check --name S288c S288c.fa S288cvsSelf_axt.fas | grep -v "OK"
 
-cat S288cvsSelf_axt.fas |
-    grep "^>S288c." |
-    spanr cover stdin |
+fasr cover --name S288c S288cvsSelf_axt.fas |
     spanr stat S288c/chr.sizes stdin -o S288cvsSelf_axt.csv
 
 cat S288cvsSelf_axt.fas |
@@ -140,8 +138,6 @@ cd ~/data/egaz/S288c_proc
 
 # Get exact copies in the genome
 fasops axt2fas ../S288cvsSelf/axtNet/*.axt.gz -l 1000 -s ../S288c/chr.sizes -o stdout > axt.fas
-
-#fasops check axt.fas ../S288c/chr.fasta --name target -o stdout | grep -v "OK"
 
 # coverage stats
 cat axt.fas |
