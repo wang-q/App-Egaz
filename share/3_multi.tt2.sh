@@ -104,7 +104,7 @@ find [% opt.multiname %]_mz -type f -name "*.maf" |
 log_info Convert maf to fas
 find [% opt.multiname %]_mz -name "*.maf" -or -name "*.maf.gz" |
     parallel --no-run-if-empty -j [% opt.parallel %] \
-        fasops maf2fas {} -o [% opt.multiname %]_fasta/{/}.fas
+        fasr maf2fas {} -o [% opt.multiname %]_fasta/{/}.fas
 
 #----------------------------#
 # refine fasta
@@ -112,7 +112,7 @@ find [% opt.multiname %]_mz -name "*.maf" -or -name "*.maf.gz" |
 log_info Refine fas
 find [% opt.multiname %]_fasta -name "*.fas" -or -name "*.fas.gz" |
     parallel --no-run-if-empty -j 2 '
-        fasops refine \
+        fasr refine \
             --msa [% opt.msa %] --parallel [% opt.parallel2 %] \
             --quick --pad 100 --fill 100 \
 [% IF opt.outgroup -%]
@@ -133,7 +133,7 @@ find [% opt.multiname %]_refined -type f -name "*.fas" |
 log_info FastTree
 
 gzip -dcf [% opt.multiname %]_refined/*.fas.gz |
-    fasops concat stdin genome.lst -o stdout |
+    fasr concat genome.lst stdin |
     FastTree -nt -fastest -noml -boot 100 |
 [% IF opt.outgroup -%]
     nw_reroot - [% opt.outgroup %] |
