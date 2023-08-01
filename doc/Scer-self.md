@@ -137,25 +137,21 @@ mkdir -p S288c_result
 cd ~/data/egaz/S288c_proc
 
 # Get exact copies in the genome
-fasops axt2fas ../S288cvsSelf/axtNet/*.axt.gz -l 1000 -s ../S288c/chr.sizes -o stdout > axt.fas
-
-# coverage stats
-cat axt.fas |
-    grep "^>" |
-    spanr cover stdin -o axt.union.json
-spanr stat chr.sizes axt.union.json -o union.csv
+fasr axt2fas \
+    ../S288c/chr.sizes ../S288cvsSelf/axtNet/*.net.axt.gz |
+    fasr filter --ge 1000 stdin -o axt.fas
 
 # links by lastz-chain
-fasops links axt.correct.fas -o stdout |
+fasr link axt.fas |
     perl -nl -e 's/(target|query)\.//g; print;' \
     > links.lastz.tsv
 
 # remove species names
 # remove duplicated sequences
 # remove sequences with more than 250 Ns
-fasops separate axt.correct.fas --nodash --rc -o stdout |
+fasr separate axt.fas --rc |
     perl -nl -e '/^>/ and s/^>(target|query)\./\>/; print;' |
-    faops filter -u stdin stdout |
+    faops filter -u -d stdin stdout |
     faops filter -n 250 stdin stdout \
     > axt.gl.fasta
 
@@ -194,15 +190,19 @@ linkr connect links.clean.tsv      -o links.connect.tsv     -r 0.9
 linkr filter  links.connect.tsv    -o links.filter.tsv      -r 0.8
 
 # recreate links
-fasops create links.filter.tsv -o multi.temp.fas       -g genome.fa
-fasops refine multi.temp.fas   -o multi.refine.fas     --msa mafft -p 8 --chop 10
-fasops links  multi.refine.fas -o stdout |
+fasr create genome.fa links.filter.tsv -o multi.temp.fas
+#fasr check genome.fa multi.temp.fas | grep -v "OK"
+
+fasr refine multi.temp.fas -o multi.refine.fas --msa mafft -p 8 --chop 10
+#fasr check genome.fa multi.refine.fas | grep -v "OK"
+
+fasr link multi.refine.fas |
     linkr sort stdin -o links.refine.tsv
 
-fasops links  multi.refine.fas -o stdout --best |
+fasr link multi.refine.fas --best |
     linkr sort stdin -o links.best.tsv
-fasops create links.best.tsv -o pair.temp.fas    -g genome.fa
-fasops refine pair.temp.fas  -o pair.refine.fas  --msa mafft -p 8
+fasr create genome.fa links.best.tsv -o pair.temp.fas
+fasr refine pair.temp.fas -o pair.refine.fas  --msa mafft -p 8
 
 cat links.refine.tsv |
     perl -nla -F"\t" -e 'print for @F' |

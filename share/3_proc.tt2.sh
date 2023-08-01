@@ -44,56 +44,23 @@ cd Processing/{}
 echo >&2 "==> Get exact copies in the genome"
 
 echo >&2 "    * axt2fas"
-fasops axt2fas \
-    ../../Pairwise/{}vsSelf/axtNet/*.axt.gz \
-    -l [% opt.length %] -s chr.sizes -o stdout > axt.fas
-fasops separate axt.fas -o . --nodash -s .sep.fasta
-
-echo >&2 "    * Target positions"
-egaz exactmatch target.sep.fasta genome.fa \
-    --length 500 --discard 50 -o replace.target.tsv
-fasops replace axt.fas replace.target.tsv -o axt.target.fas
-
-echo >&2 "    * Query positions"
-egaz exactmatch query.sep.fasta genome.fa \
-    --length 500 --discard 50 -o replace.query.tsv
-fasops replace axt.target.fas replace.query.tsv -o axt.correct.fas
-
-#----------------------------#
-# Coverage stats
-#----------------------------#
-echo >&2 "==> Coverage stats"
-
-cat axt.correct.fas |
-    grep "^>target." |
-    spanr cover stdin -o target.temp.json
-cat axt.correct.fas |
-    grep "^>query." |
-    spanr cover stdin -o query.temp.json
-
-spanr compare --op union target.temp.json query.temp.json -o axt.union.json
-spanr stat chr.sizes axt.union.json -o union.csv
+fasr axt2fas chr.sizes ../../Pairwise/{}vsSelf/axtNet/*.axt.gz |
+    fasr filter --ge 1000 stdin -o axt.fas
 
 # links by lastz-chain
-fasops links axt.correct.fas -o stdout |
+fasr link axt.fas |
     perl -nl -e "s/(target|query)\.//g; print;" \
     > links.lastz.tsv
 
 # remove species names
 # remove duplicated sequences
 # remove sequences with more than 250 Ns
-fasops separate axt.correct.fas --nodash --rc -o stdout |
+fasr separate axt.fas --rc |
     perl -nl -e "/^>/ and s/^>(target|query)\./\>/; print;" |
-    faops filter -u stdin stdout |
+    faops filter -u -d stdin stdout |
     faops filter -n 250 stdin stdout \
     > axt.gl.fasta
 
-[% IF opt.noblast -%]
-#----------------------------#
-# Lastz paralogs
-#----------------------------#
-cat axt.gl.fasta > axt.all.fasta
-[% ELSE -%]
 #----------------------------#
 # Get more paralogs
 #----------------------------#
@@ -108,7 +75,6 @@ cat axt.gl.fasta axt.bg.fasta |
     faops filter -u stdin stdout |
     faops filter -n 250 stdin stdout \
     > axt.all.fasta
-[% END -%]
 
 #----------------------------#
 # Link paralogs
@@ -124,11 +90,7 @@ echo >&2 "==> Merge paralogs"
 
 echo >&2 "    * Sort links"
 linkr sort -o links.sort.tsv \
-[% IF opt.noblast -%]
-   links.lastz.tsv
-[% ELSE -%]
     links.lastz.tsv links.blast.tsv
-[% END -%]
 
 echo >&2 "    * Clean links"
 linkr clean   links.sort.tsv       -o links.sort.clean.tsv
@@ -156,17 +118,17 @@ pushd Processing/[% id %] > /dev/null
 log_info Create multiple/pairwise alignments for [% id %]
 
 log_debug multiple links
-fasops create links.filter.tsv -o multi.temp.fas    -g genome.fa
-fasops refine multi.temp.fas   -o multi.refine.fas  --msa mafft -p [% opt.parallel %] --chop 10
-fasops links  multi.refine.fas -o stdout |
+fasr create genome.fa links.filter.tsv -o multi.temp.fas
+fasr refine multi.temp.fas   -o multi.refine.fas  --msa mafft -p [% opt.parallel %] --chop 10
+fasr link  multi.refine.fas |
     linkr sort stdin -o stdout |
     linkr filter stdin -n 2-50 -o links.refine.tsv
 
 log_debug pairwise links
-fasops   links  multi.refine.fas    -o stdout     --best |
+fasr   link  multi.refine.fas --best |
     linkr sort stdin -o links.best.tsv
-fasops create links.best.tsv   -o pair.temp.fas    -g genome.fa --name [% id %]
-fasops refine pair.temp.fas    -o pair.refine.fas  --msa mafft -p [% opt.parallel %]
+fasr create links.best.tsv   -o pair.temp.fas    -g genome.fa --name [% id %]
+fasr refine pair.temp.fas    -o pair.refine.fas  --msa mafft -p [% opt.parallel %]
 
 cat links.refine.tsv |
     perl -nla -F"\t" -e "print for @F" |
@@ -197,20 +159,18 @@ done
 spanr merge copy2.temp.json copy3.temp.json copy4-50.temp.json -o copy.json
 spanr stat chr.sizes copy.json --all -o links.copy.csv
 
-fasops mergecsv links.copy.csv links.count.csv --concat -o copy.csv
+#fasops mergecsv links.copy.csv links.count.csv --concat -o copy.csv
 
 log_debug Coverage figure
 spanr stat chr.sizes cover.json -o cover.json.csv
-#perl cover_figure.pl --size chr.sizes -f cover.yml
 
 log_info Results for [% id %]
 
 cp cover.json       ../../Results/[% id %]/[% id %].cover.json
 cp copy.json        ../../Results/[% id %]/[% id %].copy.json
 mv cover.json.csv   ../../Results/[% id %]/[% id %].cover.csv
-mv copy.csv         ../../Results/[% id %]/[% id %].copy.csv
+#mv copy.csv         ../../Results/[% id %]/[% id %].copy.csv
 cp links.refine.tsv ../../Results/[% id %]/[% id %].links.tsv
-#mv cover.png        ../../Results/[% id %]/[% id %].cover.png
 mv multi.refine.fas ../../Results/[% id %]/[% id %].multi.fas
 mv pair.refine.fas  ../../Results/[% id %]/[% id %].pair.fas
 
