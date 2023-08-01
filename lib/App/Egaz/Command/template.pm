@@ -39,13 +39,10 @@ sub opt_spec {
         [ "outgroup=s",  "the name of outgroup", ],
         [ "tree=s",      "a predefined guiding tree for multiz", ],
         [ "order",       "multiple alignments with original order (using fake_tree.nwk)", ],
-
-        # [ "rawphylo",    "create guiding tree by joining pairwise alignments", ],
         [ "fasttree", "use FastTree instead of RaxML to create a phylotree", ],
         [ "mash",     "create guiding tree by mash", ],
         [ "vcf",      "create vcf files", ],
         [],
-        [ "noblast", "don't blast paralogs against genomes", ],
         [ "circos",  "create circos script", ],
         [],
         [ "repeatmasker=s", "options passed to RepeatMasker", ],
