@@ -7,7 +7,7 @@ use App::Egaz -command;
 use App::Egaz::Common;
 
 sub abstract {
-    return 'create executing bash files';
+    return 'create pipeline files';
 }
 
 sub opt_spec {

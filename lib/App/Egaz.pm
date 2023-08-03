@@ -12,7 +12,7 @@ use App::Cmd::Setup -app;
 
 =head1 NAME
 
-App::Egaz - Backend of B<E>asy B<G>enome B<A>ligner
+App::Egaz - B<E>asy B<G>enome B<A>ligner
 
 =head1 SYNOPSIS
 
@@ -48,10 +48,10 @@ Run C<egaz help command-name> for usage information.
 
 =head1 DESCRIPTION
 
-App::Egaz is the backend of B<E>asy B<G>enome B<A>ligner.
+App::Egaz stands for B<E>asy B<G>enome B<A>ligner.
 
-B<Caution>: C<egaz lpcnam> implement UCSC's chain-net pipeline, but some parts,
-e.g. C<axtChain> don't work correctly under macOS. Use C<egaz lastz>'s build in
+B<Caution>: C<egaz lpcnam> implements UCSC's chain-net pipeline, but some parts,
+e.g. C<axtChain>, don't work correctly under macOS. Use C<egaz lastz>'s build in
 chaining mechanism (C<C=2>) instead.
 
 =head1 INSTALLATION
@@ -131,8 +131,8 @@ eLife. 2022; 11: e79014.
 
 DOI: L<https://doi.org/10.7554/eLife.79014>
 
-'*'
-
+'*': These authors contributed equally to this work
+'#': For correspondence
 
 =cut
 

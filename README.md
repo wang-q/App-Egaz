@@ -1,7 +1,7 @@
 [![Build Status](https://travis-ci.org/wang-q/App-Egaz.svg?branch=master)](https://travis-ci.org/wang-q/App-Egaz) [![Coverage Status](http://codecov.io/github/wang-q/App-Egaz/coverage.svg?branch=master)](https://codecov.io/github/wang-q/App-Egaz?branch=master) [![MetaCPAN Release](https://badge.fury.io/pl/App-Egaz.svg)](https://metacpan.org/release/App-Egaz)
 # NAME
 
-App::Egaz - Backend of **E**asy **G**enome **A**ligner
+App::Egaz - **E**asy **G**enome **A**ligner
 
 # SYNOPSIS
 
@@ -37,10 +37,10 @@ Run `egaz help command-name` for usage information.
 
 # DESCRIPTION
 
-App::Egaz is the backend of **E**asy **G**enome **A**ligner.
+App::Egaz stands for **E**asy **G**enome **A**ligner.
 
-**Caution**: `egaz lpcnam` implement UCSC's chain-net pipeline, but some parts,
-e.g. `axtChain` don't work correctly under macOS. Use `egaz lastz`'s build in
+**Caution**: `egaz lpcnam` implements UCSC's chain-net pipeline, but some parts,
+e.g. `axtChain`, don't work correctly under macOS. Use `egaz lastz`'s build in
 chaining mechanism (`C=2`) instead.
 
 # INSTALLATION
@@ -95,10 +95,13 @@ it under the same terms as Perl itself.
 
 # CITATION
 
-Yan Wang, Xiaohui Liang, Yuqian Jiang, Danjiang Dong, Cong Zhang, Tianqiang Song, Ming Chen, Yong You, Han Liu, Min Ge, Haibin Dai, Fengchan Xi, Wanqing Zhou, Jian-Qun Chen, Qiang Wang, Qihan Chen, Wenkui Yu.
+Yan Wang\*, Xiaohui Liang\*, Yuqian Jiang, Danjiang Dong, Cong Zhang, Tianqiang Song, Ming Chen, Yong You, Han Liu, Min Ge, Haibin Dai, Fengchan Xi, Wanqing Zhou, Jian-Qun Chen, Qiang Wang#, Qihan Chen#, Wenkui Yu#.
 
 Novel fast pathogen diagnosis method for severe pneumonia patients in the intensive care unit: randomized clinical trial.
 
 eLife. 2022; 11: e79014.
 
 DOI: [https://doi.org/10.7554/eLife.79014](https://doi.org/10.7554/eLife.79014)
+
+'\*': These authors contributed equally to this work
+'#': For correspondence

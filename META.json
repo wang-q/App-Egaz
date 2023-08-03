@@ -1,10 +1,10 @@
 {
-   "abstract" : "Backend of B<E>asy B<G>enome B<A>ligner",
+   "abstract" : "B<E>asy B<G>enome B<A>ligner",
    "author" : [
       "Qiang Wang <wang-q@outlook.com>"
    ],
    "dynamic_config" : 0,
-   "generated_by" : "Minilla/v3.1.19, CPAN::Meta::Converter version 2.150010",
+   "generated_by" : "Minilla/v3.1.21, CPAN::Meta::Converter version 2.150010",
    "license" : [
       "perl_5"
    ],
