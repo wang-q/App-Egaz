@@ -581,25 +581,6 @@ sub gen_pair {
     ) or Carp::confess Template->error;
 }
 
-# sub gen_rawphylo {
-#     my ( $self, $opt, $args ) = @_;
-#
-#     my $tt       = Template->new( INCLUDE_PATH => [ File::ShareDir::dist_dir('App-Egaz') ], );
-#     my $sh_name  = "2_rawphylo.sh";
-#     my $template = "2_rawphylo.tt2.sh";
-#
-#     print STDERR "Create $sh_name\n";
-#
-#     $tt->process(
-#         $template,
-#         {   args => $args,
-#             opt  => $opt,
-#             sh   => $sh_name,
-#         },
-#         Path::Tiny::path( $opt->{outdir}, $sh_name )->stringify
-#     ) or Carp::confess Template->error;
-# }
-
 sub gen_mash {
     my ( $self, $opt, $args ) = @_;
 
