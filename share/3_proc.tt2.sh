@@ -127,7 +127,7 @@ fasr link  multi.refine.fas |
 log_debug pairwise links
 fasr   link  multi.refine.fas --best |
     linkr sort stdin -o links.best.tsv
-fasr create links.best.tsv   -o pair.temp.fas    -g genome.fa --name [% id %]
+fasr create genome.fa links.best.tsv -o pair.temp.fas --name [% id %]
 fasr refine pair.temp.fas    -o pair.refine.fas  --msa mafft -p [% opt.parallel %]
 
 cat links.refine.tsv |
