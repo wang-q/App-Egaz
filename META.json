@@ -4,7 +4,7 @@
       "Qiang Wang <wang-q@outlook.com>"
    ],
    "dynamic_config" : 0,
-   "generated_by" : "Minilla/v3.1.21, CPAN::Meta::Converter version 2.150010",
+   "generated_by" : "Minilla/v3.1.25, CPAN::Meta::Converter version 2.150010",
    "license" : [
       "perl_5"
    ],
@@ -83,7 +83,7 @@
          "web" : "https://github.com/wang-q/App-Egaz"
       }
    },
-   "version" : "0.2.6",
+   "version" : "0.2.7",
    "x_authority" : "cpan:WANGQ",
    "x_contributors" : [
       "Qiang Wang <wang-q@users.noreply.github.com>"
