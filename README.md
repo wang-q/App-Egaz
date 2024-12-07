@@ -45,9 +45,9 @@ chaining mechanism (`C=2`) instead.
 
 # INSTALLATION
 
-    cpanm --installdeps https://github.com/wang-q/App-Egaz/archive/0.2.6.tar.gz
+    cpanm --installdeps https://github.com/wang-q/App-Egaz/archive/0.2.8.tar.gz
     curl -fsSL https://raw.githubusercontent.com/wang-q/App-Egaz/master/share/check_dep.sh | bash
-    cpanm -nq https://github.com/wang-q/App-Egaz/archive/0.2.6.tar.gz
+    cpanm -nq https://github.com/wang-q/App-Egaz/archive/0.2.8.tar.gz
     # cpanm -nq https://github.com/wang-q/App-Egaz.git
 
 # CONTAINER
