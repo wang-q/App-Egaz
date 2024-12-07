@@ -2,6 +2,8 @@ Revision history for Perl extension App-Egaz
 
 {{$NEXT}}
 
+0.2.9 2024-12-07T12:05:28Z
+
     - Remove dependencies on the `fasops` executable
     - Remove --rawphylow from `egaz template`
     - `spanr` is now generating .json instead of .yml
