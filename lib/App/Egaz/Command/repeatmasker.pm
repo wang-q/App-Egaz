@@ -112,6 +112,10 @@ sub execute {
             #   /home/linuxbrew/.linuxbrew/Cellar/repeatmasker/4.0.7_2/bin/RepeatMasker
             #   /home/linuxbrew/.linuxbrew/Cellar/repeatmasker/4.0.7_2/libexec/RepeatMasker
             #
+            # or a shim
+            #   $HOME/bin/RepeatMasker
+            #   $HOME/bin/rmOutToGFF3
+            #
             # We want find here
             #   /home/linuxbrew/.linuxbrew/Cellar/repeatmasker/4.0.7_2/libexec/util/rmOutToGFF3.pl
             my $rm_bin  = IPC::Cmd::can_run("RepeatMasker");
@@ -120,7 +124,10 @@ sub execute {
             #@type Path::Tiny
             my $rm2gff;
 
-            if ( $rm_path->parent->child("util")->is_dir ) {
+            if (IPC::Cmd::can_run("rmOutToGFF3")) {
+                $rm2gff = "rmOutToGFF3";
+            }
+            elsif ( $rm_path->parent->child("util")->is_dir ) {
                 $rm2gff = $rm_path->parent()->child("util/rmOutToGFF3.pl");
             }
             else {
@@ -136,7 +143,7 @@ sub execute {
                 Carp::croak "Can't find rmOutToGFF3.pl\n";
             }
 
-            $cmd = "perl $rm2gff";
+            $cmd = "$rm2gff";
             $cmd .= " $filename.out";
             $cmd .= " > $filename.gff";
             App::Egaz::Common::exec_cmd( $cmd, { verbose => $opt->{verbose}, } );
