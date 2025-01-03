@@ -56,9 +56,9 @@ chaining mechanism (C<C=2>) instead.
 
 =head1 INSTALLATION
 
-    cpanm --installdeps https://github.com/wang-q/App-Egaz/archive/0.2.8.tar.gz
+    cpanm --installdeps https://github.com/wang-q/App-Egaz/archive/0.2.9.tar.gz
     curl -fsSL https://raw.githubusercontent.com/wang-q/App-Egaz/master/share/check_dep.sh | bash
-    cpanm -nq https://github.com/wang-q/App-Egaz/archive/0.2.8.tar.gz
+    cpanm -nq https://github.com/wang-q/App-Egaz/archive/0.2.9.tar.gz
     # cpanm -nq https://github.com/wang-q/App-Egaz.git
 
 =head1 CONTAINER
